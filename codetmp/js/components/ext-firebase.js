@@ -11,14 +11,14 @@ const fire = (() => {
   };
   let logger = $('#deploy-logs');
 
-  function selectProject() {
-    projectId = this.value;
+  function selectProject(value) {
+    projectId = value;
     $('#site-list').innerHTML = '';
     listSite();
   }
 
-  function selectSite(_siteId) {
-    siteId = _siteId;
+  function selectSite(value) {
+    siteId = value;
   }
 
   function listProject() {

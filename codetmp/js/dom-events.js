@@ -49,8 +49,8 @@ let DOMEvents = {
 	},
 
 	inputable: {
-		'select-project': () => fire.selectProject(),
-		'select-site': () => fire.selectSite(),
+		'select-project': function() { fire.selectProject(this.value) },
+		'select-site': function() { fire.selectSite(this.value) },
 	},
 
 
