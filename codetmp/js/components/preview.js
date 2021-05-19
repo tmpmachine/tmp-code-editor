@@ -67,7 +67,16 @@ function PreviewManager() {
       }, '*');
     } else {
 
-      if (file.fileRef.name === undefined) {
+      if (file.isTemp && file.content === null) {
+        
+        previewLoadWindow.postMessage({
+          message: 'response-file', 
+          mime: helper.getMimeType(file.name),
+          content: file.fileRef,
+          resolverUID: event.data.resolverUID,
+        }, '*');
+
+      } else { // if (file.fileRef.name === undefined) {
 
         if (helper.isMediaTypeMultimedia(mimeType)) {
           let data = {
@@ -97,14 +106,6 @@ function PreviewManager() {
             resolverUID: event.data.resolverUID,
           }, '*');         
         }
-
-      } else {
-        previewLoadWindow.postMessage({
-          message: 'response-file', 
-          mime: helper.getMimeType(file.name),
-          content: file.fileRef,
-          resolverUID: event.data.resolverUID,
-        }, '*');
       }
     }
   }
@@ -272,7 +273,8 @@ function PreviewManager() {
       let parentId = filePath.parentId;
 
       if (file !== null) {
-	      if (typeof(file.fileRef.name) != 'undefined' && file.content === null) {
+        if (file.isTemp && file.content === null) {    
+	      // if (typeof(file.fileRef.name) != 'undefined' && file.content === null) {
 	        return file.fileRef;
 	      } else if (!file.loaded) {
 	        aww.pop('Downloading required file : '+file.name);
