@@ -401,7 +401,7 @@ const drive = (function() {
 
 
 
-  async function syncFile({ action, fid, metadata, type, source }) {
+  async function syncFile({ action, fid, metadata, type, source, isTemp }) {
     
     let method;
     let fetchUrl;
@@ -458,7 +458,11 @@ const drive = (function() {
     } else {
       form.append('metadata', new Blob([JSON.stringify(metaHeader)], { type: 'application/json' }));
       if ((action === 'create' || metadata.includes('media')) && type === 'files') {
-        if (fileRef.name === undefined) {
+        if (isTemp && content === null) {
+          fileBlob = fileRef
+          form.append('file', fileBlob);
+        } else {
+        // if (fileRef.name === undefined) {
       		if (helper.isHasSource(content)) {
 	        	let source = helper.getRemoteDataContent(content);
 	        	let fileData = await git.downloadFileData(source.downloadUrl);
@@ -468,9 +472,6 @@ const drive = (function() {
             fileBlob = new Blob([content], { type: helper.getMimeType(name) });
           		form.append('file', fileBlob);
 	      	}
-        } else {
-          fileBlob = fileRef
-          form.append('file', fileBlob);
         }
       }
     }
