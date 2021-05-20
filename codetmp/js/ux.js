@@ -279,7 +279,7 @@ const ui = {
       stateManager.pushState([1]);
       setTimeout(() => { document.activeElement.blur() }, 1);
     } else {
-      clipBoard.length = 0;
+      fileClipBoard.clipBoard.length = 0;
       stateManager.popState([1]);
       fileTab[activeTab].editor.env.editor.focus();
     }

@@ -1,8 +1,10 @@
 const fileClipBoard = (function() {
   
+  let clipBoard = [];
   let pasteParentFolderId = -1;
   let pasteMode = 'copy';
-  
+  let targetWorkspaceId = activeWorkspace;
+  let sourceWorkspaceId = activeWorkspace;
 
   function getBranch(parents) {
     let files = []
@@ -51,8 +53,10 @@ const fileClipBoard = (function() {
   
   function copy(isCut = false) {
     clipBoard.length = 0;
+    sourceWorkspaceId = activeWorkspace;
     for (let f of selectedFile) {
       if (clipBoard.indexOf(f) < 0) {
+        f.workspaceId = activeWorkspace;
         clipBoard.push(f);
       }
     }
@@ -84,7 +88,9 @@ const fileClipBoard = (function() {
     
     if (fileIds.length === 0) return;
     
+    activeWorkspace = sourceWorkspaceId;
     ({ id, fid, name, description, parentId, content, loaded, trashed } = fileManager.get({fid: fileIds[0], type: 'files'}));
+    activeWorkspace = targetWorkspaceId;
     
     if (!trashed) {
       let idx = odin.idxOf(parentId, road, 0);
@@ -115,8 +121,10 @@ const fileClipBoard = (function() {
     
     let folderId = folderIds[0];
     
+    activeWorkspace = sourceWorkspaceId;
     ({ name, modifiedTime, parentId, trashed } = fileManager.get({fid: folderId, type: 'folders'}));
-    
+    activeWorkspace = targetWorkspaceId;
+
     if (!trashed) {
       road.push([folderId, fileStorage.data.counter.folders]);
       
@@ -166,6 +174,7 @@ const fileClipBoard = (function() {
     if (clipBoard.length === 0) return;
 
     pasteParentFolderId = activeFolder;
+    targetWorkspaceId = activeWorkspace;
 
     while (clipBoard.length > 0) {
       let data;
@@ -174,24 +183,42 @@ const fileClipBoard = (function() {
       let modifiedTime = new Date().toISOString();
       
       if (type === 'file') {
+        activeWorkspace = sourceWorkspaceId;
         data = fileManager.get({fid, type:'files'});
-        if (pasteMode === 'copy')
+        activeWorkspace = targetWorkspaceId;
+        if (pasteMode === 'copy') {
           copySingleFile(data, modifiedTime);
-        else {
-          if (data.parentId !== activeFolder)
-            fileMove(data, 'files');
+        } else {
+          if (targetWorkspaceId !== sourceWorkspaceId) {
+            aww.pop('Cannot move files between workspaces. Files copied instead.', false, 5000);
+            copySingleFile(data, modifiedTime);
+          } else {
+            if (data.parentId !== activeFolder)
+              fileMove(data, 'files');
+          }
         }
       } else {
         if (pasteMode === 'copy') {
+          activeWorkspace = sourceWorkspaceId;
           let branch = getAllBranch(fid);
+          activeWorkspace = targetWorkspaceId;
           let road = copyBranchFolder(branch.folderIds, modifiedTime);
           copyBranchFile(branch.fileIds, road, modifiedTime);
         } else {
-          data = fileManager.get({fid, type: 'folders'});
-          if (isBreadcrumb(fid)) {
-            aww.pop("Cannot move folder within it's own directory.");
+          if (targetWorkspaceId !== sourceWorkspaceId) {
+            aww.pop('Cannot move files between workspaces. Files copied instead.', false, 5000);
+            activeWorkspace = sourceWorkspaceId;
+            let branch = getAllBranch(fid);
+            activeWorkspace = targetWorkspaceId;
+            let road = copyBranchFolder(branch.folderIds, modifiedTime);
+            copyBranchFile(branch.fileIds, road, modifiedTime);
           } else {
-            fileMove(data, 'folders');
+            data = fileManager.get({fid, type: 'folders'});
+            if (isBreadcrumb(fid)) {
+              aww.pop("Cannot move folder within it's own directory.");
+            } else {
+              fileMove(data, 'folders');
+            }
           }
         }
       }
@@ -222,6 +249,7 @@ const fileClipBoard = (function() {
   }
 
   return {
+    clipBoard,
     handler,
     cut,
     paste,

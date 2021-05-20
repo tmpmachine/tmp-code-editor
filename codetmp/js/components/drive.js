@@ -12,8 +12,8 @@ const drive = (function() {
   }
 
   function getAvailParents() {
-    let folds = [fileStorage.data.rootId];
-    fileStorage.data.folders.map((folder) => {
+    let folds = [mainStorage.data.rootId];
+    mainStorage.data.folders.map((folder) => {
       if (folder.id.length > 0 && !folder.isSync)
         folds.push(folder.id);
     });
@@ -21,8 +21,8 @@ const drive = (function() {
   }
 
   function getRegisteredParents() {
-    let folds = [fileStorage.data.rootId];
-    fileStorage.data.folders.map((folder) => {
+    let folds = [mainStorage.data.rootId];
+    mainStorage.data.folders.map((folder) => {
       if (folder.id !== '')
         folds.push(folder.id);
     });
@@ -91,7 +91,7 @@ const drive = (function() {
     if (folders.length === 0) return newBranch;
     
     let {id, name, modifiedTime, trashed, parents, isLoaded} = folders[0];
-    let f = fileManager.get({id, type: 'folders'});
+    let f = fileManager.get({id, type: 'folders'}, 0);
 
     if (parents) {
       
@@ -113,13 +113,15 @@ const drive = (function() {
             trashed,
             isLoaded,
             parentId: parentFolderId,
-          });
+          }, 0);
           newBranch.push(id);
         }
       }
-      if (parentFolderId == activeFolder) {
-        syncFromDrive.refresh = true;
-      	syncFromDrivePartial.refresh = true;
+      if (activeWorkspace === 0) {
+        if (parentFolderId == activeFolder) {
+          syncFromDrive.refresh = true;
+        	syncFromDrivePartial.refresh = true;
+        }
       }
     }
 
@@ -132,7 +134,7 @@ const drive = (function() {
     if (files.length === 0) return;
     
     let {id, name, description = '', modifiedTime, trashed, parents} = files[0];
-    let f = fileManager.get({id, type: 'files'});
+    let f = fileManager.get({id, type: 'files'}, 0);
     let mimeType = helper.getMimeType(name);
 
     if (parents) {
@@ -151,7 +153,7 @@ const drive = (function() {
           if (f.loaded) {
 	          downloadDependencies(f).then(content => {
 	          	f.content = content;
-	          	fileStorage.save();
+	          	mainStorage.save();
 	          	ui.reloadOpenTab(f.fid);
 	          });
           }
@@ -167,12 +169,14 @@ const drive = (function() {
             description,
             parentId: parentFolderId,
           };
-          new File(data);
+          new File(data, 0);
         }
       }
-      if (parentFolderId == activeFolder) {
-        syncFromDrive.refresh = true;
-        syncFromDrivePartial.refresh = true;
+      if (activeWorkspace === 0) {
+        if (parentFolderId == activeFolder) {
+          syncFromDrive.refresh = true;
+          syncFromDrivePartial.refresh = true;
+        }
       }
     }
 
@@ -218,7 +222,7 @@ const drive = (function() {
       
       registerFolder(allFolders);
       registerFile(allFiles);
-      fileStorage.save();
+      mainStorage.save();
 
       if (json.nextPageToken) {
         listChanges(json.nextPageToken);
@@ -228,7 +232,8 @@ const drive = (function() {
       
       if (syncFromDrive.refresh) {
         syncFromDrive.refresh = false;
-        fileManager.list();
+        if (activeWorkspace === 0)
+          fileManager.list();
       }
       
       settings.data.drive.startPageToken = json.newStartPageToken;
@@ -239,10 +244,10 @@ const drive = (function() {
   async function syncFromDrive(parents = getAvailParents(), dirLevel = 1, nextPageToken, pendingBranch = []) {
     if (settings.data.drive.startPageToken.length === 0) {
       
-      if (!fileStorage.data.rootId) 
+      if (!mainStorage.data.rootId) 
       	return;
       if (parents.length === 0) {
-        fileStorage.save();
+        mainStorage.save();
         getStartPageToken();
         return;
       }
@@ -283,11 +288,11 @@ const drive = (function() {
           syncFromDrive(parents, dirLevel, json.nextPageToken, newBranch);
         } else {
           for (let parentId of parents) {
-            let folder = fileManager.get({id: parentId, type: 'folders'});
+            let folder = fileManager.get({id: parentId, type: 'folders'}, 0);
             if (folder)
               folder.isSync = true;
           }
-          fileStorage.save();
+          mainStorage.save();
           if (dirLevel < 2)
 	        syncFromDrive(newBranch, dirLevel+1);
 	      else
@@ -296,7 +301,8 @@ const drive = (function() {
         
         if (syncFromDrive.refresh) {
           syncFromDrive.refresh = false;
-          fileManager.list();
+          if (activeWorkspace === 0)
+            fileManager.list();
         }
       });
     } else {
@@ -309,13 +315,13 @@ const drive = (function() {
 
   	return new Promise(async resolve => {
 
-      if (!fileStorage.data.rootId) {
+      if (!mainStorage.data.rootId) {
         resolve();
       	return;
       }
 
       if (parents.length === 0) {
-        fileStorage.save();
+        mainStorage.save();
         resolve();
         return;
       }
@@ -332,7 +338,7 @@ const drive = (function() {
    		}
 
       if (parents.length === 0) {
-        fileStorage.save();
+        mainStorage.save();
         resolve();
       }
 
@@ -370,7 +376,8 @@ const drive = (function() {
   
         if (syncFromDrivePartial.refresh) {
           syncFromDrivePartial.refresh = false;
-          fileManager.list();
+          if (activeWorkspace === 0)
+            fileManager.list();
         }
 
         if (typeof(json.nextPageToken) !== 'undefined') {
@@ -380,13 +387,13 @@ const drive = (function() {
           for (let parentId of parents) {
           	let index = dirSyncQueue.indexOf(parentId);
           	dirSyncQueue.splice(index, 1);
-            let folder = fileManager.get({id: parentId, type: 'folders'});
+            let folder = fileManager.get({id: parentId, type: 'folders'}, 0);
             if (folder) {
               folder.isSync = true;
               folder.isLoaded = true;
             }
           }
-          fileStorage.save();
+          mainStorage.save();
           if (dirLevel < 2) {
 	          syncFromDrivePartial(newBranch, dirLevel+1)
 	          .then(resolve);
@@ -410,7 +417,7 @@ const drive = (function() {
     let fileBlob;
     
     if (action === 'create' || action === 'copy') {
-      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}));
+      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
       method = 'POST';
       metaHeader = {
         modifiedTime,
@@ -428,7 +435,7 @@ const drive = (function() {
       
     } else if (action === 'update') {
       
-      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}));
+      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
 
       fetchUrl = apiUrlUpload+'files/'+id+'?uploadType=multipart&fields=id';
       method = 'PATCH';
@@ -595,25 +602,25 @@ const drive = (function() {
   function syncToDrive() {
     
     $('#txt-sync').textContent = '';
-    if (!fileStorage.data.rootId || !settings.data.autoSync) return;
+    if (!mainStorage.data.rootId || !settings.data.autoSync) return;
     
-    let sync = fileStorage.data.sync[0];
+    let sync = mainStorage.data.sync[0];
     if (sync === undefined || syncToDrive.enabled) return;
     
     syncToDrive.enabled = true;
-    $('#txt-sync').textContent = 'Sync ('+fileStorage.data.sync.length+')';
+    $('#txt-sync').textContent = 'Sync ('+mainStorage.data.sync.length+')';
     
       syncFile(sync).then((json) => {
         if (json.action === 'create' || json.action === 'copy') {
-          let file = fileManager.get({fid: fileStorage.data.sync[0].fid, type: json.type});
+          let file = fileManager.get({fid: mainStorage.data.sync[0].fid, type: json.type}, 0);
           file.id = json.id;
           // if (sync.isTemp)
           	// file.isTemp = false;
         }
-        fileStorage.data.sync.splice(0, 1);
+        mainStorage.data.sync.splice(0, 1);
         syncToDrive.enabled = false;
         syncToDrive();
-        fileStorage.save();
+        mainStorage.save();
   
       }).catch((error) => {
         syncToDrive.enabled = false;  
@@ -654,8 +661,8 @@ const drive = (function() {
   }
 
   function initAppData(systemFolderId) {
-    fileStorage.data.rootId = systemFolderId;
-    fileStorage.save();
+    mainStorage.data.rootId = systemFolderId;
+    mainStorage.save();
     checkPermission(systemFolderId)
     syncFromDrive();
   }
@@ -746,16 +753,16 @@ const drive = (function() {
 
   function getParents(parentId) {
     if (parseInt(parentId) === -1)
-      return { id: fileStorage.data.rootId} ;
+      return { id: mainStorage.data.rootId} ;
       
-    return fileManager.get({fid: parentId, type: 'folders'});
+    return fileManager.get({fid: parentId, type: 'folders'}, 0);
   }
 
   function getParentId(id) {
-    if (id === fileStorage.data.rootId)
+    if (id === mainStorage.data.rootId)
       return -1;
       
-    let data = fileManager.get({id, type:'folders'});;
+    let data = fileManager.get({id, type:'folders'}, 0);
     if (data)
       return data.fid;
     else

@@ -4,7 +4,6 @@ let navStructure = {
   root: {
     activeFile: null,
     fileTab: [],
-    clipBoard: [],
     selectedFile: [],
     activeTab: 0,
     activeFolder: -1,
@@ -39,7 +38,10 @@ function changeWorkspace() {
   }
 }
 
-function File(data = {}) {
+function File(data = {}, workspaceId = activeWorkspace) {
+  
+  let temp = activeWorkspace;
+  activeWorkspace = workspaceId;
   
   let file = fileStorage.new('files');
   
@@ -66,10 +68,14 @@ function File(data = {}) {
   
   fileStorage.data.files.push(file);
   fileStorage.data.counter.files++;
+  activeWorkspace = temp;
   return file;
 }
 
-function Folder(data = {}) {
+function Folder(data = {}, workspaceId = activeWorkspace) {
+  
+  let temp = activeWorkspace;
+  activeWorkspace = workspaceId;
   
   let file = fileStorage.new('folders');
   
@@ -93,6 +99,7 @@ function Folder(data = {}) {
   fileStorage.data.counter.folders++;
   fileStorage.data.folders.push(file);
   fileStorage.save();
+  activeWorkspace = temp;
   return file;
 }
 
@@ -225,7 +232,7 @@ function FileManager() {
         file.isTemp = false;
 
         if (source.origin == 'git') {
-          handleSync({
+          fileManager.sync({
             fid: file.fid,
             action: 'update',
             metadata: ['media', 'description'],
@@ -255,7 +262,9 @@ function FileManager() {
   }
   
   this.sync = function(data) {
-    handleSync(data);
+    if (activeWorkspace === 0) {
+      handleSync(data);
+    }
   };
 
   this.getDescription = function() {
@@ -326,7 +335,7 @@ function FileManager() {
     activeFile.content = fileTab[activeTab].editor.env.editor.getValue();
     activeFile.modifiedTime = (new Date()).toISOString();
     activeFile.description = ui.fileManager.getDescription();
-    handleSync({
+    fileManager.sync({
       fid: activeFile.fid,
       action: 'update',
       metadata: ['media', 'description'],
@@ -372,8 +381,12 @@ function FileManager() {
     })
   }
   
-  this.get = function(data) {
-    let haystack = (data.type == 'files') ? fileStorage.data.files : fileStorage.data.folders; 
+  this.get = function(data, workspaceId = activeWorkspace) {
+    let haystack;
+    if (workspaceId === 0)
+      haystack = (data.type == 'files') ? mainStorage.data.files : mainStorage.data.folders;
+    else
+      haystack = (data.type == 'files') ? fileStorage.data.files : fileStorage.data.folders;
     if (data.id !== undefined)
       return odin.dataOf(data.id, haystack, 'id')
     else if (data.fid !== undefined)
@@ -781,7 +794,7 @@ function handleSync(sync) {
     sync.metadata = [];
     fileStorage.data.sync.push(sync);
   } else if (sync.action === 'update') {
-    // Reduce request load by merging, modifying, and swapping sync request.
+    // Reduce request load by merging, modifying, and swapping sync request in queue.
     // Do not reorder sync with type of files to prevent file being created before parent directory.
     fileStorage.data.sync.push(sync);
     

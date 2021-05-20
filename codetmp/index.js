@@ -159,6 +159,7 @@ let activeWorkspace = 0;
       },
     };
     let mainStorage = new lsdb('file-storage', fileStructure);
+    window.mainStorage = mainStorage;
     let tempStorage = new lsdb('temp-file-storage', fileStructure, {
       isStoreData: false,
     });
