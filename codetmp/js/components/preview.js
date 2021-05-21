@@ -653,6 +653,8 @@ function replaceTemplate(body, preParent = -1, path = ['root']) {
   
 })();
 
+// DOM events
+
 window.addEventListener('message', function(e) {
   if (e.data.message) {
     switch (e.data.message) {
@@ -679,6 +681,8 @@ window.addEventListener('message', function(e) {
   }
 
 }, false);
+
+// DOM events
 
 navigator.serviceWorker.addEventListener('message', e => {
   if (e.data.type) {
