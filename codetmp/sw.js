@@ -54,7 +54,7 @@ self.addEventListener('install', function(event) {
     '/js/require/aww.js',
     '/js/require/jszip.min.js',
 
-    '/js/components/api.js',
+    '/js/components/support.js',
     '/js/components/extension.js',
     '/js/components/preferences.js',
     '/js/components/modal.js',

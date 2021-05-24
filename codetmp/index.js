@@ -25,7 +25,7 @@ let activeWorkspace = 0;
     },
     {
       urls: [
-        'js/components/api.js',
+        'js/components/support.js',
         'js/components/helper.js',
         'js/components/extension.js',
         'js/components/preferences.js',
@@ -88,7 +88,7 @@ let activeWorkspace = 0;
         'js/require/jszip.min.js',
       ],
       callback: function() {
-      	isSupport.check('JSZip');
+      	support.check('JSZip');
       },
     },
   ];

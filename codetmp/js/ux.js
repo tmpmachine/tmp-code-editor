@@ -743,7 +743,7 @@ function initNavMenus() {
   function checkBrowserSupport(key) {
     let status = true;
     switch (key) {
-      case 'new-file-on-disk': status = isSupport.showSaveFilePicker; break;
+      case 'new-file-on-disk': status = support.showSaveFilePicker; break;
     }
     return status;
   }
@@ -1671,7 +1671,7 @@ function authReady() {
   }
   let uid = gapi.auth2.getAuthInstance().currentUser.get().getId();
   oblog.blogs.list(uid, listBlogs,'items(id,name)&status=LIVE');
-  isSupport.check('firebase');
+  support.check('firebase');
 }
 function authLogout() {
   fileStorage.reset();
@@ -1680,7 +1680,7 @@ function authLogout() {
 
   $('body')[0].classList.toggle('is-authorized', false);
   $('#blog-list').innerHTML = '';
-  isSupport.check('firebase');
+  support.check('firebase');
   
   activeFolder = -1;
   while (breadcrumbs.length > 1)

@@ -1,4 +1,4 @@
-const isSupport = (function() {
+const support = (function() {
 
 	function checkJSZip() {
 		if ('JSZip' in window) {
