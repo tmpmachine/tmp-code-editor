@@ -468,7 +468,8 @@ function FileManager() {
 
       let src = f.contentLink;
 
-      if (f.fileRef.name !== undefined) {
+      if (f.isTemp && f.content === null) {
+      // if (f.fileRef.name !== undefined) {
         src = URL.createObjectURL(f.fileRef);
       } else {
         if (helper.isHasSource(f.content)) {
@@ -504,7 +505,8 @@ function FileManager() {
       for (let f of files) {
         if (f.trashed)
           continue;
-        if (f.fileRef.name !== undefined) {
+        if (f.isTemp && f.content === null) {    
+        // if (f.fileRef.name !== undefined) {
           folder.file(f.name, f.fileRef, {binary: true});
         } else {
           fileRequests.push({f, folder, options})
@@ -536,7 +538,8 @@ function FileManager() {
   function getReqFileContent(f, options) {
 	  	return new Promise(resolve => {
 
-            if (f.fileRef.name !== undefined) {
+            if (f.isTemp && f.content === null) {
+            // if (f.fileRef.name !== undefined) {
               resolve(f.fileRef);
               return
          	}
@@ -634,7 +637,8 @@ function FileManager() {
             let f = fileManager.get({fid: Number(file.getAttribute('data')), type: 'files'})
             if (f.trashed)
             	continue;
-            if (f.fileRef.name !== undefined) {
+            if (f.isTemp && f.content === null) {
+            // if (f.fileRef.name !== undefined) {
               	zip.file(f.name, f.fileRef, {binary: true});
             } else {
     		    	fileRequests.push({f, folder: zip, options})
@@ -670,7 +674,8 @@ function FileManager() {
         let f = fileManager.get({fid: Number(file.getAttribute('data')), type: 'files'})
         new Promise(resolveReader => {
 
-            if (f.fileRef.name !== undefined) {
+            if (f.isTemp && f.content === null) {
+            // if (f.fileRef.name !== undefined) {
               resolveReader(f.fileRef);
             } else {
               getReqFileContent(f, options).then(blob => {
