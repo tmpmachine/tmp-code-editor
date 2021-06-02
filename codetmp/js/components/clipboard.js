@@ -76,7 +76,7 @@ const fileClipBoard = (function() {
       description,
       loaded,
       parentId: activeFolder,
-    }, action, false, false);
+    });
     fileManager.sync({
       fid: file.fid, 
       action, 
