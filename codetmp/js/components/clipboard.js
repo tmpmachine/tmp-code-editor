@@ -66,10 +66,12 @@ const fileClipBoard = (function() {
     $('.clickable[data-callback="paste"] .Label')[0].textContent = isCut ? 'Move here' : 'Copy here';
   }
   
-  function copySingleFile({ id, fid, description, name, content, loaded }, modifiedTime) {
+  function copySingleFile({ id, fid, description, name, content, loaded, isTemp, fileRef }, modifiedTime) {
     let action = (loaded) ? 'create' : 'copy';
     let file = new File({
       id,
+      isTemp,
+      fileRef,
       name: fileManager.getDuplicateName(pasteParentFolderId, name),
       modifiedTime,
       content,
