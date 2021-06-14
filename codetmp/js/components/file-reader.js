@@ -96,7 +96,7 @@ const fileReaderModule = (function() {
 	async function openOnEditor(data) {
 		if (isDir(data.type))
 			return;
-		if (parseInt(fileTab[activeTab].fid) < 0) {
+		// if (parseInt(fileTab[activeTab].fid) < 0) {
 			let fileRef = await getFileRef(data.entry);
 			let content = await fileRef.text();
 			let tabData = {
@@ -107,7 +107,7 @@ const fileReaderModule = (function() {
 				fileHandle: data.isPressedCtrlKey ? data.entry : null,
 			};
 			newTab(-1, tabData);
-		}
+		// }
 	}
 
 	function proceedNextQueueItem(item) {
