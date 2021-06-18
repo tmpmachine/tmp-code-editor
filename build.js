@@ -11,13 +11,16 @@ function minifyFiles() {
 	function minifyJS(srcPath) {
 		fs.readdir(srcPath, (err, files) => {
 		  	files.forEach(filename => {
-		    	if (['min','minify.js'].includes(filename)) return
-				minify(srcPath+filename).then(content => {
-					let path = srcPath+filename
-					fs.writeFile(path, content, () => {
-					  console.log('Done!')
-					});
-				})
+				let stats = fs.statSync(srcPath+filename);
+				if (stats.isFile()) {
+			    	if (['min','minify.js'].includes(filename)) return
+					minify(srcPath+filename).then(content => {
+						let path = srcPath+filename
+						fs.writeFile(path, content, () => {
+						  console.log('Done!')
+						});
+					})
+				}
 		    })
 		});
 	}
