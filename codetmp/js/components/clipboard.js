@@ -106,7 +106,7 @@ const fileClipBoard = (function() {
         content,
         loaded,
         parentId: road[idx][1],
-      }, action, false, false);
+      });
       fileManager.sync({
         fid: file.fid, 
         action, 
