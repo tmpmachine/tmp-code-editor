@@ -400,21 +400,21 @@ function getMatchLinkedFile(content) {
 function replaceFile(match, body, preParent, path) {
   let src = match[0].substring(11, match[0].length-9);
   let relativeParent = preParent;
-  
-  // if (src.startsWith('__')) {
-  //   relativeParent = -1;
-  //   src = src.replace(/__\//, '');
-  // }
-  
   let parentId = previewManager.getDirectory(src, relativeParent, path);
   let files = fileManager.listFiles(parentId);
   let name = src.replace(/.*?\//g,'');
-  let file = odin.dataOf(name, files, 'name');
-  if (file === undefined) {
+  let file = null;
+  for (let i=0; i<files.length; i++) {
+    if (files[i].trashed) {
+      continue;
+    } else if (files[i].name == name) {
+      file = files[i];
+    }
+  }
+  if (file === null) {
     body = body.replace(match[0], '');
     aww.pop('Required file not found : '+src);
   } else {
-
     let content = '';
     if (!file.loaded) {
       fileManager.downloadMedia(file);
@@ -425,7 +425,6 @@ function replaceFile(match, body, preParent, path) {
       else
         content = file.content;
     }
-  
     let swap = replaceTemplate(content, parentId, path);
     body = body.replace(new RegExp(match[0]), swap);
   }
@@ -470,8 +469,15 @@ function replaceLinkedFile(match, body, preParent, path) {
     let parentId = previewManager.getDirectory(src, relativeParent, path);
     let files = fileManager.listFiles(parentId);
     let name = src.replace(/.*?\//g,'');
-    let file = odin.dataOf(name, files, 'name');
-    if (file === undefined) {
+    let file = null;
+    for (let i=0; i<files.length; i++) {
+      if (files[i].trashed) {
+        continue;
+      } else if (files[i].name == name) {
+        file = files[i];
+      }
+    }
+    if (file === null) {
       body = body.replace(match[0], '');
       console.log(src+' not found');
     } else {
