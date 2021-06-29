@@ -41,8 +41,16 @@ let DOMEvents = {
 	    'btn-redo': () => { fileTab[activeTab].editor.env.editor.redo(); fileTab[activeTab].editor.env.editor.focus() },
 	    'more-tab': function() { ui.switchTab(1) },
 	    
-	    'expand-tree-explorer': function() { document.body.classList.toggle('--tree-explorer', true) },
-	    'collapse-tree-explorer': function() { document.body.classList.toggle('--tree-explorer', false) },
+	    'expand-tree-explorer': function() { 
+	    	settings.data.explorer.tree = true;
+	    	settings.save();
+	    	document.body.classList.toggle('--tree-explorer', true) 
+	    },
+	    'collapse-tree-explorer': function() {
+	    	settings.data.explorer.tree = false;
+	    	settings.save();
+	     	document.body.classList.toggle('--tree-explorer', false) 
+	 	},
 	    'reload-file-tree': fileManager.reloadFileTree,
 	},
 
@@ -103,7 +111,11 @@ let DOMEvents = {
 				ui.openNewTab();
 			}
 		},
-		'Alt+Q': () => { document.body.classList.toggle('--tree-explorer') },
+		'Alt+Q': () => {
+			document.body.classList.toggle('--tree-explorer');
+			settings.data.explorer.tree = document.body.classList.contains('--tree-explorer');
+	    	settings.save();
+		},
 		'Alt+W': confirmCloseTab,
 		'Alt+O': keyboardCallbacks.openFileDirectory,
 		'Ctrl+S': () => { event.preventDefault(); fileManager.save() },

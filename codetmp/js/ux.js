@@ -799,6 +799,9 @@ function initUI() {
   initInframeLayout();
   fileManager.list();
   fileManager.listTree();
+  if (settings.data.explorer.tree) {
+		document.body.classList.toggle('--tree-explorer', true);
+  }
   preferences.loadSettings();
   newTab();
   initTabFocusHandler();

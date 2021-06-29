@@ -189,6 +189,7 @@ let activeWorkspace = 0;
         },
         explorer: {
           view: 'grid',
+          tree: false,
         },
         showHomepage: true,
         autoSync: true,
