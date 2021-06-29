@@ -798,6 +798,7 @@ function initUI() {
   notif = Notifier($('#tmp-notif'), $('#notif-list'));
   initInframeLayout();
   fileManager.list();
+  fileManager.listTree();
   preferences.loadSettings();
   newTab();
   initTabFocusHandler();

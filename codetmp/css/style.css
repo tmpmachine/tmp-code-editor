@@ -219,9 +219,17 @@ html,body{height:100%;}
 
 #sidebar .Inner {
 	/*grid-auto-flow: column;*/
-      display: flex;
-    /*padding-left: 0.45em;*/
+  display: flex; 
+  /*padding-left: 0.45em;*/
 }
+
+@media (min-width:  601px) {
+  #sidebar {
+    grid-template-columns: auto 1fr;
+    /*width: 280px;*/
+  }
+}
+
 #sidebar .Inner > div {
 	min-width: 70px;
 }
@@ -266,7 +274,7 @@ html,body{height:100%;}
 			    display: grid;
     /*align-items: center;*/
         align-items: flex-start;
-    padding-top: .45em;
+    /*padding-top: .45em;*/
 		}
 	}
 }
@@ -347,6 +355,10 @@ display: grid;
 .bg3{background:#3b647b}
 .bg4{background:#1d1f25}
 .bg5{background:#1a1d21}
+.bg5x{background:hsl(216deg 14% 22%)}
+@media (max-width: 600px){
+  .bg5x{background:#1a1d21}
+}
 .bg6{background:#272822}
 .bg7{background:#444c50}
 .bg8{background:#2d2f38}
@@ -359,6 +371,11 @@ display: grid;
 body:not(.is-authorized) .authorized, body:not(.is-authorized) .feature-disabled{display:none}
 body.is-authorized .unauthorized, body.is-authorized .feature-enabled{display:none}
 body:not(.has-clipboard) .clickable[data-callback="paste"]{display: none}
+body.--tree-explorer .tree-explorer-btn-expand{display: none}
+body:not(.--tree-explorer) .tree-explorer{display: none}
+
+.tree-explorer-btn-collapse,.tree-explorer-btn-expand {background:#2b3036 ;}
+.tree-explorer-btn-collapse:hover,.tree-explorer-btn-expand:hover {background:#353b42 ;}
 
 #update-notif {
   display: none;
@@ -382,6 +399,7 @@ body:not(.has-clipboard) .clickable[data-callback="paste"]{display: none}
   padding-bottom: 1em;
 }
 @media (max-width:600px) {
+  .tree-explorer{display: none}
   #nav-bar{height:0!important;overflow:hidden}
 }
 
@@ -897,4 +915,12 @@ body:not(.is-authorized) .drop-menu .Items.authorized {display:flex;color:#73737
 i.Btn-close.material-icons.w3-button.w3-hover-none:hover {
     color: #ffffff!important;
     /*color: #3eaaff!important;*/
+}
+
+.tree-explorer ::-webkit-scrollbar-corner{background:#2b3036}
+.tree-explorer ::-webkit-scrollbar-track{background:#2b3036}
+.tree-explorer ::-webkit-scrollbar-thumb{background:#949494}
+.tree-explorer ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }

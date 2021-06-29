@@ -147,6 +147,19 @@ function FileManager() {
       });
     }
   }
+
+   function getListFolder(parentId = activeFolder) {
+    let folders = fileManager.listFolders(parentId);
+    folders.sort(function(a, b) {
+      return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
+    });
+    let result = [];
+    for (let f of folders) {
+      if (f.trashed) continue;
+      result.push(f)
+    }
+    return result;
+  }
   
   function traversePath(parentId, path = []) {
     if (parentId === -1)
@@ -202,6 +215,19 @@ function FileManager() {
       $('#file-list').appendChild(el);
       counter++;
     }
+  }
+
+  function getListFiles(parentId = activeFolder) {
+    let files = fileManager.listFiles(parentId);
+    files.sort(function(a, b) {
+      return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
+    });
+    let result = []
+    for (let file of files) {
+      if (file.trashed) continue;
+      result.push(file)
+    }
+    return result;
   }
 
   this.downloadDependencies = function(file, source) {
@@ -368,6 +394,82 @@ function FileManager() {
     selectedFile.splice(0, 1);
     ui.toggleFileActionButton();
   };
+
+  this.reloadFileTree = function () {
+    $('#file-tree').innerHTML = '';
+    fileManager.listTree();
+  }
+
+  this.listTree = function(fid = null, parentNode = null) {
+
+    if (fid === null) {
+
+      let folders = getListFolder();
+      for (var i = 0; i < folders.length; i++) {
+        let node = $('#tmp-file2').content.cloneNode(true);
+        $('.folder-name', node)[0].textContent = folders[i].name
+        $('.folder-name', node)[0].dataset.title = folders[i].name
+        $('.folder-name', node)[0].dataset.fid = folders[i].fid
+        $('#file-tree').append(node)
+      }
+
+      let files = getListFiles();
+      for (var i = 0; i < files.length; i++) {
+        let node = $('#tmp-file1').content.cloneNode(true);
+        $('.file-name', node)[0].textContent = files[i].name
+        $('.file-name', node)[0].dataset.title = files[i].name
+        $('.file-name', node)[0].dataset.fid = files[i].fid
+        $('#file-tree').append(node)
+      }
+      fileTree('file-tree');
+    } else {
+
+      let folders = getListFolder(parseInt(fid));
+      for (var i = 0; i < folders.length; i++) {
+        let node = $('#tmp-file2').content.cloneNode(true);
+        $('.folder-name', node)[0].textContent = folders[i].name
+        $('.folder-name', node)[0].dataset.fid = folders[i].fid
+        $('.folder-name', node)[0].dataset.title = folders[i].name
+        $('li',node)[0].classList.add('folder-root');
+        $('li',node)[0].classList.add('closed');
+        $('ul',parentNode)[0].append(node)
+      }
+
+      let files = getListFiles(parseInt(fid));
+      for (var i = 0; i < files.length; i++) {
+        let node = $('#tmp-file1').content.cloneNode(true);
+        $('.file-name', node)[0].textContent = files[i].name
+        $('.file-name', node)[0].dataset.title = files[i].name
+        $('.file-name', node)[0].dataset.fid = files[i].fid
+        $('ul',parentNode)[0].append(node)
+      }
+      parentNode.classList.toggle('isLoaded', true);
+
+      var spanFolderElementsInsideLi = $('ul span.folder-name', parentNode);
+        spanFolderElementsInsideLi.forEach(span => {
+          if (span.parentNode.nodeName === 'LI') {
+            span.onclick = function(e) {
+              let isOpened = span.parentNode.classList.toggle('open');
+              let isLoaded = span.parentNode.classList.contains('isLoaded');
+              if (isOpened && !isLoaded) {
+                fileManager.listTree(span.dataset.fid, span.parentNode)
+              }
+            };
+          }
+        });
+
+
+        $('ul span.file-name', parentNode).forEach(span => {
+          if (span.parentNode.nodeName === 'LI') {
+            span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
+          }
+        });
+    }
+  };
+
+  this.openFileByElementFidDataset = function() {
+    fileManager.open(this.dataset.fid)
+  }
 
   function getFileContent(file) {
     return new Promise(resolve => {

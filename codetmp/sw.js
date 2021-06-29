@@ -1,5 +1,5 @@
 L = console.log;
-let cacheVersion = '7.2035';
+let cacheVersion = '7.204';
 let cacheItem = 'codetmp-'+cacheVersion;
 
 self.addEventListener('message', function(e) {
@@ -32,6 +32,8 @@ self.addEventListener('install', function(event) {
     '/assets/ace/ext-language_tools.js',
     '/assets/ace/snippets/javascript.js',
     '/assets/ace/snippets/html.js',
+    '/assets/icons/file_open.svg',
+    '/assets/icons/file_close.svg',
 
     '/assets/images/128.png',
     '/assets/images/128ap.png',

@@ -22,6 +22,176 @@
   
   <style id="preload-material">.material-icons{max-width:37.5px;overflow:hidden;color:transparent}</style>
 
+  <style type="text/css">
+    .tree-explorer {
+      display:  grid;
+      grid-template-rows:  auto auto 1fr;
+      width:  220px;
+      overflow: auto;
+      background: hsl(214deg 12% 19%);
+      height: 100%;
+      color: white;
+      z-index: 1222;
+      /*padding: 4px 12px;*/
+      font-size: 0.9rem;
+    }
+  </style>
+  <style>
+  .tree-explorer .file-list,
+.tree-explorer .file-list ul {
+      -webkit-user-select: none;
+    user-select: none;
+    list-style-type: none;
+    font-size: 1em;
+    line-height: 1.8em;
+    margin-left: 10px;
+    padding-left: 0px;
+    border-left: 1px dotted #505050;
+}
+.tree-explorer .file-list li {
+  position: relative;
+  width: fit-content;
+  /*padding-left: 25px;*/
+}
+
+.tree-explorer .file-list li span {
+  text-decoration: none;
+      white-space: nowrap;
+  cursor: pointer;
+  padding-left: 24px;
+  display: block;
+}
+
+.tree-explorer .file-list li span.file-name:before {
+      display: block;
+    content: ' ';
+    width: 16px;
+    height: 1px;
+    position: absolute;
+    top: 13px;
+    border-bottom: 1px dotted #505050;
+}
+
+
+
+
+/* todo: use javascript to detect if title is partially visible */
+/*.tree-explorer span.folder-name:after {
+    content: attr(data-title);
+    position: absolute;
+    left: 24px;
+    background: #303740;
+    border: 1px solid #636363;
+    top: -1px;
+    transform: scale(0%);
+    transition-delay: .2s;
+}
+
+.tree-explorer span.folder-name:hover:after {
+    transform: scale(100%);
+    z-index: 1;
+}*/
+.tree-explorer .file-list li:before {
+  list-style-type: none;
+  font-family: FontAwesome;
+  display: block;
+  content:  ' ';
+  /*background-image: url('./icons/file.svg');*/
+  background-size: cover!important;
+  /*content: url('./icons/file.svg');*/
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  font-size: 1.3em;
+  color: #555;
+}
+.tree-explorer .file-list .folder-root {
+  list-style-type: none;
+  width: 100%;
+}
+.tree-explorer .file-list li:not(.folder-root) {
+  /*list-style-type: none;*/
+  width: 100%;
+}
+.tree-explorer .file-list li span:hover {
+    background: #363d44;
+}
+.tree-explorer .file-list .folder-root:before {
+  background-image: url('./icons/folder_close.svg');
+  background-size: cover;
+  /*content: url('./icons/folder_close.svg');*/
+}
+.tree-explorer .file-list .folder-root.open:before {
+  background-image: url('./icons/folder_open.svg');
+  background-size: cover;
+  /*content: url('./icons/folder_open.svg');*/
+}
+.tree-explorer li.folder-root ul {
+  /*transition: all 0.2s ease-in-out;*/
+  /*overflow: hidden;*/
+}
+.tree-explorer li.folder-root.closed > ul {
+  /*opacity: 0;*/
+  /*max-height: 0;*/
+  /*max-width: 0;*/
+  display:  none;
+}
+.tree-explorer li.folder-root.open > ul {
+  opacity: 1;
+  display: block;
+  /*max-height: 100%;*/
+  /*max-width: 0;*/
+}
+  </style>
+
+
+  
+
+  <script>
+    function fileTree(elementId = 'file-tree') {
+      NodeList.prototype.has = function(selector) {
+        return Array.from(this).filter(e => e.querySelector(selector));
+      };
+
+      var element = document.getElementById(elementId);
+      element.classList.add('file-list');
+      var liElementsInideUl = element.querySelectorAll('li');
+      liElementsInideUl.has('ul').forEach(li => {
+        li.classList.add('folder-root');
+        li.classList.add('closed');
+        var spanFolderElementsInsideLi = li.querySelectorAll('span.folder-name');
+        spanFolderElementsInsideLi.forEach(span => {
+          if (span.parentNode.nodeName === 'LI') {
+            span.onclick = function(e) {
+              // L(span.dataset.fid)
+              let isOpened = span.parentNode.classList.toggle('open');
+              let isLoaded = span.parentNode.classList.contains('isLoaded');
+              // L(opened)
+              if (isOpened && !isLoaded) {
+                L(1)
+                fileManager.listTree(span.dataset.fid, span.parentNode)
+              }
+            };
+          }
+        });
+      });
+    }
+
+  </script>
+
+  <template id="tmp-file1">
+    <li><span class="file-name">file</span></li>
+  </template>
+
+  <template id="tmp-file2">
+      <li>
+        <span class="folder-name">folder 1</span>
+        <ul></ul>
+      </li>
+  </template>
+
   <div id="main-layout" class="normal-mode">
     <div id="main-editor">
       <div class="w3-rest " style="height:100%;position:relative;">
@@ -32,7 +202,7 @@
             <div class="w3-padding homepage-content">
               <div>
               <h3 style="font-weight:bold;margin-bottom: 0">Codetmp</h3>
-              <div class="w3-tiny" style="opacity:0.5;">Build v7.2.035, 22 June 2021</div>
+              <div class="w3-tiny" style="opacity:0.5;">Build v7.2.04, 29 June 2021</div>
               <p>Static web development sandbox by <u><a href="http://pacolemon.blogspot.com/">PacoLemon</a></u>.</p>
               <p>Codetmp is all about :</p>
               <ul>
@@ -240,6 +410,9 @@
             
             <div id="nav-bar" class="no-select w3-small" style="background:#191a21;height:34px;position:relative;display:flex;justify-content:space-between;width:100%;color:#fafafa;">
               <div class="menu-bar">
+                <button class="tree-explorer-btn-expand clickable" title="File Tree Explorer (Alt + Q)" data-callback="expand-tree-explorer" style="border: 0;cursor: pointer;color: #97bcc1;">
+                  <i class="material-icons i-btn-in">chevron_right</i>
+                </button>
                 <div class="drop-menu">
 	        		<a href="#" class="Root w3-padding">File</a>
                   <div class="Submenu">
@@ -376,8 +549,37 @@
             <i class="material-icons i-btn-in">account_circle</i>
             <label class="l-btn-in">Account</label>
           </div>
-            <div class="bg5" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:-2;"></div>
+            <div class="bg5x" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:-2;"></div>
           </div>
+        <div class="tree-explorer">
+          <div class="no-select w3-small" style="border-bottom: 1px solid #3b424a;height:34px;position:relative;display:flex;justify-content:flex-end;width:100%;color:#fafafa;">
+              <button data-callback="collapse-tree-explorer" class="clickable tree-explorer-btn-collapse" style="border: 0;cursor: pointer;color: #00bcd4;width: 100%;text-align: right;">
+                  <i class="material-icons i-btn-in">chevron_left</i>
+              </button>
+            </div>
+            <div style="padding: 8px 8px 4px;
+    display: flex;
+    justify-content: flex-start;">
+              <button data-callback="reload-file-tree" class="clickable tree-explorer-btn-collapse" style="
+    border: 0;
+    cursor: pointer;
+    color: white;
+    opacity: .6;
+    font-size: 8px;
+    text-align: right;
+    border: 1px solid #6d6d6d;
+    /* border-radius: 5px; */
+    padding: 2px 6px;
+    align-items: center;
+    display: flex;
+    grid-gap: 4px;">
+                  <i class="material-icons i-btn-in">sync</i> Reload
+              </button>
+            </div>
+            <div style="padding:2px 0px;overflow: auto;">
+          <ul id="file-tree" class="file-tree"></ul>
+            </div>
+        </div>
       </div>
       <div id="status-bar" class="no-select w3-tiny">
         <span id="txt-sync"></span>

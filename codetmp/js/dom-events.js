@@ -40,6 +40,10 @@ let DOMEvents = {
 	    'btn-undo': () => { fileTab[activeTab].editor.env.editor.undo(); fileTab[activeTab].editor.env.editor.focus() },
 	    'btn-redo': () => { fileTab[activeTab].editor.env.editor.redo(); fileTab[activeTab].editor.env.editor.focus() },
 	    'more-tab': function() { ui.switchTab(1) },
+	    
+	    'expand-tree-explorer': function() { document.body.classList.toggle('--tree-explorer', true) },
+	    'collapse-tree-explorer': function() { document.body.classList.toggle('--tree-explorer', false) },
+	    'reload-file-tree': fileManager.reloadFileTree,
 	},
 
 	submittable: {
@@ -99,6 +103,7 @@ let DOMEvents = {
 				ui.openNewTab();
 			}
 		},
+		'Alt+Q': () => { document.body.classList.toggle('--tree-explorer') },
 		'Alt+W': confirmCloseTab,
 		'Alt+O': keyboardCallbacks.openFileDirectory,
 		'Ctrl+S': () => { event.preventDefault(); fileManager.save() },
