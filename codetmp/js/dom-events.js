@@ -56,6 +56,7 @@ let DOMEvents = {
 
 	submittable: {
 		'confirm-download': ui.fileManager.fileDownload,
+		'confirm-generate-single-file': ui.fileManager.generateSingleFile,
 		'publish-blog': publishToBlog,
 		'deploy-hosting': () => fire.deploy(),
 	},
@@ -88,6 +89,7 @@ let DOMEvents = {
 		'about': toggleHomepage,
 		'sign-out': signOut,
 		'modal': toggleModalByClick,
+		'generate-single-file': ui.toggleGenerateSingleFile,
 	},
 
 

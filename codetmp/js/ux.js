@@ -226,6 +226,14 @@ const ui = {
     }, 50)
   },
 
+  toggleGenerateSingleFile: function() {
+    toggleModal('generate-single-file');
+    let form = $('.modal-window[data-name="generate-single-file"] form')[0];
+    setTimeout(() => {
+      form.submit.focus();
+    }, 50)
+  },
+
   previewMedia: function(file, mimeType) {
     toggleModal('media-preview');
     
@@ -525,6 +533,28 @@ const ui = {
       }
     }
 
+    function generateSingleFile(self) {
+      let form = self.target;
+      let options = {
+        replaceDivless: form.replaceDivless.checked,
+        replaceFileTag: true,
+      };
+      let tab = fileTab[activeTab];
+      let fakeFileNode = document.createElement('div');
+      fakeFileNode.setAttribute('data', tab.fid);
+
+      fileManager.downloadSingle(fakeFileNode, options).then(blob => {
+        if (blob === null)
+          return
+        let a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = tab.name.title;
+        $('#limbo').appendChild(a);
+        a.click();
+        $('#limbo').removeChild(a);
+      })
+    }
+
     function getDescription() {
       let data = {};
       for (let desc of $('.description')) {
@@ -543,6 +573,7 @@ const ui = {
 			deleteSelected,
       fileDownload,
       getDescription,
+      generateSingleFile,
 		};
 
 	})(),
