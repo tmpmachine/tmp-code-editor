@@ -154,9 +154,22 @@ function FileManager() {
       return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
     });
     let result = [];
+    let downloadQueue = [];
     for (let f of folders) {
-      if (f.trashed) continue;
+      if (f.trashed) 
+        continue;
+      if (!f.isLoaded)
+        downloadQueue.push(f.id)
       result.push(f)
+    }
+
+    if (downloadQueue.length > 0) {
+      let notifId = notif.add({
+        title: 'Loading directory',
+      });
+      drive.syncFromDrivePartial(downloadQueue).then(() => {
+        notif.update(notifId, {content:'Done'}, true);
+      });
     }
     return result;
   }
