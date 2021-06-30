@@ -32,8 +32,8 @@ self.addEventListener('install', function(event) {
     '/assets/ace/ext-language_tools.js',
     '/assets/ace/snippets/javascript.js',
     '/assets/ace/snippets/html.js',
-    '/assets/icons/file_open.svg',
-    '/assets/icons/file_close.svg',
+    '/assets/icons/folder_open.svg',
+    '/assets/icons/folder_close.svg',
 
     '/assets/images/128.png',
     '/assets/images/128ap.png',
