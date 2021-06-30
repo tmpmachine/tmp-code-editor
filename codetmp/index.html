@@ -179,12 +179,9 @@
         spanFolderElementsInsideLi.forEach(span => {
           if (span.parentNode.nodeName === 'LI') {
             span.onclick = function(e) {
-              // L(span.dataset.fid)
               let isOpened = span.parentNode.classList.toggle('open');
               let isLoaded = span.parentNode.classList.contains('isLoaded');
-              // L(opened)
               if (isOpened && !isLoaded) {
-                L(1)
                 fileManager.listTree(span.dataset.fid, span.parentNode)
               }
             };
@@ -589,10 +586,70 @@
     grid-gap: 4px;">
                   <i class="material-icons i-btn-in">sync</i> Reload
               </button>
+              <button style="
+    border: 0;
+    color: white;
+    opacity: .6;
+    font-size: 8px;
+    text-align: right;
+    /* border-radius: 5px; */
+    padding: 2px 6px;
+    align-items: center;
+    display: flex;
+    grid-gap: 4px;
+    background: #2b3036;">
+                  Info: Right click to reveal file
+              </button>
+
             </div>
             <div style="padding:2px 0px;overflow: auto;">
           <ul id="file-tree" class="file-tree"></ul>
             </div>
+            <script>
+
+              function openopen(fid, node, isDirectory = true) {
+                if (activeFolder == fid)
+                  return
+                breadcrumbs.splice(1);
+                let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+                while (!isRoot) {
+                  if (isDirectory) {
+                    breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+                  } else {
+                    isDirectory = true;
+                  }
+                  node = node.parentNode.parentNode.previousElementSibling;
+                  isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+                  if (isRoot) {
+                    breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+                  } 
+                }
+
+                loadBreadCrumbs();
+                
+                if (breadcrumbs.length > 1)
+                  breadcrumbs.pop();
+                fileManager.openFolder(fid);
+
+                if (!$('#in-my-files').classList.contains('active'))
+                  $('#btn-menu-my-files').click();
+              }
+
+
+                document.getElementById('file-tree').addEventListener("contextmenu", e => {
+                  
+                  let isDirectory = true;
+                  if (e.target.classList.contains('folder-name')) {
+                    e.preventDefault();
+                    openopen(e.target.dataset.fid, e.target, isDirectory)
+                  } else if (e.target.classList.contains('file-name')) {
+                    isDirectory = false;
+                    e.preventDefault();
+                    openopen(e.target.dataset.parent, e.target, isDirectory)
+                  }
+                });
+
+            </script>
         </div>
       </div>
       <div id="status-bar" class="no-select w3-tiny">

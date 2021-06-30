@@ -419,6 +419,7 @@ function FileManager() {
         $('.file-name', node)[0].textContent = files[i].name
         $('.file-name', node)[0].dataset.title = files[i].name
         $('.file-name', node)[0].dataset.fid = files[i].fid
+        $('.file-name', node)[0].dataset.parent = files[i].parentId
         $('#file-tree').append(node)
       }
       fileTree('file-tree');
@@ -441,6 +442,7 @@ function FileManager() {
         $('.file-name', node)[0].textContent = files[i].name
         $('.file-name', node)[0].dataset.title = files[i].name
         $('.file-name', node)[0].dataset.fid = files[i].fid
+        $('.file-name', node)[0].dataset.parent = files[i].parentId
         $('ul',parentNode)[0].append(node)
       }
       parentNode.classList.toggle('isLoaded', true);
