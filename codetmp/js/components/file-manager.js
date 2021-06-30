@@ -417,7 +417,7 @@ function FileManager() {
 
     if (fid === null) {
 
-      let folders = getListFolder();
+      let folders = getListFolder(-1);
       for (var i = 0; i < folders.length; i++) {
         let node = $('#tmp-file2').content.cloneNode(true);
         $('.folder-name', node)[0].textContent = folders[i].name
@@ -426,7 +426,7 @@ function FileManager() {
         $('#file-tree').append(node)
       }
 
-      let files = getListFiles();
+      let files = getListFiles(-1);
       for (var i = 0; i < files.length; i++) {
         let node = $('#tmp-file1').content.cloneNode(true);
         $('.file-name', node)[0].textContent = files[i].name
