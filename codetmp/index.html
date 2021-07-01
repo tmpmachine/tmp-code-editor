@@ -54,6 +54,13 @@
   /*padding-left: 25px;*/
 }
 
+.tree-explorer #file-tree {
+  opacity: 0.85;
+  /*transition: opacity 150ms;*/
+}
+/*#sidebar:hover .tree-explorer #file-tree {
+  opacity: 1;
+}*/
 .tree-explorer .file-list li span {
   text-decoration: none;
       white-space: nowrap;
@@ -62,6 +69,10 @@
   display: block;
   font-size:  12px;
 }
+.tree-explorer span.file-name.--focus {
+    background: hsl(213deg 11% 14%);
+    border-right: 3px solid #3bff99;
+  }
 
 .tree-explorer .file-list li span.file-name:before {
       display: block;

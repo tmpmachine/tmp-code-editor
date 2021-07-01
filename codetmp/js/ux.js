@@ -1319,6 +1319,18 @@ function compressTab(idx) {
   }
 }
 
+function removeTreeFocus() {
+	let node = $(`.file-name.--focus`);
+	if (node.length > 0)
+		node[0].classList.toggle('--focus', false);
+}
+
+function  highlightTree(fid) {
+	removeTreeFocus();
+	let node = $(`.file-name[data-fid="${fid}"]`);
+	if (node.length > 0)
+		node[0].classList.toggle('--focus', true);
+}
 
 function focusTab(fid) {
   
@@ -1328,6 +1340,8 @@ function focusTab(fid) {
     tab.classList.toggle('isActive', false);
   }
   
+  highlightTree(fid);
+
   $('.file-tab')[idx].classList.toggle('isActive', true);
   
   compressTab(idx);
