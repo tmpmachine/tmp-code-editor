@@ -85,33 +85,12 @@
     border-bottom: 1px dotted #505050;
 }
 
-
-
-
-/* todo: use javascript to detect if title is partially visible */
-/*.tree-explorer span.folder-name:after {
-    content: attr(data-title);
-    position: absolute;
-    left: 24px;
-    background: #303740;
-    border: 1px solid #636363;
-    top: -1px;
-    transform: scale(0%);
-    transition-delay: .2s;
-}
-
-.tree-explorer span.folder-name:hover:after {
-    transform: scale(100%);
-    z-index: 1;
-}*/
 .tree-explorer .file-list li:before {
   list-style-type: none;
   font-family: FontAwesome;
   display: block;
   content:  ' ';
-  /*background-image: url('./icons/file.svg');*/
   background-size: cover!important;
-  /*content: url('./icons/file.svg');*/
   position: absolute;
   top: 0;
   left: 0;
@@ -120,6 +99,7 @@
   font-size: 1.3em;
   color: #555;
   z-index: -1;
+  margin: 2px;
 }
 .tree-explorer .file-list .folder-root {
   list-style-type: none;

@@ -1328,8 +1328,12 @@ function removeTreeFocus() {
 function  highlightTree(fid) {
 	removeTreeFocus();
 	let node = $(`.file-name[data-fid="${fid}"]`);
-	if (node.length > 0)
+	if (node.length > 0) {
 		node[0].classList.toggle('--focus', true);
+		node[0].setAttribute('tabindex', 0);
+		node[0].focus();
+		node[0].removeAttribute('tabindex');
+	}
 }
 
 function focusTab(fid) {
