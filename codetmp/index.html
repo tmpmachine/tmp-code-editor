@@ -604,7 +604,10 @@
             </div>
             <script>
 
-              function openopen(fid, node, isDirectory = true) {
+              (function() {
+
+
+              function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
                 if (activeFolder == fid)
                   return
                 breadcrumbs.splice(1);
@@ -638,14 +641,16 @@
                   let isDirectory = true;
                   if (e.target.classList.contains('folder-name')) {
                     e.preventDefault();
-                    openopen(e.target.dataset.fid, e.target, isDirectory)
+                    updateTreeBreadcrumbs(e.target.dataset.fid, e.target, isDirectory)
                   } else if (e.target.classList.contains('file-name')) {
                     isDirectory = false;
                     e.preventDefault();
-                    openopen(e.target.dataset.parent, e.target, isDirectory)
+                    updateTreeBreadcrumbs(e.target.dataset.parent, e.target, isDirectory)
                   }
                 });
 
+              })();
+              
             </script>
         </div>
       </div>

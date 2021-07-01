@@ -1329,11 +1329,26 @@ function  highlightTree(fid) {
 	removeTreeFocus();
 	let node = $(`.file-name[data-fid="${fid}"]`);
 	if (node.length > 0) {
+		revealTreeDirectory(node[0], fid)
 		node[0].classList.toggle('--focus', true);
 		node[0].setAttribute('tabindex', 0);
 		node[0].focus();
 		node[0].removeAttribute('tabindex');
 	}
+}
+
+function revealTreeDirectory(node, fid) {
+  let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+  let temp  = [];
+  while (!isRoot) {
+    node = node.parentNode.parentNode.previousElementSibling;
+    let dirTree = node.parentNode;
+		temp.push(dirTree);
+    isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+  }
+  for (var i = temp.length - 1; i >= 0; i--) {
+  	temp[i].classList.toggle('open', true);
+  }
 }
 
 function focusTab(fid) {
