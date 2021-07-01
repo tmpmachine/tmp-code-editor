@@ -66,15 +66,12 @@
       white-space: nowrap;
   cursor: pointer;
   padding-left: 24px;
+  padding-right: 8px;
   display: block;
   font-size:  12px;
 }
 .tree-explorer span.file-name.--focus {
-    background: hsl(213deg 11% 14%);
-    border-right: 3px solid #3bff99;
-  }
-  .tree-explorer span.file-name.--focus :before{
-    border:0;
+    background: #5f6163;
   }
 
 .tree-explorer .file-list li span.file-name:before {
@@ -173,6 +170,10 @@
   /*max-height: 100%;*/
   /*max-width: 0;*/
 }
+
+  .tree-explorer .file-list li span.file-name.--focus:before{
+    border:0;
+  }
   </style>
 
 
@@ -618,7 +619,7 @@
               </button>
 
             </div>
-            <div style="padding:2px 0px;overflow: auto;">
+            <div style="padding:2px 0px;overflow: auto;" class="d-grid">
           <ul id="file-tree" class="file-tree"></ul>
             </div>
             <script>
