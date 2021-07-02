@@ -1,9 +1,9 @@
 let DOMEvents = {
 	/* ----- */
 	/*
-		DOM event handler is structured as below :
+		DOM event handlers are structured as below :
 
-		eventClass {
+		className {
 			data-callback-attribute: callbackFunction
 		}
 	*/
@@ -69,9 +69,10 @@ let DOMEvents = {
 
 	/* ----- */
 	/*
-		clickableMenu is similiar to clickable event except it handles menu UI after the event is triggered i.e closing selected sub menu parent
+		Similiar to clickable group with addition of handling menu UI i.e closing selected sub menu parent
 		
-		className : menu-link
+		actual className : menu-link
+		to do : determine a fitting className
 	*/
 	clickableMenu: {
 		'open-in-explorer': () => deferFeature1.openFileDirectory(),
