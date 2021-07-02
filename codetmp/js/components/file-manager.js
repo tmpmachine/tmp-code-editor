@@ -433,6 +433,7 @@ function FileManager() {
         $('.file-name', node)[0].dataset.title = files[i].name
         $('.file-name', node)[0].dataset.fid = files[i].fid
         $('.file-name', node)[0].dataset.parent = files[i].parentId
+        $('.file-name', node)[0].addEventListener('dblclick', fileManager.openFileByElementFidDataset);
         $('#file-tree').append(node)
       }
       fileTree('file-tree');
