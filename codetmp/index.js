@@ -54,6 +54,8 @@ let activeWorkspace = 0;
     {
       urls: [
         'js/dom-events.js',
+        'css/file-tree.css',
+        'js/components/file-tree.js',
       ],
       callback: function() {
         initUI();

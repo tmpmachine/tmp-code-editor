@@ -22,183 +22,6 @@
   
   <style id="preload-material">.material-icons{max-width:37.5px;overflow:hidden;color:transparent}</style>
 
-  <style type="text/css">
-    .tree-explorer {
-      display:  grid;
-      grid-template-rows:  auto auto 1fr;
-      width:  220px;
-      overflow: auto;
-      background: hsl(214deg 12% 19%);
-      height: 100%;
-      color: white;
-      z-index: 1222;
-      /*padding: 4px 12px;*/
-      font-size: 0.9rem;
-    }
-  </style>
-  <style>
-  .tree-explorer .file-list,
-.tree-explorer .file-list ul {
-      -webkit-user-select: none;
-    user-select: none;
-    list-style-type: none;
-    font-size: 1em;
-    line-height: 1.8em;
-    margin-left: 10px;
-    padding-left: 0px;
-    border-left: 1px dotted #505050;
-}
-.tree-explorer .file-list li {
-  position: relative;
-  width: fit-content;
-  /*padding-left: 25px;*/
-}
-
-.tree-explorer #file-tree {
-  opacity: 0.85;
-  /*transition: opacity 150ms;*/
-}
-/*#sidebar:hover .tree-explorer #file-tree {
-  opacity: 1;
-}*/
-.tree-explorer .file-list li span {
-  text-decoration: none;
-      white-space: nowrap;
-  cursor: pointer;
-  padding-left: 24px;
-  padding-right: 8px;
-  display: block;
-  font-size:  12px;
-}
-.tree-explorer span.file-name.--focus {
-    background: #5f6163;
-  }
-
-.tree-explorer .file-list li span.file-name:before {
-      display: block;
-    content: ' ';
-    width: 16px;
-    height: 1px;
-    position: absolute;
-    top: 13px;
-    left:  0px;
-    border-bottom: 1px dotted #505050;
-}
-
-.tree-explorer .file-list li:before {
-  list-style-type: none;
-  font-family: FontAwesome;
-  display: block;
-  content:  ' ';
-  background-size: cover!important;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  font-size: 1.3em;
-  color: #555;
-  z-index: -1;
-  margin: 2px;
-}
-.tree-explorer .file-list .folder-root {
-  list-style-type: none;
-  width: 100%;
-}
-.tree-explorer .file-list li:not(.folder-root) {
-  /*list-style-type: none;*/
-  width: 100%;
-}
-/*.tree-explorer .file-list li span:hover {
-    background: #363d44;
-}*/
-.tree-explorer .file-list li span:hover:after {
-    background: #363d44;
-    display: 'block';
-    width:100%;
-    z-index: -4;
-    left:0;
-    top:0;
-    position:absolute;
-    content: ' ';
-    height: 25px;
-}
-
-.tree-explorer .file-list .folder-root:before {
-  background-image: url('./assets/icons/folder_close.svg');
-  background-size: cover;
-  /*content: url('./icons/folder_close.svg');*/
-}
-.tree-explorer .file-list .folder-root.open:before {
-  background-image: url('./assets/icons/folder_open.svg');
-  background-size: cover;
-  /*content: url('./icons/folder_open.svg');*/
-}
-.tree-explorer li.folder-root ul {
-  /*transition: all 0.2s ease-in-out;*/
-  /*overflow: hidden;*/
-}
-.tree-explorer li.folder-root.closed > ul {
-  /*opacity: 0;*/
-  /*max-height: 0;*/
-  /*max-width: 0;*/
-  display:  none;
-}
-.tree-explorer li.folder-root.open > ul {
-  opacity: 1;
-  display: block;
-  /*max-height: 100%;*/
-  /*max-width: 0;*/
-}
-
-  .tree-explorer .file-list li span.file-name.--focus:before{
-    border:0;
-  }
-  </style>
-
-
-  
-
-  <script>
-    function fileTree(elementId = 'file-tree') {
-      NodeList.prototype.has = function(selector) {
-        return Array.from(this).filter(e => e.querySelector(selector));
-      };
-
-      var element = document.getElementById(elementId);
-      element.classList.add('file-list');
-      var liElementsInideUl = element.querySelectorAll('li');
-      liElementsInideUl.has('ul').forEach(li => {
-        li.classList.add('folder-root');
-        li.classList.add('closed');
-        var spanFolderElementsInsideLi = li.querySelectorAll('span.folder-name');
-        spanFolderElementsInsideLi.forEach(span => {
-          if (span.parentNode.nodeName === 'LI') {
-            span.onclick = function(e) {
-              let isOpened = span.parentNode.classList.toggle('open');
-              let isLoaded = span.parentNode.classList.contains('isLoaded');
-              if (isOpened && !isLoaded) {
-                fileManager.listTree(span.dataset.fid, span.parentNode)
-              }
-            };
-          }
-        });
-      });
-    }
-
-  </script>
-
-  <template id="tmp-file1">
-    <li><span class="file-name">file</span></li>
-  </template>
-
-  <template id="tmp-file2">
-      <li>
-        <span class="folder-name">folder 1</span>
-        <ul></ul>
-      </li>
-  </template>
-
   <div id="main-layout" class="normal-mode">
     <div id="main-editor">
       <div class="w3-rest " style="height:100%;position:relative;">
@@ -503,6 +326,9 @@
         </div>
       </div>
       <div id="sidebar" class="w3-animate-left w3-card-4 HIDE" style="overflow:auto">
+        
+        <!-- SIDEBAR MENU -->
+        <!--  -->
         <div class="Inner">
           <div id="btn-menu-my-files" class="btn-material no-select" menu="in-my-files">
             <i class="material-icons i-btn-in">folder</i>
@@ -557,102 +383,33 @@
             <i class="material-icons i-btn-in">account_circle</i>
             <label class="l-btn-in">Account</label>
           </div>
-            <div class="bg5x" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:-2;"></div>
-          </div>
-        <div class="tree-explorer">
-          <div class="no-select w3-small" style="border-bottom: 1px solid #3b424a;height:34px;position:relative;display:flex;justify-content:flex-end;width:100%;color:#fafafa;">
-              <button data-callback="collapse-tree-explorer" class="clickable tree-explorer-btn-collapse" style="border: 0;cursor: pointer;color: #00bcd4;width: 100%;text-align: right;">
-                  <i class="material-icons i-btn-in">chevron_left</i>
-              </button>
-            </div>
-            <div style="padding: 8px 8px 4px;
-    display: flex;
-    justify-content: flex-start;">
-              <button data-callback="reload-file-tree" class="clickable tree-explorer-btn-collapse" style="
-    border: 0;
-    cursor: pointer;
-    color: white;
-    opacity: .6;
-    font-size: 8px;
-    text-align: right;
-    border: 1px solid #6d6d6d;
-    /* border-radius: 5px; */
-    padding: 2px 6px;
-    align-items: center;
-    display: flex;
-    grid-gap: 4px;">
-                  <i class="material-icons i-btn-in">sync</i> Reload
-              </button>
-              <button style="
-    border: 0;
-    color: white;
-    opacity: .6;
-    font-size: 8px;
-    text-align: right;
-    /* border-radius: 5px; */
-    padding: 2px 6px;
-    align-items: center;
-    display: flex;
-    grid-gap: 4px;
-    background: #2b3036;">
-                  Info: Right click to reveal file
-              </button>
-
-            </div>
-            <div style="padding:2px 0px;overflow: auto;" class="d-grid">
-          <ul id="file-tree" class="file-tree"></ul>
-            </div>
-            <script>
-
-              (function() {
-
-
-              function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
-                if (activeFolder == fid)
-                  return
-                breadcrumbs.splice(1);
-                let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
-                while (!isRoot) {
-                  if (isDirectory) {
-                    breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
-                  } else {
-                    isDirectory = true;
-                  }
-                  node = node.parentNode.parentNode.previousElementSibling;
-                  isRoot = node.parentNode.parentNode.classList.contains('file-tree');
-                  if (isRoot) {
-                    breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
-                  } 
-                }
-
-                loadBreadCrumbs();
-                
-                if (breadcrumbs.length > 1)
-                  breadcrumbs.pop();
-                fileManager.openFolder(fid);
-
-                if (!$('#in-my-files').classList.contains('active'))
-                  $('#btn-menu-my-files').click();
-              }
-
-
-                document.getElementById('file-tree').addEventListener("contextmenu", e => {
-                  
-                  let isDirectory = true;
-                  if (e.target.classList.contains('folder-name')) {
-                    e.preventDefault();
-                    updateTreeBreadcrumbs(e.target.dataset.fid, e.target, isDirectory)
-                  } else if (e.target.classList.contains('file-name')) {
-                    isDirectory = false;
-                    e.preventDefault();
-                    updateTreeBreadcrumbs(e.target.dataset.parent, e.target, isDirectory)
-                  }
-                });
-
-              })();
-              
-            </script>
+          <div class="bg5x" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:-2;"></div>
         </div>
+        <!--  -->
+        <!-- END OF SIDEBAR MENU -->
+
+
+        <!-- FILE TREE EXPLORER -->
+        <!--  -->
+        <div class="tree-explorer">
+          <div class="no-select w3-small">
+            <button data-callback="collapse-tree-explorer" class="clickable tree-explorer-btn-collapse">
+              <i class="material-icons i-btn-in">chevron_left</i>
+            </button>
+          </div>
+          <div>
+            <button data-callback="reload-file-tree" class="clickable tree-explorer-btn-collapse">
+              <i class="material-icons i-btn-in">sync</i> Reload
+            </button>
+            <button>Info: Right click to reveal file</button>
+          </div>
+          <div class="d-grid">
+            <ul id="file-tree" class="file-list file-tree"></ul>
+          </div>
+        </div>
+        <!--  -->
+        <!-- END OF FILE TREE EXPLORER -->
+
       </div>
       <div id="status-bar" class="no-select w3-tiny">
         <span id="txt-sync"></span>
@@ -668,6 +425,17 @@
     <iframe name="PreviewFrame" id="PreviewFrame" src=""></iframe>
     <input id="file-upload" type="file" onchange="fileReaderModule.uploadFile(this)">
   </div>
+
+  <template id="tmp-file-tree-file">
+    <li><span class="file-name"></span></li>
+  </template>
+
+  <template id="tmp-file-tree-directory">
+    <li>
+      <span class="folder-name"></span>
+      <ul></ul>
+    </li>
+  </template>
 
   <!--service worker handler-->
   <script>

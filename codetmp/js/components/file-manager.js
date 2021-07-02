@@ -415,73 +415,48 @@ function FileManager() {
 
   this.listTree = function(fid = null, parentNode = null) {
 
-    if (fid === null) {
+    let folders = (fid === null) ? getListFolder(-1) : getListFolder(parseInt(fid));
+    let files = (fid === null) ? getListFiles(-1) : getListFiles(parseInt(fid));
 
-      let folders = getListFolder(-1);
-      for (var i = 0; i < folders.length; i++) {
-        let node = $('#tmp-file2').content.cloneNode(true);
-        $('.folder-name', node)[0].textContent = folders[i].name
-        $('.folder-name', node)[0].dataset.title = folders[i].name
-        $('.folder-name', node)[0].dataset.fid = folders[i].fid
-        $('#file-tree').append(node)
-      }
-
-      let files = getListFiles(-1);
-      for (var i = 0; i < files.length; i++) {
-        let node = $('#tmp-file1').content.cloneNode(true);
-        $('.file-name', node)[0].textContent = files[i].name
-        $('.file-name', node)[0].dataset.title = files[i].name
-        $('.file-name', node)[0].dataset.fid = files[i].fid
-        $('.file-name', node)[0].dataset.parent = files[i].parentId
-        $('.file-name', node)[0].addEventListener('dblclick', fileManager.openFileByElementFidDataset);
-        $('#file-tree').append(node)
-      }
-      fileTree('file-tree');
-    } else {
-
-      let folders = getListFolder(parseInt(fid));
-      for (var i = 0; i < folders.length; i++) {
-        let node = $('#tmp-file2').content.cloneNode(true);
-        $('.folder-name', node)[0].textContent = folders[i].name
-        $('.folder-name', node)[0].dataset.fid = folders[i].fid
-        $('.folder-name', node)[0].dataset.title = folders[i].name
-        $('li',node)[0].classList.add('folder-root');
-        $('li',node)[0].classList.add('closed');
-        $('ul',parentNode)[0].append(node)
-      }
-
-      let files = getListFiles(parseInt(fid));
-      for (var i = 0; i < files.length; i++) {
-        let node = $('#tmp-file1').content.cloneNode(true);
-        $('.file-name', node)[0].textContent = files[i].name
-        $('.file-name', node)[0].dataset.title = files[i].name
-        $('.file-name', node)[0].dataset.fid = files[i].fid
-        $('.file-name', node)[0].dataset.parent = files[i].parentId
-        $('ul',parentNode)[0].append(node)
-      }
+    if (fid != null) {
+      parentNode = $('ul',parentNode)[0];
       parentNode.classList.toggle('isLoaded', true);
-
-      var spanFolderElementsInsideLi = $('ul span.folder-name', parentNode);
-        spanFolderElementsInsideLi.forEach(span => {
-          if (span.parentNode.nodeName === 'LI') {
-            span.onclick = function(e) {
-              let isOpened = span.parentNode.classList.toggle('open');
-              let isLoaded = span.parentNode.classList.contains('isLoaded');
-              if (isOpened && !isLoaded) {
-                fileManager.listTree(span.dataset.fid, span.parentNode)
-              }
-            };
-          }
-        });
-
-
-        $('ul span.file-name', parentNode).forEach(span => {
-          if (span.parentNode.nodeName === 'LI') {
-            span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
-          }
-        });
+    } else {
+      parentNode = $('#file-tree');
     }
+
+    for (var i = 0; i < folders.length; i++) {
+      let node = $('#tmp-file-tree-directory').content.cloneNode(true);
+      let span = $('.folder-name', node)[0];
+      span.textContent = folders[i].name
+      span.dataset.fid = folders[i].fid
+      span.dataset.title = folders[i].name
+      span.addEventListener('click', fileManager.openDirectoryTree);
+      $('li', node)[0].classList.add('folder-root');
+      $('li', node)[0].classList.add('closed');
+      parentNode.append(node)
+    }
+
+    for (var i = 0; i < files.length; i++) {
+      let node = $('#tmp-file-tree-file').content.cloneNode(true);
+      let span = $('.file-name', node)[0];
+      span.textContent = files[i].name
+      span.dataset.title = files[i].name
+      span.dataset.fid = files[i].fid
+      span.dataset.parent = files[i].parentId
+      span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
+      parentNode.append(node)
+    }
+
   };
+
+  this.openDirectoryTree = function() {
+    let isOpened = this.parentNode.classList.toggle('open');
+    let isLoaded = this.parentNode.classList.contains('isLoaded');
+    if (isOpened && !isLoaded) {
+      fileManager.listTree(this.dataset.fid, this.parentNode)
+    }
+  }
 
   this.openFileByElementFidDataset = function() {
     fileManager.open(this.dataset.fid)
