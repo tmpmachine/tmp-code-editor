@@ -63,12 +63,14 @@ let activeWorkspace = 0;
     },
     {
       urls: [
+        'js/components/keyboard-handler.js',
         'js/components/file-reader.js',
         'js/components/template.js',
         'js/require/divless.js',
       ],
       callback: function() {
         fileReaderModule.init();
+        keyboardHandlerComponent.init();
       },
     },
     {

@@ -5,7 +5,7 @@ let pressedKeys = {};
 let notif;
 
 // preview
-window.name = 'parent';
+// window.name = 'parent';
 
 const fileExplorerManager = {
 	lastClickEl: null,
@@ -878,9 +878,8 @@ function initUI() {
   }
 
 	o.listen({
-    	'.btn-material': ui.toggleMenu,
+    '.btn-material': ui.toggleMenu,
 	});
-	applyKeyboardListener();
 	initNavMenus();
 	attachMouseListener();
 }
@@ -1552,99 +1551,6 @@ let keyboardCallbacks = {
   }
 };
 
-// DOM events
-
-function applyKeyboardListener() {
- 
-  // explorer & editor
-
-  function keyEscape() {
-    if ($('#btn-menu-my-files').classList.contains('active')) {
-   	  if (selectedFile.length > 0) {
-   	    for (let el of selectedFile)
-   			  toggleFileHighlight(el, false);
-   	    fileExplorerManager.doubleClick = false;
-   	    selectedFile.length = 0;
-        ui.toggleFileActionButton();
-   	  } else {
-         if (!fileReaderModule.isDragging) {
-	         $('#btn-menu-my-files').click();
-	         fileTab[activeTab].editor.env.editor.focus();
-         }
-   	  }
-    }
-  }
-  
-  
-
-  window.addEventListener('blur', e => { 
-  	pressedKeys.shiftKey = false; pressedKeys.ctrlKey = false; 
-  	editorManager.isPasteRow = false;
-  })
-  window.addEventListener('keyup', e => { 
-  	pressedKeys.shiftKey = e.shiftKey; pressedKeys.ctrlKey = e.ctrlKey;
-  })
-  window.addEventListener('keydown', e => { 
-  	pressedKeys.shiftKey = e.shiftKey; 
-  	pressedKeys.ctrlKey = e.ctrlKey; 
-  })
-
-  window.addEventListener('keydown', function(e) {
-    if (modalWindowManager.hasOpenModal()) {
-	  	if (event.key === 'Escape') {
-    		modalWindowManager.closeAll();
-	  	}
-	  	return;
-    }
-
-    if (e.altKey && (fileTab[activeTab].editor.env.editor.isFocused() || document.activeElement.id == 'search-input')) {
-      e.preventDefault();
-    }
-
-    if (!$('#btn-menu-my-files').classList.contains('active')) {
-    	if (event.key === 'Escape') {
-    		toggleInsertSnippet(false);
-    		fileTab[activeTab].editor.env.editor.focus();
-    	}
-    }
-
-    if (!e.ctrlKey && !e.altKey && $('#btn-menu-my-files').classList.contains('active')) {
-      if (('_-.abcdefghijklmnopqrstuvwxyz1234567890'.includes(e.key))) {
-        selectFileByName(e.key);
-      } else {
-        switch (event.key) {
-          case 'Backspace': 
-            previousFolder(); 
-            break;
-          case 'Escape': 
-            keyEscape();
-            break;
-          case 'Delete': 
-            ui.fileManager.deleteSelected(); 
-            break;
-          case 'ArrowLeft': 
-          case 'ArrowDown': 
-          case 'ArrowRight': 
-          case 'ArrowUp': 
-            navigationHandler(event);
-            break;
-          case 'Enter': 
-            if ($('#btn-menu-my-files').classList.contains('active') && selectedFile.length > 0) {
-              event.preventDefault();
-              doubleClickOnFile();
-            }
-          break;
-        }
-      }
-    }
-  });
-
-  let keyboard = new KeyTrapper();
-  keyboard.isBlocked = function() {
-  	return stateManager.isState(1);
-  }
-  keyboard.listen(DOMEvents.keyboardShortcuts);
-};
 
 // drive
 function autoSync(event) {
