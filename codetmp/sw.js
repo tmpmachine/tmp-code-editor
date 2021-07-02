@@ -72,6 +72,8 @@ self.addEventListener('install', function(event) {
     '/js/components/file-tree.js',
     '/js/components/drive.js',
     '/js/components/keyboard-handler.js',
+    '/js/components/defer-feature-1.js',
+    '/js/components/defer-feature-2.js',
     
     '/js/dom-events.js',
     '/js/ux.js',

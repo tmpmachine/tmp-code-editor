@@ -74,7 +74,7 @@ let DOMEvents = {
 		className : menu-link
 	*/
 	clickableMenu: {
-		'open-in-explorer': keyboardCallbacks.openFileDirectory,
+		'open-in-explorer': () => deferFeature1.openFileDirectory(),
 		'new-file': ui.newFile,
 		'new-file-on-disk': ui.newDiskFile,
 		'new-folder': ui.fileManager.newFolder,
@@ -98,14 +98,14 @@ let DOMEvents = {
 		'Alt+Shift+N': ui.fileManager.newFolder,
 		'Alt+<': () => ui.switchTab(-1),
 		'Alt+>': () => ui.switchTab(1),
-		'Alt+L': keyboardCallbacks.lockFile,
-		'Alt+B': keyboardCallbacks.copyUploadBody,
+		'Alt+L': () => deferFeature1.lockFile(),
+		'Alt+B': () => deferFeature1.copyUploadBody(),
 		'Alt+M': () => {
 			if (!$('#in-home').classList.contains('active'))
 		    	ui.toggleMyFiles();
 		},
-		'Alt+R': keyboardCallbacks.toggleWrapMode,
-		'Alt+I': keyboardCallbacks.toggleFileInfo,
+		'Alt+R': () => deferFeature1.toggleWrapMode(),
+		'Alt+I': () => deferFeature1.toggleFileInfo(),
 		'Alt+N': () => { 
 			if (!$('#in-home').classList.contains('active')) {
 		    	if ($('#btn-menu-my-files').classList.contains('active'))
@@ -119,13 +119,13 @@ let DOMEvents = {
 	    	settings.save();
 		},
 		'Alt+W': confirmCloseTab,
-		'Alt+O': keyboardCallbacks.openFileDirectory,
+		'Alt+O': () => deferFeature1.openFileDirectory(),
 		'Ctrl+S': () => { event.preventDefault(); fileManager.save() },
 		'Ctrl+D': () => { event.preventDefault(); ui.fileManager.deleteSelected() },
 		'Ctrl+A': selectAllFiles,
-		'Ctrl+V': keyboardCallbacks.handlePasteRow,
+		'Ctrl+V': () => deferFeature1.handlePasteRow(),
 		'Ctrl+O': () => { fileManager.openLocal(event) },
-		'Alt+D': keyboardCallbacks.toggleTemplate,
+		'Alt+D': () => deferFeature1.toggleTemplate(),
 		'Ctrl+Enter': function() {
 		  if ($('#btn-menu-my-files').classList.contains('active')) {
 		  	if (selectedFile.length > 0) 

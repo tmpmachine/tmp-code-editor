@@ -1,4 +1,4 @@
-const keyboardHandlerComponent = {
+const keyboardHandler = {
 
   init: function() {
     this.listenCombinationKeys();

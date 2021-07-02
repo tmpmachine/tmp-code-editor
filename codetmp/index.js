@@ -47,7 +47,7 @@ let activeWorkspace = 0;
       ],
       callback: function() {
         loadStorageData();
-        logWarningMessage();
+        // logWarningMessage();
         ace.config.set('basePath', 'assets/ace');
       },
     },
@@ -70,7 +70,7 @@ let activeWorkspace = 0;
       ],
       callback: function() {
         fileReaderModule.init();
-        keyboardHandlerComponent.init();
+        keyboardHandler.init();
       },
     },
     {
@@ -79,6 +79,8 @@ let activeWorkspace = 0;
         'js/require/oblog.js',
         'js/require/auth2helper.js',
         'js/components/drive.js',
+        'js/components/defer-feature-1.js',
+        'js/components/defer-feature-2.js',
       ],
     },
     {
