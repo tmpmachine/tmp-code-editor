@@ -15,6 +15,7 @@ self.addEventListener('install', function(event) {
   let urls = [
     '/',
     '/css/style.css',
+    '/css/file-tree.css',
     
     '/assets/ace/ace.js',
     '/assets/ace/theme-codetmp.js',
@@ -68,6 +69,7 @@ self.addEventListener('install', function(event) {
     '/js/components/preview.js',
     '/js/components/clipboard.js',
     '/js/components/file-manager.js',
+    '/js/components/file-tree.js',
     '/js/components/drive.js',
     
     '/js/dom-events.js',
