@@ -58,8 +58,11 @@ function revealTreeDirectory(node, fid) {
 
 function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
 
+  if (!$('#in-my-files').classList.contains('active'))
+    $('#btn-menu-my-files').click();
   if (activeFolder == fid)
     return
+
   breadcrumbs.splice(1);
   let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
   while (!isRoot) {
@@ -81,8 +84,6 @@ function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
     breadcrumbs.pop();
   fileManager.openFolder(fid);
 
-  if (!$('#in-my-files').classList.contains('active'))
-    $('#btn-menu-my-files').click();
 }
 
 

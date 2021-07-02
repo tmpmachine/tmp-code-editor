@@ -1,5 +1,4 @@
 /* v1.39 - 17 Jan 2021 */
-
 (function () {
   
   function generateAttributes(attributes) {
@@ -177,6 +176,7 @@
     const newMatch = [];
     var charBypass = '';
     var state = '';
+    let skipNextLineFeeds = false;
     
     function finishTag() {
       var tagName = tagStack.join('');
@@ -242,6 +242,9 @@
         if (char == ']') {
           stack.push(newAtt+openingClose+innerHTML+closeTag[closeTag.length-1]);
           closeTag.pop();
+        } else if (char == '\r') {
+          stack.push(newAtt+openingClose+innerHTML+'\n');
+          skipNextLineFeeds = true;
         } else {
           stack.push(newAtt+openingClose+innerHTML+'\n');
         }
@@ -364,6 +367,12 @@
           case '\n':
           case '\r':
 
+            if (char == '\n') {
+              if (skipNextLineFeeds) {
+                skipNextLineFeeds = false;
+                continue;
+              }
+            }
             stopRender(char);
             
             break;
