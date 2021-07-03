@@ -126,6 +126,20 @@ function FileTreeComponent() {
       node[0].classList.toggle('--focus', false);
   }
 
+  this.highlightTree = function(fid) {
+    removeTreeFocus();
+    let node = $(`.file-name[data-fid="${fid}"]`)[0];
+    if (node) {
+      revealTreeDirectory(node, fid);
+      node.classList.toggle('--focus', true);
+      node.setAttribute('tabindex', 0);
+      node.focus();
+      node.removeAttribute('tabindex');
+    } else {
+      this.loadAndRevealTreeDirectory(fid);
+    }
+  }
+
   function revealTreeDirectory(node, fid) {
     let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
     let temp  = [];
@@ -140,15 +154,54 @@ function FileTreeComponent() {
     }
   }
 
-  this.highlightTree = function(fid) {
-    removeTreeFocus();
-    let node = $(`.file-name[data-fid="${fid}"]`);
-    if (node.length > 0) {
-      revealTreeDirectory(node[0], fid)
-      node[0].classList.toggle('--focus', true);
-      node[0].setAttribute('tabindex', 0);
-      node[0].focus();
-      node[0].removeAttribute('tabindex');
+  this.loadAndRevealTreeDirectory = function(fid) {
+    if (parseInt(fid) < 0)
+      return;
+
+    let file = fileManager.get({fid, type: 'files'});
+    let temp = [];
+    let flaggedNode;
+
+    while (true) {
+      let node = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
+      if (node) {
+        temp.push(file.parentId);
+        flaggedNode = node;
+        break;
+      } else {
+        if (file.parentId == -1)
+          break;
+        file = fileManager.get({fid: file.parentId, type: 'folders'})
+        temp.push(file.fid);
+      }
+    }
+
+    for (var i = temp.length - 1; i >= 0; i--) {
+      let span = $(`.folder-name[data-fid="${temp[i]}"]`)[0];
+      let li = span.parentNode;   
+      this.openDirectoryTree(span);
+    }
+
+    revealPathToRoot(flaggedNode);
+
+    let node = $(`.file-name[data-fid="${fid}"]`)[0];
+    node.classList.toggle('--focus', true);
+    node.setAttribute('tabindex', 0);
+    node.focus();
+    node.removeAttribute('tabindex');
+  }
+
+  function revealPathToRoot(span) {
+    let subtree = span.parentNode.parentNode.parentNode;
+    let isRoot = (subtree.firstElementChild.dataset.fid == '-1');
+    let temp  = [];
+    while (!isRoot) {
+      temp.push(subtree);
+      subtree = subtree.parentNode.parentNode;
+      isRoot = (subtree.firstElementChild.dataset.fid == '-1');
+    }
+    for (var i = temp.length - 1; i >= 0; i--) {
+      temp[i].classList.toggle('open', true);
     }
   }
 
