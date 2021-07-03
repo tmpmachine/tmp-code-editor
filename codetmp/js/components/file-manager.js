@@ -417,12 +417,11 @@ function FileManager() {
 
     let folders = (fid === null) ? getListFolder(-1) : getListFolder(parseInt(fid));
     let files = (fid === null) ? getListFiles(-1) : getListFiles(parseInt(fid));
-
-    if (fid != null) {
+    if (fid == null) {
+      parentNode = $('#file-tree .folder-name[data-fid="-1"]').nextElementSibling;
+    } else {
       parentNode = $('ul',parentNode)[0];
       parentNode.classList.toggle('isLoaded', true);
-    } else {
-      parentNode = $('#file-tree');
     }
 
     for (var i = 0; i < folders.length; i++) {
@@ -431,7 +430,6 @@ function FileManager() {
       span.textContent = folders[i].name
       span.dataset.fid = folders[i].fid
       span.dataset.title = folders[i].name
-      span.addEventListener('click', fileManager.openDirectoryTree);
       $('li', node)[0].classList.add('folder-root');
       $('li', node)[0].classList.add('closed');
       parentNode.append(node)
@@ -444,23 +442,10 @@ function FileManager() {
       span.dataset.title = files[i].name
       span.dataset.fid = files[i].fid
       span.dataset.parent = files[i].parentId
-      span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
       parentNode.append(node)
     }
 
   };
-
-  this.openDirectoryTree = function() {
-    let isOpened = this.parentNode.classList.toggle('open');
-    let isLoaded = this.parentNode.classList.contains('isLoaded');
-    if (isOpened && !isLoaded) {
-      fileManager.listTree(this.dataset.fid, this.parentNode)
-    }
-  }
-
-  this.openFileByElementFidDataset = function() {
-    fileManager.open(this.dataset.fid)
-  }
 
   function getFileContent(file) {
     return new Promise(resolve => {

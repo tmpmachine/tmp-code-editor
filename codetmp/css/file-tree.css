@@ -157,3 +157,6 @@
     grid-gap: 4px;
     background: #2b3036;
 }
+.tree-explorer .folder-name[data-fid="-1"] {
+  background: #03a9f440;
+}

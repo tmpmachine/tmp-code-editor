@@ -1,4 +1,4 @@
-.d-grid{display: grid;}
+.d-grid{display: grid;}.d-none{display: none;}
 hr{border:0;border-top:1px solid #383a42;margin:16px 0;}
 button, input, select, textarea {
   font-family: inherit;

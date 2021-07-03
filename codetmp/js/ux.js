@@ -344,6 +344,10 @@ const ui = {
 		          metadata: ['name'],
 		          type: 'folders'
 		        });
+		        getComponentAsPromise('file-tree').then(fileTree => {
+	        		fileTree.renameItem(folder, 'folder');
+	        	});
+
 	      	});
 	    }
 	    function renameFile() {
@@ -361,6 +365,9 @@ const ui = {
 		          metadata: ['name'],
 		          type: 'files'
 		        });
+		        getComponentAsPromise('file-tree').then(fileTree => {
+	        		fileTree.renameItem(file, 'file');
+	        	});
 
 		        if (activeFile) {
 		          if (fid === activeFile.fid)
@@ -396,6 +403,10 @@ const ui = {
 		        	type: 'folders',
 	        	});
 	        	clearSelection();
+	        	getComponentAsPromise('file-tree').then(fileTree => {
+	        		fileTree.appendFolder(folder);
+	        	});
+
 	      	});
 	    }
       function newFile() {
@@ -416,6 +427,10 @@ const ui = {
               type: 'files',
             });
             clearSelection();
+            getComponentAsPromise('file-tree').then(fileTree => {
+	        		fileTree.appendFile(file);
+	        	});
+
           });
       }
       function confirmDeletion(message) {
@@ -427,41 +442,47 @@ const ui = {
       }
 	    function deleteFolder(selectedFile) {
 	    	let selection = getSelected(selectedFile);
-		      	let data = fileManager.get({fid: selection.id, type: 'folders'});
-		      	data.trashed = true;
-	        	commit({
-		        	fid: data.fid,
-		        	action: 'update',
-		        	metadata: ['trashed'],
-		        	type: 'folders'
-		      	});
+      	let data = fileManager.get({fid: selection.id, type: 'folders'});
+      	data.trashed = true;
+      	commit({
+        	fid: data.fid,
+        	action: 'update',
+        	metadata: ['trashed'],
+        	type: 'folders'
+      	});
+      	getComponentAsPromise('file-tree').then(fileTree => {
+      		fileTree.removeFolder(data);
+      	});
 	    }
 	    function deleteFile(selectedFile) {
 	    	let selection = getSelected(selectedFile);
 	    	let fid = selection.id;
-		      	let data = fileManager.get({fid, type: 'files'});
-		      	data.trashed = true;
-		      
-		      	if (activeFile && data.fid === activeFile.fid) {
-		        	activeFile = null;
-				  	fileTab[activeTab].fiber = 'fiber_manual_record';
-		        	$('.icon-rename')[activeTab].textContent = 'fiber_manual_record';
-		      	}
-		      
-		      	for (let sync of fileStorage.data.sync) {
-		        	if (sync.action === 52 && sync.copyId === fid) {
-		          	sync.action = 12;
-		        	}
-		      	}
-		      
-		      	locked = -1;
-		      
-			    commit({
-			        fid: data.fid,
-			        action: 'update',
-			        metadata: ['trashed'],
-			        type: 'files'
-			    });
+      	let data = fileManager.get({fid, type: 'files'});
+      	data.trashed = true;
+      
+      	if (activeFile && data.fid === activeFile.fid) {
+        	activeFile = null;
+		  	fileTab[activeTab].fiber = 'fiber_manual_record';
+        	$('.icon-rename')[activeTab].textContent = 'fiber_manual_record';
+      	}
+      
+      	for (let sync of fileStorage.data.sync) {
+        	if (sync.action === 52 && sync.copyId === fid) {
+          	sync.action = 12;
+        	}
+      	}
+      
+      	locked = -1;
+      
+		    commit({
+		        fid: data.fid,
+		        action: 'update',
+		        metadata: ['trashed'],
+		        type: 'files'
+		    });
+		    getComponentAsPromise('file-tree').then(fileTree => {
+	    		fileTree.removeFile(data);
+	      });
 	    }
 
 	    function deleteSelected() {
@@ -751,10 +772,6 @@ function initUI() {
   notif = Notifier($('#tmp-notif'), $('#notif-list'));
   // initInframeLayout();
   fileManager.list();
-  fileManager.listTree();
-  if (settings.data.explorer.tree) {
-		document.body.classList.toggle('--tree-explorer', true);
-  }
   preferences.loadSettings();
   newTab();
   initTabFocusHandler();
@@ -1191,7 +1208,9 @@ function focusTab(fid) {
     tab.classList.toggle('isActive', false);
   }
   
-  highlightTree(fid);
+  getComponentAsPromise('file-tree').then(fileTree => {
+	  fileTree.highlightTree(fid);
+	});
 
   $('.file-tab')[idx].classList.toggle('isActive', true);
   

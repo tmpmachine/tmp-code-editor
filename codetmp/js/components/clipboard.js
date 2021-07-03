@@ -84,6 +84,9 @@ const fileClipBoard = (function() {
       action, 
       type: 'files',
     });
+    getComponentAsPromise('file-tree').then(fileTree => {
+      fileTree.appendFile(file);
+    });
   }
   
   function copyBranchFile(fileIds, road, modifiedTime) {
@@ -141,6 +144,11 @@ const fileClipBoard = (function() {
         action: 'create', 
         type: 'folders',
       });
+      if (road.length == 1) {
+        getComponentAsPromise('file-tree').then(fileTree => {
+          fileTree.appendFolder(folder);
+        });
+      }
     }
     
     folderIds.splice(0, 1);
@@ -150,7 +158,6 @@ const fileClipBoard = (function() {
   }
   
   function fileMove(data, fileType) {
-  
     handleSync({
       fid: data.fid,
       action: 'update',
@@ -158,7 +165,10 @@ const fileClipBoard = (function() {
       type: fileType,
       source: data.parentId
     });
-    
+    getComponentAsPromise('file-tree').then(fileTree => {
+      let type = (fileType == 'files') ? 'file' : 'folder';
+      fileTree.moveItemFrom(type, data.fid, activeFolder);
+    });
     data.parentId = activeFolder;
   }
   

@@ -2,6 +2,32 @@ let L = console.log;
 let $ = function(selector, node=document) { let nodes = node.querySelectorAll(selector); return selector.startsWith('#') ? nodes[0] : nodes }
 let iframeResolver = [];
 let activeWorkspace = 0;
+
+// load component file and add as object key
+let components = {};
+
+function getComponent(name) {
+  if (typeof(components[name]) != 'undefined') {
+    return components[name];
+  }
+  return null;
+}
+
+function getComponentAsPromise(name) {
+  return new Promise((resolve, reject) => {
+    if (typeof(components[name]) != 'undefined')
+      resolve(components[name]);
+    reject(name);
+  })
+}
+
+function registerComponent(name, componentObj) {
+  if (typeof(components[name]) != 'undefined') {
+    console.log(`Failed to register component ${name}. Component already exists.`);
+  } else {
+    components[name] = componentObj;    
+  }
+}
     
 (function() {
 

@@ -240,7 +240,7 @@
             
             <div id="nav-bar" class="no-select w3-small" style="background:#191a21;height:34px;position:relative;display:flex;justify-content:space-between;width:100%;color:#fafafa;">
               <div class="menu-bar">
-                <button class="tree-explorer-btn-expand clickable" title="File Tree Explorer (Alt + Q)" data-callback="expand-tree-explorer" style="border: 0;cursor: pointer;color: #97bcc1;">
+                <button class="tree-explorer-btn-expand clickable d-none" title="File Tree Explorer (Alt + Q)" data-callback="expand-tree-explorer" style="border: 0;cursor: pointer;color: #97bcc1;">
                   <i class="material-icons i-btn-in">chevron_right</i>
                 </button>
                 <div class="drop-menu">
@@ -391,7 +391,7 @@
 
         <!-- FILE TREE EXPLORER -->
         <!--  -->
-        <div class="tree-explorer">
+        <div class="tree-explorer d-none">
           <div class="no-select w3-small">
             <button data-callback="collapse-tree-explorer" class="clickable tree-explorer-btn-collapse">
               <i class="material-icons i-btn-in">chevron_left</i>
@@ -404,7 +404,12 @@
             <button>Info: Right click to reveal file</button>
           </div>
           <div class="d-grid">
-            <ul id="file-tree" class="file-list file-tree"></ul>
+            <ul id="file-tree" class="file-list file-tree">
+              <li class="folder-root open">
+                <span class="folder-name" data-fid="-1">My Files</span>
+                <ul class="isLoaded"></ul>
+              </li>
+            </ul>
           </div>
         </div>
         <!--  -->
