@@ -409,7 +409,7 @@ function FileManager() {
   };
 
   this.reloadFileTree = function () {
-    $('#file-tree').innerHTML = '';
+    $('#file-tree > li > ul').innerHTML = '';
     fileManager.listTree();
   }
 
