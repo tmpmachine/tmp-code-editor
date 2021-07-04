@@ -257,7 +257,6 @@
 	        		<a href="#" class="Root w3-padding">Explorer</a>
                   <div class="Submenu">
                     <a href="#" class="w3-padding Items menu-link" data-callback="my-files" data-shortcut="Alt + M"> My Files </a>
-                    <a href="#" class="w3-padding Items menu-link" data-callback="modal" data-target="file-info" data-shortcut="Alt + I"> File Info </a>
                     <a href="#" class="w3-padding Items menu-link" data-callback="open-in-explorer" data-shortcut="Alt + O"> Open File in Explorer </a>
                     <a href="#" class="w3-padding Items menu-link w3-hide" data-callback="trash"> Trash </a>
                   </div>
@@ -274,9 +273,8 @@
                 <div class="drop-menu">
 	        	  <a href="#" class="Root w3-padding">Publish</a>
                   <div class="Submenu">
-                  	<a href="#" class="w3-padding Items menu-link authorized" data-callback="modal" data-target="publish-blogger">Publish to Blogger</a>
                   	<a href="#" class="w3-padding Items menu-link authorized" data-callback="modal" data-target="deploy-firebase">Deploy to Firebase Hosting</a>
-                    <a href="#" class="w3-padding Items menu-link" data-callback="generate-single-file">Generate Single File</a>
+                    <a href="#" class="w3-padding Items menu-link" data-callback="generate-single-file" data-shortcut="Alt + P">Generate Single File</a>
                   </div>
                 </div>
                 <div class="drop-menu">
@@ -348,12 +346,6 @@
             <div data-callback="btn-menu-save" class="clickable btn-material w3-animate-left no-select">
               <i class="material-icons i-btn-in">save</i>
               <label class="l-btn-in">Save</label>
-            </div>
-          </div>
-          <div id="btn-file-info-wrapper" style="position:relative;z-index:0;">
-            <div id="btn-file-info" class="btn-material no-select w3-animate-left clickable" data-callback="toggle-file-info">
-              <i class="material-icons i-btn-in">info</i>
-              <label class="l-btn-in">File Info</label>
             </div>
           </div>
           <div id="btn-menu-template" data-callback="btn-menu-template" class="clickable w3-animate-left btn-material no-select">

@@ -1,6 +1,4 @@
 let previewUrl = 'https://cpreview.web.app/';
-let uploadBody = '';
-let locked = -1;
 let previewFrameResolver = null;
 let previewWindow = null;
 let portResolver = null;
@@ -9,13 +7,7 @@ let isPreviewFrameLoaded = false;
 let isPortOpened = false;
 let previewManager = new PreviewManager();
 let windows = [];
-let SPACache = [];
-let isPreviewSPA = false;
 let previewMode = 'normal';
-const PREVIEWCONFIG = {
-  isReplaceLinkedFile: false,
-}
-let missingDirectory = [];
 
 function PreviewManager() {
 
@@ -76,7 +68,7 @@ function PreviewManager() {
           resolverUID: event.data.resolverUID,
         }, '*');
 
-      } else { // if (file.fileRef.name === undefined) {
+      } else { 
 
         if (helper.isMediaTypeMultimedia(mimeType)) {
           let data = {
@@ -228,13 +220,7 @@ function PreviewManager() {
   }
 
   function getFileAtPath(src) {
-    let preParent;
-    if (locked >=0) {
-      let file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-      preParent = file.parentId;
-    } else {
-     preParent = activeFolder;
-    }
+    let preParent = activeFolder;
     let relativeParent = preParent;
     let path = ['root'];
     let parentId = previewManager.getDirectory(src, relativeParent, path);
@@ -252,56 +238,45 @@ function PreviewManager() {
   }
 
 	this.getContent = function(src, mimeType) {
-      if (isPreviewSPA) {
-        for (let i=0; i<SPACache.length; i++) {
-          if ('/'+SPACache[i].path == src) {
-            return SPACache[i].content; 
-          }
-        }
-      }
 
-      if (src == '/untitled.html') {
-      	let content = replaceTemplate(fileTab[activeTab].editor.env.editor.getValue());
-        if (settings.data.editor.divlessHTMLEnabled)
-          return divless.replace(content);
-        return content;
-      }
-
-      let content = '<404></404>';
-      let filePath = getFileAtPath(src);
-      let file = filePath.file;
-      let parentId = filePath.parentId;
-
-      if (file !== null) {
-        if (file.isTemp && file.content === null) {    
-	      // if (typeof(file.fileRef.name) != 'undefined' && file.content === null) {
-	        return file.fileRef;
-	      } else if (!file.loaded) {
-	        aww.pop('Downloading required file : '+file.name);
-	        fileManager.downloadMedia(file);
-		        content = '';
-	      } else {
-	        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
-	        if (tabIdx >= 0)
-	          content = (activeFile && activeFile.fid === file.fid) ? fileTab[activeTab].editor.env.editor.getValue() : fileTab[tabIdx].editor.env.editor.getValue();
-	        else
-	          content = file.content;
-	      }
-	      content = replaceTemplate(content, parentId)
-        if (settings.data.editor.divlessHTMLEnabled && mimeType.match(/text\/html|text\/xml/)) {
-          content = divless.replace(content);
-	      }
-      }
+    if (src == '/untitled.html') {
+    	let content = replaceTemplate(fileTab[activeTab].editor.env.editor.getValue());
+      if (settings.data.editor.divlessHTMLEnabled)
+        return divless.replace(content);
       return content;
+    }
+
+    let content = '<404></404>';
+    let filePath = getFileAtPath(src);
+    let file = filePath.file;
+    let parentId = filePath.parentId;
+
+    if (file !== null) {
+      if (file.isTemp && file.content === null) {    
+        return file.fileRef;
+      } else if (!file.loaded) {
+        aww.pop('Downloading required file : '+file.name);
+        fileManager.downloadMedia(file);
+	        content = '';
+      } else {
+        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
+        if (tabIdx >= 0)
+          content = (activeFile && activeFile.fid === file.fid) ? fileTab[activeTab].editor.env.editor.getValue() : fileTab[tabIdx].editor.env.editor.getValue();
+        else
+          content = file.content;
+      }
+      content = replaceTemplate(content, parentId)
+      if (settings.data.editor.divlessHTMLEnabled && mimeType.match(/text\/html|text\/xml/)) {
+        content = divless.replace(content);
+      }
+    }
+    return content;
   }
 
   this.getFrameName = function() {
     let file = activeFile;
     let name = (previewMode == 'inframe') ? 'inframe-preview' : 'preview';
-    if (locked >= 0)
-      file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-    if (file !== null)
-      name = 'preview-'+file.fid;
+    name = 'preview-'+file.fid;
     return name;
   }
 
@@ -358,12 +333,8 @@ function PreviewManager() {
 
     let file;
 
-    if (locked >= 0) {    
-      file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-    } else {
-      if (activeFile != null) {
-        file = activeFile;
-      }
+    if (activeFile != null) {
+      file = activeFile;
     }
 
   	if (typeof(file) == 'undefined') {
@@ -391,10 +362,6 @@ function PreviewManager() {
 
 function getMatchTemplate(content) {
 	return content.match(/<file src=.*?><\/file>/);
-}
-
-function getMatchLinkedFile(content) {
-  return content.match(/<script .*?src=.*?><\/script>|<link .*?rel=('|")stylesheet('|").*?>/);
 }
 
 function replaceFile(match, body, preParent, path) {
@@ -431,91 +398,7 @@ function replaceFile(match, body, preParent, path) {
   return body;
 }
 
-function replaceLinkedFile(match, body, preParent, path) {
-
-  let tagName;
-  let isScriptOrLink = false;
-  let start = 11;
-  let end = 9;
-  let src = '';
-  
-  if (match[0].includes('<script')) {
-    src = match[0].match(/src=['|"].*?['|"]/)[0];
-    src = src.substring(5, src.length - 1);
-    isScriptOrLink = true;
-    tagName = 'script';
-  } else if (match[0].includes('<link')) {
-    src = match[0].match(/href=['|"].*?['|"]/)[0];
-    src = src.substring(6, src.length - 1);
-    isScriptOrLink = true;
-    tagName = 'style';
-  }
-  
-  src = (src.length > 0) ? src : match[0].substring(start, match[0].length-end);
-  let relativeParent = preParent;
-  
-  if (src.startsWith('https://') || src.startsWith('http://')) {
- 
-    body = body.replace(match[0], match[0].replace('<link ','<web-link ').replace('<script ','<web-script '));
-    match = getMatchLinkedFile(body);
- 
-  } else {
-
-    if (src.startsWith('__')) {
-      relativeParent = -1;
-      src = src.replace(/__\//, '');
-    }
-    
-    let parentId = previewManager.getDirectory(src, relativeParent, path);
-    let files = fileManager.listFiles(parentId);
-    let name = src.replace(/.*?\//g,'');
-    let file = null;
-    for (let i=0; i<files.length; i++) {
-      if (files[i].trashed) {
-        continue;
-      } else if (files[i].name == name) {
-        file = files[i];
-      }
-    }
-    if (file === null) {
-      body = body.replace(match[0], '');
-      console.log(src+' not found');
-    } else {
-      let content = '';
-      let ot = '', ct = '';
-      if (tagName) {
-        ot = '<'+tagName+'>\n';
-        ct = '\n</'+tagName+'>';
-      }
-
-      if (file.loaded) {
-        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
-        if (tabIdx >= 0)
-          content = (activeFile && activeFile.fid === file.fid) ? fileTab[activeTab].editor.env.editor.getValue() : fileTab[tabIdx].editor.env.editor.getValue();
-        else
-          content = file.content;
-      } else {
-        fileManager.downloadMedia(file);
-      }
-    
-      let swap = ot + content + ct;
-      body = body.replace(new RegExp(match[0]), swap);
-    }
-  }
-  
-  return body;
-}
-
 function replaceTemplate(body, preParent = -1, path = ['root']) {
-  if (PREVIEWCONFIG.isReplaceLinkedFile) {
-    let match = getMatchLinkedFile(body);
-    while (match !== null) {
-      let searchPath = JSON.parse(JSON.stringify(path));
-      body = replaceLinkedFile(match, body, preParent, searchPath);
-      match = getMatchLinkedFile(body);
-    }
-  }
-
   let match = getMatchTemplate(body);
   while (match !== null) {
     let searchPath = JSON.parse(JSON.stringify(path));
@@ -527,58 +410,6 @@ function replaceTemplate(body, preParent = -1, path = ['root']) {
 
 (function() {
   
-  
-
-  function getSingleFileContent(body, preParent = -1, path = ['root']) {
-    if (body === undefined) {
-      if (locked === -1 || (activeFile && locked === activeFile.fid)) {
-        body = fileTab[activeTab].editor.env.editor.getValue();
-        preParent = activeFile ? activeFile.parentId : activeFolder;
-      } else {
-        let file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
-        if (tabIdx >= 0)
-          body = fileTab[tabIdx].editor.env.editor.getValue();
-        else
-          body = file.content;
-        preParent = file.parentId;
-      }
-    }
-    body = replaceTemplate(body, preParent, path);
-    return body;
-  }
-  
-  function clearComments(xml) {
-    xml = xml.replace(new RegExp('<!--_(.|\n)*?-->','g'),'');
-    return xml;
-  }
-
-  function getHTML(body, preParent = -1, path = ['root']) {
-
-    if (body === undefined) {
-      if (locked === -1 || (activeFile && locked === activeFile.fid)) {
-      
-        body = fileTab[activeTab].editor.env.editor.getValue();
-        
-        preParent = activeFile ? activeFile.parentId : activeFolder;
-      } else {
-      
-        let file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-        
-        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
-        if (tabIdx >= 0)
-          body = fileTab[tabIdx].editor.env.editor.getValue();
-        else
-          body = file.content;
-        
-        preParent = file.parentId;
-      }
-      
-    }
-    
-    return body;
-  }
-
   function previewWeb(filePath) {
 	  new Promise(function(resolve) {
 	  	if (isPreviewFrameLoaded) 
@@ -597,64 +428,10 @@ function replaceTemplate(body, preParent = -1, path = ['root']) {
         }, 1);
 	  });
   }
-  
-  function cacheContent(filePath, isForceDeploy) {
-    let content = getSingleFileContent().replace(/<web-script /g, '<script ').replace(/<web-link /g, '<link ');
-    if (settings.data.editor.divlessHTMLEnabled) {
-    	if (typeof(divless) != 'undefined') {
-  			if (helper.getMimeType(filePath).match(/^text\/html|text\/xml/)) {
-  				if (settings.data.editor.divlessHTMLEnabled)
-            content = divless.replace(content);
-  			}
-    	}
-    }
 
-    content = clearComments(content);
-
-    if (isForceDeploy) {
-      uploadBody = content;
-      return;
-    }
-
-    let isFound = false;
-    for (let i=0; i<SPACache.length; i++) {
-      if (SPACache[i].path == filePath) {
-        isFound = true;
-        SPACache[i].content = content;
-        break;
-      }
-    }
-    if (!isFound) {
-      SPACache.push({
-        path: filePath,
-        content: content,
-      });
-    }
-  }
-
-  function getSPA() {
-    if (locked > 0) {
-      let file = odin.dataOf(locked, fileStorage.data.files, 'fid');
-      return file.description['spa-preview'];
-    }
-    return $('#in-SPA-mode').checked;
-  }
-
-  function previewHTML(isNoPreview = false) {
-    let isSPA = getSPA();
-    isPreviewSPA = isSPA;
-    missingDirectory.length = 0;
-
+  function previewHTML() {
 	  let filePath = previewManager.getPath();
-	  if (isSPA) {
-	    PREVIEWCONFIG.isReplaceLinkedFile = true;
-	    cacheContent(filePath, isNoPreview);
-	  } else {
-	    PREVIEWCONFIG.isReplaceLinkedFile = false;
-	  }
-	  if (!isNoPreview) {
-	     previewWeb(filePath);
-	  }
+     previewWeb(filePath);
   }
 
   window.previewHTML = previewHTML;

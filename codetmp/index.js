@@ -102,7 +102,6 @@ function registerComponent(name, componentObj) {
     {
       urls: [
         'js/require/aww.js',
-        'js/require/oblog.js',
         'js/require/auth2helper.js',
         'js/components/drive.js',
         'js/components/defer-feature-1.js',
@@ -111,8 +110,7 @@ function registerComponent(name, componentObj) {
     },
     {
       urls: [
-        'js/components/git.js',
-        'https://apis.google.com/js/platform.js?onload=renderSignInButton',
+        'js/components/single-file-generator.js',
       ],
     },
     {
@@ -122,6 +120,12 @@ function registerComponent(name, componentObj) {
       callback: function() {
       	support.check('JSZip');
       },
+    },
+    {
+      urls: [
+        'js/components/git.js',
+        'https://apis.google.com/js/platform.js?onload=renderSignInButton',
+      ],
     },
   ];
 
@@ -140,7 +144,6 @@ function registerComponent(name, componentObj) {
         rootId: '',
         files: [],
         folders: [],
-        blogs: [],
         sync: [],
         counter: {
           files: 0,
@@ -148,17 +151,12 @@ function registerComponent(name, componentObj) {
         }
       },
     
-      blogs: {
-        name: '',
-        id: ''
-      },
       folders:{
         fid: 0,
         parentId: -1,
         
         id: '',
         name: '',
-        description: '',
         modifiedTime: '',
         trashed: false,
         isLoaded: true,
@@ -177,7 +175,6 @@ function registerComponent(name, componentObj) {
         id: '',
         name: '',
         content: '',
-        description: {},
         trashed: false,
         fileRef: {},
       },

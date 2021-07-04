@@ -1,5 +1,5 @@
 L = console.log;
-let cacheVersion = '7.261';
+let cacheVersion = '7.262';
 let cacheItem = 'codetmp-'+cacheVersion;
 
 self.addEventListener('message', function(e) {
@@ -53,7 +53,6 @@ self.addEventListener('install', function(event) {
     '/js/require/lsdb.js',
     '/js/require/keyboard.js',
     '/js/require/odin.js',
-    '/js/require/oblog.js',
     '/js/require/aww.js',
     '/js/require/jszip.min.js',
 
@@ -74,6 +73,7 @@ self.addEventListener('install', function(event) {
     '/js/components/keyboard-handler.js',
     '/js/components/defer-feature-1.js',
     '/js/components/defer-feature-2.js',
+    '/js/components/single-file-generator.js',
     
     '/js/dom-events.js',
     '/js/ux.js',

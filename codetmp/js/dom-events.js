@@ -22,7 +22,6 @@ let DOMEvents = {
 		'set-git-token': ui.setGitToken,
 		'clone-repo': ui.cloneRepo,
 		'toggle-homepage': () => toggleHomepage(),
-		'toggle-file-info': () => toggleModal('file-info'),
 		'toggle-settings': () => toggleModal('settings'),
 		'toggle-account': () => toggleModal('account'),
 		'new-folder' : ui.fileManager.newFolder,
@@ -33,7 +32,6 @@ let DOMEvents = {
 		'change-workspace': changeWorkspace,
 		'change-file-list-view': ui.changeFileListView,
 
-		'btn-create-entry': createBlogEntry,
 	    'btn-menu-template': function() { toggleInsertSnippet() },
 	    'btn-menu-save': fileManager.save,
 	    'btn-menu-preview': function() { openPreviewWindow(); previewHTML(); },
@@ -56,8 +54,13 @@ let DOMEvents = {
 
 	submittable: {
 		'confirm-download': ui.fileManager.fileDownload,
-		'confirm-generate-single-file': ui.fileManager.generateSingleFile,
-		'publish-blog': publishToBlog,
+		'confirm-generate-single-file': (self) => {
+			getComponentAsPromise('single-file-generator').then(sfg => {
+				sfg.generate(self);
+			}).catch((e) => {
+				aww.pop('Component is not ready yet.')
+			});
+		},
 		'deploy-hosting': () => fire.deploy(),
 	},
 
@@ -99,14 +102,12 @@ let DOMEvents = {
 		'Alt+Shift+N': ui.fileManager.newFolder,
 		'Alt+<': () => ui.switchTab(-1),
 		'Alt+>': () => ui.switchTab(1),
-		'Alt+L': () => deferFeature1.lockFile(),
-		'Alt+B': () => deferFeature1.copyUploadBody(),
+		'Alt+P': ui.toggleGenerateSingleFile,
 		'Alt+M': () => {
 			if (!$('#in-home').classList.contains('active'))
 		    	ui.toggleMyFiles();
 		},
 		'Alt+R': () => deferFeature1.toggleWrapMode(),
-		'Alt+I': () => deferFeature1.toggleFileInfo(),
 		'Alt+N': () => { 
 			if (!$('#in-home').classList.contains('active')) {
 		    	if ($('#btn-menu-my-files').classList.contains('active'))

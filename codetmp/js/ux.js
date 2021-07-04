@@ -472,8 +472,6 @@ const ui = {
         	}
       	}
       
-      	locked = -1;
-      
 		    commit({
 		        fid: data.fid,
 		        action: 'update',
@@ -554,38 +552,6 @@ const ui = {
       }
     }
 
-    function generateSingleFile(self) {
-      let form = self.target;
-      let options = {
-        replaceDivless: form.replaceDivless.checked,
-        replaceFileTag: true,
-      };
-      let tab = fileTab[activeTab];
-      let fakeFileNode = document.createElement('div');
-      fakeFileNode.setAttribute('data', tab.fid);
-
-      fileManager.downloadSingle(fakeFileNode, options).then(blob => {
-        if (blob === null)
-          return
-        let a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = tab.name.title;
-        $('#limbo').appendChild(a);
-        a.click();
-        $('#limbo').removeChild(a);
-      })
-    }
-
-    function getDescription() {
-      let data = {};
-      for (let desc of $('.description')) {
-        if ((['text','hidden','textarea'].includes(desc.type) && desc.value.length === 0) ||
-        (desc.type == 'checkbox' && !desc.checked)) continue;
-        data[desc.getAttribute('name')] = (desc.type == 'checkbox') ? desc.checked : desc.value;
-      }
-      return data;
-    };
-
     return {
 			renameFolder,
 			renameFile,
@@ -593,9 +559,7 @@ const ui = {
       newFile,
 			deleteSelected,
       fileDownload,
-      getDescription,
-      generateSingleFile,
-		};
+    };
 
 	})(),
 
@@ -667,7 +631,6 @@ const ui = {
     if ($('#in-my-files').classList.contains('active')) {
 		$('#btn-menu-save-wrapper').classList.toggle('hide', true);
 	  	$('#btn-menu-preview-wrapper').classList.toggle('hide', true);
-	  	$('#btn-file-info-wrapper').classList.toggle('hide', true);
 	  	$('#btn-menu-template').classList.toggle('hide', true);
 
 	  	$('#btn-home-wrapper').classList.toggle('hide', false);
@@ -678,7 +641,6 @@ const ui = {
     } else {
 	    $('#btn-menu-save-wrapper').classList.toggle('hide', false);
 	  	$('#btn-menu-preview-wrapper').classList.toggle('hide', false);
-	  	$('#btn-file-info-wrapper').classList.toggle('hide', false);
 	  	$('#btn-menu-template').classList.toggle('hide', false);
 	  	$('#btn-home-wrapper').classList.toggle('hide', true);
 	  	$('#btn-account-wrapper').classList.toggle('hide', true);
@@ -1227,10 +1189,7 @@ function focusTab(fid) {
   fileTab[idx].editor.env.editor.session.setUseWrapMode(settings.data.editor.wordWrapEnabled);
   fileTab[idx].editor.env.editor.setFontSize(editorManager.fontSize);
   activeFile = (String(fid)[0] == '-') ? null : fileTab[activeTab].file;
-  setEditorMode(fileTab[activeTab].name);
-  
-  let fileSettings = activeFile ? activeFile.description : {};
-  openDevelopmentSettings(fileSettings);
+  setEditorMode(fileTab[activeTab].name);  
 }
 
 // explorer, DOM events
@@ -1352,45 +1311,6 @@ function autoSync(event) {
   }
 }
 
-// blogger
-
-function createBlogEntry() {
-  
-  let templateName = window.prompt('Post title');
-  if (!templateName) return;
-
-  oblog.config({
-    blog: $('#in-blog-name').value
-  });
-  
-  aww.pop('creating blog entry...');
-  
-  oblog.posts.insert({
-    title: templateName,
-  }, response => {
-    
-    aww.pop('blog entry created successfully');
-    $('#in-eid').value = response.id;
-    fileManager.save();
-    
-  }, 'id')
-}
-
-function listBlogs(json) {
-  $('#blog-list').innerHTML = '';
-  for (let blog of json.items) {
-    let option = document.createElement('option');
-    option.value = blog.id;
-    option.textContent = blog.name;
-    $('#blog-list').append(option);
-  }
-}
-
-function publishToBlogger() {
-  previewHTML(true);
-  deploy();
-}
-
 // auth
 function authReady() {
   $('body')[0].classList.toggle('is-authorized', true);
@@ -1401,7 +1321,6 @@ function authReady() {
     drive.syncToDrive();
   }
   let uid = gapi.auth2.getAuthInstance().currentUser.get().getId();
-  oblog.blogs.list(uid, listBlogs,'items(id,name)&status=LIVE');
   support.check('firebase');
 }
 function authLogout() {
@@ -1410,7 +1329,6 @@ function authLogout() {
   notif.reset();
 
   $('body')[0].classList.toggle('is-authorized', false);
-  $('#blog-list').innerHTML = '';
   support.check('firebase');
   
   activeFolder = -1;
@@ -1430,7 +1348,7 @@ function signOut() {
 
 function renderSignInButton() {
   gapi.signin2.render('g-signin2', {
-    'scope': 'https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive'+auth2.additionalScopes,
+    'scope': 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive'+auth2.additionalScopes,
     'width': 240,
     'height': 50,
     'longtitle': true,
@@ -1450,30 +1368,6 @@ function toggleHomepage() {
   $('#main-editor').classList.toggle('editor-mode');
   if ($('#in-my-files').classList.contains('active'))
     $('#btn-menu-my-files').click();
-}
-
-function fixOldSettings(key, desc, settings) {
-  if (key == 'blogName' && settings.blog)
-    desc.value = settings.blog;
-  else if (key == 'entryId' && settings.eid)
-    desc.value = settings.eid;
-  else if ((key == 'isWrap' && settings.pre) ||
-  (key == 'isSummaryFix' && settings.bibibi) ||
-  (key == 'isBreak' && settings.more)
-  )
-    desc.checked = true;
-}
-
-function openDevelopmentSettings(settings) {
-  settings = helper.parseDescription(settings)
-  for (let desc of $('.description')) {
-    let key = desc.getAttribute('name');
-    if (['text','textarea','hidden'].includes(desc.type))
-      desc.value = settings[key] || '';
-    else if (desc.type == 'checkbox')
-      desc.checked = settings[key] || false;
-    fixOldSettings(key, desc, settings);
-  } 
 }
 
 function renameFile() {

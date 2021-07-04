@@ -49,7 +49,6 @@ function File(data = {}, workspaceId = activeWorkspace) {
     fid: fileStorage.data.counter.files,
     name: 'untitled.html',
     content: fileTab[activeTab].editor.env.editor.getValue(),
-    description: ui.fileManager.getDescription(),
     loaded: true,
     parentId: activeFolder,
     modifiedTime: new Date().toISOString(),
@@ -274,7 +273,7 @@ function FileManager() {
           fileManager.sync({
             fid: file.fid,
             action: 'update',
-            metadata: ['media', 'description'],
+            metadata: ['media'],
             type: 'files'
           });
           drive.syncToDrive();
@@ -306,16 +305,6 @@ function FileManager() {
     }
   };
 
-  this.getDescription = function() {
-    let data = {};
-    for (let desc of $('.description')) {
-      if ((['text','hidden','textarea'].includes(desc.type) && desc.value.length === 0) ||
-      (desc.type == 'checkbox' && !desc.checked)) continue;
-      data[desc.getAttribute('name')] = (desc.type == 'checkbox') ? desc.checked : desc.value;
-    }
-    return JSON.stringify(data);
-  };
-  
   this.openLocal = async function(event) {
     if (typeof(window.showOpenFilePicker) !== 'undefined') {
       event.preventDefault();
@@ -373,11 +362,10 @@ function FileManager() {
   function saveExistingFile() {
     activeFile.content = fileTab[activeTab].editor.env.editor.getValue();
     activeFile.modifiedTime = (new Date()).toISOString();
-    activeFile.description = ui.fileManager.getDescription();
     fileManager.sync({
       fid: activeFile.fid,
       action: 'update',
-      metadata: ['media', 'description'],
+      metadata: ['media'],
       type: 'files'
     });
     drive.syncToDrive();
@@ -503,8 +491,6 @@ function FileManager() {
       
     if ($('#btn-menu-my-files').classList.contains('active'))
         $('#btn-menu-my-files').click();
-  
-      openDevelopmentSettings(f.description);
     })
   }
 
@@ -958,118 +944,6 @@ function getFileAtPath(path, parentId = -1) {
 }
 
 
-
-function publishToBlog(self) {
-  
-  function callback(e) {
-    if (e == 404)
-      aww.pop('error 404');
-    else if (e == 400)
-      aww.pop('error: 400');
-    else
-      aww.pop('Published.');
-  }
-
-  function getTabContent() {
-    let tabTitle = $('.file-tab-name')[activeTab].textContent;
-    let content = fileTab[activeTab].editor.env.editor.getValue();
-    content = fileManager.replaceFileTag(content, fileTab[activeTab].file.parentId);
-    if (settings.data.editor.divlessHTMLEnabled) {
-      if (typeof(divless) != 'undefined') {
-        if (helper.getMimeType(tabTitle).match(/^text\/html|text\/xml/)) {
-          if (settings.data.editor.divlessHTMLEnabled)
-            content = divless.replace(content);
-        }
-      }
-    }
-    return content;
-  }
-
-  let form = self.target;
-  if (form.blogId) {
-      aww.pop('Publishing...');
-      let content = getTabContent();
-      oblog.config({ 
-        blogId: form.blogId.value,
-      });
-
-      if (form.entryId.value.trim().length === 0) {
-        oblog[form.postType.value].insert({
-          content,
-          title: form.postTitle.value
-        }, callback)
-      } else {
-        let data = {
-          content,
-        };
-        if (form.option.checked)
-          data.title = form.postTitle.value
-        oblog[form.postType.value].patch(form.entryId.value.trim(), data, callback)
-      }
-  } else {
-    aww.pop('No blog selected');
-  }
-}
-
-(function() {
-
-  function getBlogId(file, blogName) {
-    aww.pop('Retrieving blog id ...');
-    oblog.config({ blog: blogName});
-    oblog.getBlogId(blogId => {
-      let settings = helper.parseDescription(file.description);
-      settings.blogId = blogId;
-      file.description = JSON.stringify(settings);
-      if (locked < 0)
-        $('#in-blog-id').value = blogId;
-      fileManager.save();
-      deploy();
-    });
-  }
-  
-  function deploy() {
-    
-    let data = (locked >= 0) ? fileManager.get({fid: locked, type: 'files'}) : activeFile;
-    let {blogName, blogId, entryId} = helper.parseDescription(data.description);
-
-    if (blogName && entryId) {
-      
-      if (!blogId) {
-        getBlogId(data, blogName);
-        return;
-      }
-      
-      aww.pop('Publishing...');
-      
-      let content = uploadBody;
-      
-      let type = 'posts';
-      if (entryId.startsWith('p')) {
-        entryId = entryId.substring(1);
-        type = 'pages';
-      }
-
-      oblog.config({ blog: blogName });
-      oblog[type].patch(entryId, {
-        content
-      }, e => {
-        if (e == 404)
-          aww.pop('404');
-        else if (e == 400)
-          aww.pop('400');
-        else
-          aww.pop('Published.');
-      })
-    } else {
-      alert('Please set blog name and entry ID.');
-    }
-  }
-  
-  window.deploy = deploy;
-  
-})();
-
-
 function trashList() {
   
   var el;
@@ -1095,17 +969,12 @@ function trashList() {
   });
   
   for (let {fid, name, trashed} of files) {
-    let clsLock = '';
     let iconColor = helper.getFileIconColor(name);
       
-    if (fid === locked)
-      clsLock = 'w3-text-purple';
-    
     el = o.element('div',{ innerHTML: o.template('tmp-list-file-trash', {
       fid,
       name,
       iconColor,
-      clsLock
     }) });
     
     $('#list-trash').appendChild(el);

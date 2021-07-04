@@ -128,53 +128,6 @@
   </div>
 </div>
 
-<div class="window modal-window Hide Export" data-name="publish-blogger">
-  <div class="Wrapper">
-      <div class="Overlay" data-target="publish-blogger"></div>
-      <div class="Modal bg8 col1">
-        <div class="Header no-select">
-          <h5><b>Publish to Blogger</b></h5>
-          <i class="Btn-close material-icons w3-button w3-hover-none" data-target="publish-blogger" style="color:#aaa;">close</i>
-        </div>
-      <div class="Content">
-        <section>
-	      <div class="unauthorized">You're not logged in. Sign in to use this feature.</div>
-        <form id="blog" class="authorized submittable preventDefault if-post" data-callback="publish-blog">
-          
-        	<p>Item to publish : currently opened tab.</p>
-
-          <div class="w3-tiny">Select Blog (or create a new one at <a href="https://blogger.com"><u>Blogger</u></a>)</div>
-          <select id="blog-list" name="blogId"></select>
-          <br/>
-          <div class="w3-tiny">
-          	<span class="if-post">Page Type</span>
-          </div>
-          <label>
-            <input type="radio" name="postType" value="posts" checked=""> Post
-          </label>
-          <label>
-            <input type="radio" name="postType" value="pages"> Page
-          </label>
-          <div class="w3-tiny">
-          	<span class="if-post">Post Title</span>
-          </div>
-          <input class="description" name="postTitle" style="width:100%;"/>
-          <div class="w3-tiny">
-          	<span class="if-post">Entry ID (leave blank if you're posting a new entry)</span>
-          </div>
-          <input class="description" name="entryId" style="width:100%;"/>
-          <div class="w3-tiny">
-          	<span class="if-post">Publish Option</span>
-          </div>
-	      <label><input type="checkbox" name="option"> Update entry title</label>
-          <div style="height:1em"></div>
-          <button class="btn-style-1">Publish</button>
-        </form>
-        </section>
-      </div>
-  </div>
-</div>
-
 <div class="window modal-window Hide Export" data-name="deploy-firebase">
   <div class="Wrapper">
       <div class="Overlay" data-target="deploy-firebase"></div>
@@ -304,43 +257,6 @@
           </li>
         </ul>
         </section>
-
-        </div>
-      </div>
-  </div>
-</div>
-
-<div class="window modal-window Hide Export" data-name="file-info">
-  <div class="Wrapper">
-      <div class="Overlay" data-target="file-info"></div>
-      <div class="Modal bg8 col1">
-        <div class="Header no-select">
-          <h5><b>File Info</b></h5>
-          <i class="Btn-close material-icons w3-button w3-hover-none" data-target="file-info" style="color:#aaa;">close</i>
-        </div>
-      <div class="Content">
-          
-          <section>
-            <div id="btn-open-directory" class="w3-button w3-border w3-margin-bottom w3-block w3-hide">
-              <div class="w3-small w3-padding-small w3-left" style="font-weight:bold;">Open Directory</div>
-            </div>
-            <small>Preview mode</small>
-            <div>
-              <input id="in-SPA-mode" class="description" type="checkbox" name="spa-preview"/> <label class="w3-tiny" for="in-SPA-mode">Single Page Application</label>
-            </div>
-
-            <div class="authorized">
-              <small>Development</small>
-              <div class="w3-tiny">Blog name</div>
-              <input id="in-blog-name" class="description" name="blogName" style="width:100%;"/>
-              <div class="w3-tiny">Blog ID</div>
-              <input id="in-blog-id" class="description" name="blogId" style="width:100%;"/>
-              <div class="w3-tiny">Entry ID</div>
-              <input id="in-eid" class="description" name="entryId" style="width:100%;"/>
-              <div class="w3-tiny" style="margin-top:1em;">Render and deploy option</div>
-              <button class="clickable" data-callback="btn-create-entry">Create Blog Entry</button>
-            </div>
-          </section>
 
         </div>
       </div>

@@ -133,7 +133,7 @@ const drive = (function() {
     
     if (files.length === 0) return;
     
-    let {id, name, description = '', modifiedTime, trashed, parents} = files[0];
+    let {id, name, modifiedTime, trashed, parents} = files[0];
     let f = fileManager.get({id, type: 'files'}, 0);
     let mimeType = helper.getMimeType(name);
 
@@ -148,7 +148,6 @@ const drive = (function() {
         if (new Date(f.modifiedTime).getTime()-new Date(modifiedTime).getTime() < -100) {
           
           f.modifiedTime = modifiedTime;
-          f.description = JSON.parse(description);
           
           if (f.loaded) {
 	          downloadDependencies(f).then(content => {
@@ -166,7 +165,6 @@ const drive = (function() {
             modifiedTime,
             trashed,
             loaded: false,
-            description,
             parentId: parentFolderId,
           };
           new File(data, 0);
@@ -202,7 +200,7 @@ const drive = (function() {
     let notifId = notif.add({
       title: 'Checking for file changes ...',
     });
-    fetch(apiUrl+'changes?pageToken='+pageToken+'&fields=nextPageToken,newStartPageToken,changes(file(name,description,id,trashed,parents,mimeType,modifiedTime))', {
+    fetch(apiUrl+'changes?pageToken='+pageToken+'&fields=nextPageToken,newStartPageToken,changes(file(name,id,trashed,parents,mimeType,modifiedTime))', {
       method: 'GET',
       headers: httpHeaders,
     }).then(response => {
@@ -257,7 +255,7 @@ const drive = (function() {
       	qParents.push(`"${p}"`);
       };
       let queryParents = '('+qParents.join(' in parents or ')+' in parents)';
-      let url = apiUrl+'files?q=('+escape(queryParents)+')&fields=nextPageToken,files(name, description, id, trashed, parents, mimeType, modifiedTime)';
+      let url = apiUrl+'files?q=('+escape(queryParents)+')&fields=nextPageToken,files(name, id, trashed, parents, mimeType, modifiedTime)';
       if (typeof(nextPageToken) !== 'undefined')
         url = url+'&pageToken='+nextPageToken;
       
@@ -347,7 +345,7 @@ const drive = (function() {
       	a.push(`"${p}"`);
       };
       let queryParents = '('+a.join(' in parents or ')+' in parents)';
-      let url = apiUrl+'files?q=('+escape(queryParents)+')&fields=nextPageToken,files(name, description, id, trashed, parents, mimeType, modifiedTime)';
+      let url = apiUrl+'files?q=('+escape(queryParents)+')&fields=nextPageToken,files(name, id, trashed, parents, mimeType, modifiedTime)';
       if (typeof(nextPageToken) !== 'undefined')
         url = url+'&pageToken='+nextPageToken;
       
@@ -417,7 +415,7 @@ const drive = (function() {
     let fileBlob;
     
     if (action === 'create' || action === 'copy') {
-      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
+      ({ id, name, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
       method = 'POST';
       metaHeader = {
         modifiedTime,
@@ -427,7 +425,6 @@ const drive = (function() {
       
       if (action === 'create') {
         metaHeader.name = name;
-        metaHeader.description = helper.parseDescription(description);
         fetchUrl = apiUrlUpload+'files?uploadType=multipart&fields=id';
       } else {
         fetchUrl = apiUrl+'files/'+id+'/copy?alt=json&fields=id';
@@ -435,7 +432,7 @@ const drive = (function() {
       
     } else if (action === 'update') {
       
-      ({ id, name, description, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
+      ({ id, name, trashed, modifiedTime, parentId, content, fileRef } = fileManager.get({fid, type}, 0));
 
       fetchUrl = apiUrlUpload+'files/'+id+'?uploadType=multipart&fields=id';
       method = 'PATCH';
@@ -447,8 +444,6 @@ const drive = (function() {
       for (let meta of metadata) {
         if (meta === 'name')
           metaHeader.name = name;
-        else if (meta === 'description')
-          metaHeader.description = JSON.stringify(description);
         else if (meta === 'trashed')
           metaHeader.trashed = trashed;
         else if (meta === 'parents') {

@@ -66,7 +66,7 @@ const fileClipBoard = (function() {
     $('.clickable[data-callback="paste"] .Label')[0].textContent = isCut ? 'Move here' : 'Copy here';
   }
   
-  function copySingleFile({ id, fid, description, name, content, loaded, isTemp, fileRef }, modifiedTime) {
+  function copySingleFile({ id, fid, name, content, loaded, isTemp, fileRef }, modifiedTime) {
     let action = (loaded) ? 'create' : 'copy';
     let file = new File({
       id,
@@ -75,7 +75,6 @@ const fileClipBoard = (function() {
       name: fileManager.getDuplicateName(pasteParentFolderId, name),
       modifiedTime,
       content,
-      description,
       loaded,
       parentId: activeFolder,
     });
@@ -94,7 +93,7 @@ const fileClipBoard = (function() {
     if (fileIds.length === 0) return;
     
     activeWorkspace = sourceWorkspaceId;
-    ({ id, fid, name, description, parentId, content, loaded, trashed } = fileManager.get({fid: fileIds[0], type: 'files'}));
+    ({ id, fid, name, parentId, content, loaded, trashed } = fileManager.get({fid: fileIds[0], type: 'files'}));
     activeWorkspace = targetWorkspaceId;
     
     if (!trashed) {
@@ -103,7 +102,6 @@ const fileClipBoard = (function() {
       let file = new File({
         id,
         name: fileManager.getDuplicateName(pasteParentFolderId, name),
-        description,
         modifiedTime,
         trashed,
         content,
