@@ -1656,7 +1656,7 @@ function clearSelection() {
 function selectAllFiles() {
 	if (stateManager.isState(0)) {
     event.preventDefault();
-		selectedFile = [...$('.folder-list'), ...$('.file-list')];
+		selectedFile = [...$('.folder-list, .file-list')];
 		for (let el of selectedFile)
 			toggleFileHighlight(el, true);
     ui.toggleFileActionButton();
