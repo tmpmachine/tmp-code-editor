@@ -259,10 +259,13 @@ document.getElementById('file-tree').addEventListener("contextmenu", e => {
 });
 
 document.getElementById('file-tree').addEventListener("click", e => {
-  if (e.target.classList.contains('folder-name')) {
+  let elClass = e.target.classList;
+  if (elClass.contains('folder-name')) {
     if (e.target.dataset.fid == '-1')
       return
     getComponent('file-tree').openDirectoryTree(e.target);
+  } else if (['file-name','--opened'].every(cls => elClass.contains(cls))) {
+    getComponent('file-tree').openFileByElementFidDataset(e.target);
   }
 });
 
