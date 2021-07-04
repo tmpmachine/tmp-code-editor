@@ -276,7 +276,8 @@ function PreviewManager() {
   this.getFrameName = function() {
     let file = activeFile;
     let name = (previewMode == 'inframe') ? 'inframe-preview' : 'preview';
-    name = 'preview-'+file.fid;
+    if (file !== null)
+      name = 'preview-'+file.fid;
     return name;
   }
 
