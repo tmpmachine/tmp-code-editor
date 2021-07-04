@@ -1130,6 +1130,10 @@ function confirmCloseTab(focus = true, comeback) {
 }
 
 function closeActiveTab() {
+	let fid = parseInt(fileTab[activeTab].fid); 
+	getComponentAsPromise('file-tree').then(fileTree => {
+	  fileTree.removeOpenIndicator(fid);
+	});
   $('#file-title').removeChild($('.file-tab')[activeTab]);
   fileTab.splice(activeTab, 1);
 }

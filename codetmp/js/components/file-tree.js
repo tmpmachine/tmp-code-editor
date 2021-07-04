@@ -102,10 +102,12 @@ function FileTreeComponent() {
     if (!span || !targetSpan)
       return;
     let li = span.parentNode;
-    if (type == 'file')
+    if (type == 'file') {
+      span.dataset.parent = targetParentId;
       this.insertFileToSubtree(span.textContent, li, targetSpan.nextElementSibling);
-    else
+    } else {
       this.insertToSubtree(span.textContent, li, targetSpan.nextElementSibling);
+    }
   }
 
   this.openDirectoryTree = function(target) {
@@ -120,23 +122,30 @@ function FileTreeComponent() {
     fileManager.open(target.dataset.fid)
   }
 
+  this.highlightTree = function(fid) {
+    removeTreeFocus();
+    let node = $(`.file-name[data-fid="${fid}"]`)[0];
+    if (node) {
+      revealTreeDirectory(node, fid);
+      node.classList.add('--focus', '--opened');
+      node.setAttribute('tabindex', 0);
+      node.focus();
+      node.removeAttribute('tabindex');
+    } else {
+      this.loadAndRevealTreeDirectory(fid);
+    }
+  }
+
   function removeTreeFocus() {
     let node = $(`.file-name.--focus`);
     if (node.length > 0)
       node[0].classList.toggle('--focus', false);
   }
 
-  this.highlightTree = function(fid) {
-    removeTreeFocus();
+  this.removeOpenIndicator = function(fid) {
     let node = $(`.file-name[data-fid="${fid}"]`)[0];
     if (node) {
-      revealTreeDirectory(node, fid);
-      node.classList.toggle('--focus', true);
-      node.setAttribute('tabindex', 0);
-      node.focus();
-      node.removeAttribute('tabindex');
-    } else {
-      this.loadAndRevealTreeDirectory(fid);
+      node.classList.remove('--opened');
     }
   }
 
