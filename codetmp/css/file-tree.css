@@ -101,12 +101,14 @@
   opacity: 1;
   display: block;
 }
-.tree-explorer .file-name.--focus:before{
-  border:0;
-}
+
 .tree-explorer .file-name:not(.--focus).--opened:before {
     border-bottom: 1px dotted #3bff99;
 }
+.tree-explorer .file-name.--focus.--opened:before{
+  border:0;
+}
+
 
 
 .tree-explorer-btn-collapse[data-callback="collapse-tree-explorer"] {
