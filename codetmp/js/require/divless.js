@@ -324,6 +324,13 @@
         } else {
           if (state == 'open') {
             state = '';
+            if (stack.join('') == '<!--[') {
+              attMode = '';
+              unClose++;
+              state = 'getTagName';
+              stack.pop();
+              stack.push(lt);
+            }
           } else {
             pointer = 0;
           }
