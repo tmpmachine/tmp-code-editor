@@ -227,14 +227,16 @@ function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
   let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
   while (!isRoot) {
     if (isDirectory) {
-      breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+      if (node.dataset.fid != '-1')
+        breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
     } else {
       isDirectory = true;
     }
     node = node.parentNode.parentNode.previousElementSibling;
     isRoot = node.parentNode.parentNode.classList.contains('file-tree');
     if (isRoot) {
-      breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+      if (node.dataset.fid != '-1')
+        breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
     } 
   }
 
