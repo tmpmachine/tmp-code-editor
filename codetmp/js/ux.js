@@ -144,6 +144,24 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
+	changeWorkspace: function() {
+	  if (this.dataset.target != $('#workspace-title').textContent) {
+	    for (let node of $('.workspace .Btn')) {
+	      node.classList.toggle('active');
+	    }
+	    $('#workspace-title').textContent = this.dataset.target;
+	    activeWorkspace = parseInt(this.dataset.index);
+	    fileManager.list();
+	    listTab();
+	    if (fileTab.length === 0)
+	      newTab();
+	    focusTab(fileTab[activeTab].fid);
+	    loadBreadCrumbs();
+	    getComponentAsPromise('file-tree').then(ft => {
+				ft.reload();
+			})
+	  }
+	},
   newFile: function() {
     if (!$('#btn-menu-my-files').classList.contains('active')) {
       ui.openNewTab();

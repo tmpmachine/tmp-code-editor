@@ -22,22 +22,6 @@ for (let key in navStructure.root) {
   })
 }
 
-function changeWorkspace() {
-  if (this.dataset.target != $('#workspace-title').textContent) {
-    for (let node of $('.workspace .Btn')) {
-      node.classList.toggle('active');
-    }
-    $('#workspace-title').textContent = this.dataset.target;
-    activeWorkspace = parseInt(this.dataset.index);
-    fileManager.list();
-    listTab();
-    if (fileTab.length === 0)
-      newTab();
-    focusTab(fileTab[activeTab].fid);
-    loadBreadCrumbs();
-  }
-}
-
 function File(data = {}, workspaceId = activeWorkspace) {
   
   let temp = activeWorkspace;
@@ -147,8 +131,8 @@ function FileManager() {
     }
   }
 
-   function getListFolder(parentId = activeFolder) {
-    let folders = fileManager.listFolders(parentId);
+  this.getListFolder = function(parentId = activeFolder) {
+    let folders = this.listFolders(parentId);
     folders.sort(function(a, b) {
       return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
     });
@@ -229,8 +213,8 @@ function FileManager() {
     }
   }
 
-  function getListFiles(parentId = activeFolder) {
-    let files = fileManager.listFiles(parentId);
+  this.getListFiles = function(parentId = activeFolder) {
+    let files = this.listFiles(parentId);
     files.sort(function(a, b) {
       return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
     });
@@ -394,45 +378,6 @@ function FileManager() {
     loadBreadCrumbs();
     selectedFile.splice(0, 1);
     ui.toggleFileActionButton();
-  };
-
-  this.reloadFileTree = function () {
-    $('#file-tree > li > ul').innerHTML = '';
-    fileManager.listTree();
-  }
-
-  this.listTree = function(fid = null, parentNode = null) {
-
-    let folders = (fid === null) ? getListFolder(-1) : getListFolder(parseInt(fid));
-    let files = (fid === null) ? getListFiles(-1) : getListFiles(parseInt(fid));
-    if (fid == null) {
-      parentNode = $('#file-tree .folder-name[data-fid="-1"]').nextElementSibling;
-    } else {
-      parentNode = $('ul',parentNode)[0];
-      parentNode.classList.toggle('isLoaded', true);
-    }
-
-    for (var i = 0; i < folders.length; i++) {
-      let node = $('#tmp-file-tree-directory').content.cloneNode(true);
-      let span = $('.folder-name', node)[0];
-      span.textContent = folders[i].name
-      span.dataset.fid = folders[i].fid
-      span.dataset.title = folders[i].name
-      $('li', node)[0].classList.add('folder-root');
-      $('li', node)[0].classList.add('closed');
-      parentNode.append(node)
-    }
-
-    for (var i = 0; i < files.length; i++) {
-      let node = $('#tmp-file-tree-file').content.cloneNode(true);
-      let span = $('.file-name', node)[0];
-      span.textContent = files[i].name
-      span.dataset.title = files[i].name
-      span.dataset.fid = files[i].fid
-      span.dataset.parent = files[i].parentId
-      parentNode.append(node)
-    }
-
   };
 
   function getFileContent(file) {

@@ -29,7 +29,7 @@ let DOMEvents = {
 		'sign-out' : signOut,
 		'grant-firebase-access': () => auth2.grant('https://www.googleapis.com/auth/firebase'),
 
-		'change-workspace': changeWorkspace,
+		'change-workspace': ui.changeWorkspace,
 		'change-file-list-view': ui.changeFileListView,
 
 	    'btn-menu-template': function() { toggleInsertSnippet() },

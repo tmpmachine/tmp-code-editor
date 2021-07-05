@@ -34,8 +34,10 @@ function FileTreeComponent() {
   }
 
   this.insertToSubtree = function(fileName, node, parentNode, type='folder') {
-    if (!parentNode.classList.contains('isLoaded'))
+    if (!parentNode.classList.contains('isLoaded')) {
+      node.remove();
       return
+    }
 
     parentNode.append(node)
     let x2 = parentNode.children;
@@ -114,7 +116,7 @@ function FileTreeComponent() {
     let isOpened = target.parentNode.classList.toggle('open');
     let isLoaded = target.nextElementSibling.classList.contains('isLoaded');
     if (isOpened && !isLoaded) {
-      fileManager.listTree(target.dataset.fid, target.parentNode)
+      listTree(target.dataset.fid, target.parentNode)
     }
   }
 
@@ -214,71 +216,117 @@ function FileTreeComponent() {
     }
   }
 
-}
+  this.reload = function () {
+    $('#file-tree > li > ul').innerHTML = '';
+    listTree();
+  }
 
-function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
+  function listTree(fid = null, parentNode = null) {
 
-  if (!$('#in-my-files').classList.contains('active'))
-    $('#btn-menu-my-files').click();
-  if (activeFolder == fid)
-    return
-
-  breadcrumbs.splice(1);
-  let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
-  while (!isRoot) {
-    if (isDirectory) {
-      breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+    let fm = fileManager;
+    let folders = (fid === null) ? fm.getListFolder(-1) : fm.getListFolder(parseInt(fid));
+    let files = (fid === null) ? fm.getListFiles(-1) : fm.getListFiles(parseInt(fid));
+    if (fid == null) {
+      parentNode = $('#file-tree .folder-name[data-fid="-1"]').nextElementSibling;
     } else {
-      isDirectory = true;
+      parentNode = $('ul',parentNode)[0];
+      parentNode.classList.toggle('isLoaded', true);
     }
-    node = node.parentNode.parentNode.previousElementSibling;
-    isRoot = node.parentNode.parentNode.classList.contains('file-tree');
-    if (isRoot) {
-      breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
-    } 
+
+    for (var i = 0; i < folders.length; i++) {
+      let node = $('#tmp-file-tree-directory').content.cloneNode(true);
+      let span = $('.folder-name', node)[0];
+      span.textContent = folders[i].name
+      span.dataset.fid = folders[i].fid
+      span.dataset.title = folders[i].name
+      $('li', node)[0].classList.add('folder-root');
+      $('li', node)[0].classList.add('closed');
+      parentNode.append(node)
+    }
+
+    for (var i = 0; i < files.length; i++) {
+      let node = $('#tmp-file-tree-file').content.cloneNode(true);
+      let span = $('.file-name', node)[0];
+      span.textContent = files[i].name
+      span.dataset.title = files[i].name
+      span.dataset.fid = files[i].fid
+      span.dataset.parent = files[i].parentId
+      parentNode.append(node)
+    }
+
+  };
+
+  this.attachListener = function() {
+    document.getElementById('file-tree').addEventListener("contextmenu", e => {
+      let isDirectory = true;
+      if (e.target.classList.contains('folder-name')) {
+        e.preventDefault();
+        updateTreeBreadcrumbs(e.target.dataset.fid, e.target, isDirectory)
+      } else if (e.target.classList.contains('file-name')) {
+        isDirectory = false;
+        e.preventDefault();
+        updateTreeBreadcrumbs(e.target.dataset.parent, e.target, isDirectory)
+      }
+    });
+
+    document.getElementById('file-tree').addEventListener("click", e => {
+      let elClass = e.target.classList;
+      if (elClass.contains('folder-name')) {
+        if (e.target.dataset.fid == '-1')
+          return
+        getComponent('file-tree').openDirectoryTree(e.target);
+      } else if (['file-name','--opened'].every(cls => elClass.contains(cls))) {
+        getComponent('file-tree').openFileByElementFidDataset(e.target);
+      }
+    });
+
+    document.getElementById('file-tree').addEventListener("dblclick", e => {
+      if (e.target.classList.contains('file-name')) {
+        getComponent('file-tree').openFileByElementFidDataset(e.target);
+      }
+    });
   }
 
-  loadBreadCrumbs();
-  
-  if (breadcrumbs.length > 1)
-    breadcrumbs.pop();
-  fileManager.openFolder(fid);
+  function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
 
-}
-
-document.getElementById('file-tree').addEventListener("contextmenu", e => {
-  let isDirectory = true;
-  if (e.target.classList.contains('folder-name')) {
-    e.preventDefault();
-    updateTreeBreadcrumbs(e.target.dataset.fid, e.target, isDirectory)
-  } else if (e.target.classList.contains('file-name')) {
-    isDirectory = false;
-    e.preventDefault();
-    updateTreeBreadcrumbs(e.target.dataset.parent, e.target, isDirectory)
-  }
-});
-
-document.getElementById('file-tree').addEventListener("click", e => {
-  let elClass = e.target.classList;
-  if (elClass.contains('folder-name')) {
-    if (e.target.dataset.fid == '-1')
+    if (!$('#in-my-files').classList.contains('active'))
+      $('#btn-menu-my-files').click();
+    if (activeFolder == fid)
       return
-    getComponent('file-tree').openDirectoryTree(e.target);
-  } else if (['file-name','--opened'].every(cls => elClass.contains(cls))) {
-    getComponent('file-tree').openFileByElementFidDataset(e.target);
-  }
-});
 
-document.getElementById('file-tree').addEventListener("dblclick", e => {
-  if (e.target.classList.contains('file-name')) {
-    getComponent('file-tree').openFileByElementFidDataset(e.target);
-  }
-});
+    breadcrumbs.splice(1);
+    let isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+    while (!isRoot) {
+      if (isDirectory) {
+        breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+      } else {
+        isDirectory = true;
+      }
+      node = node.parentNode.parentNode.previousElementSibling;
+      isRoot = node.parentNode.parentNode.classList.contains('file-tree');
+      if (isRoot) {
+        breadcrumbs.splice(1, 0, {folderId:node.dataset.fid, title: node.textContent})
+      } 
+    }
 
-fileManager.listTree();
-if (settings.data.explorer.tree) {
-  document.body.classList.toggle('--tree-explorer', true);
+    loadBreadCrumbs();
+    
+    if (breadcrumbs.length > 1)
+      breadcrumbs.pop();
+    fileManager.openFolder(fid);
+
+  }
+
+  // end of component
 }
 
-$('.tree-explorer')[0].classList.toggle('d-none', false);
-$('.tree-explorer-btn-expand')[0].classList.toggle('d-none', false);
+
+getComponentAsPromise('file-tree').then(ft => {
+  ft.reload();
+  ft.attachListener();
+  if (settings.data.explorer.tree) {
+    document.body.classList.toggle('--tree-explorer', true);
+  }
+  $('.tree-explorer')[0].classList.toggle('d-none', false);
+  $('.tree-explorer-btn-expand')[0].classList.toggle('d-none', false);
+});
