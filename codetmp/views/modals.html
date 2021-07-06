@@ -7,7 +7,7 @@
       <div class="search-box" style="position:relative;">
         <div class="w3-round w3-white" style="position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;align-items:center">
           <div class="button-tb" style="overflow:hidden;">
-            <input id="search-input" class="w3-padding-16 w3-round w3-white w3-padding" autocomplete='off' onkeydown='wgSearch.selectHints()' oninput='wgSearch.find(this.value)' placeholder='Search snippets' type='text' name='q' style="width:100%;border:0;"/>
+            <input id="search-input" class="w3-round w3-white w3-padding" autocomplete='off' onkeydown='wgSearch.selectHints()' oninput='wgSearch.find(this.value)' placeholder='Search snippets' type='text' name='q' style="width:100%;border:0;padding:16px"/>
           </div>
           <div>
             <label for="search-input">
@@ -23,11 +23,11 @@
 
 <div id="update-notif" class="Export" style="position:fixed;bottom:0;left:0;background:#0b0b0e;color:#ccc;z-index:8177;font-weight:bold;width:100%;">
   <div class="w3-right">
-    <div id="btn-refresh" class="w3-left w3-padding-16 w3-container" style="text-transform:uppercase;font-weight:bold;color:#d8d782;">Refresh</div>
-    <div id="btn-dismiss" class="w3-left w3-padding-16 w3-container" style="text-transform:uppercase;font-weight:bold;">Dismiss</div>
+    <div id="btn-refresh" class="w3-left w3-container" style="padding:16px;text-transform:uppercase;font-weight:bold;color:#d8d782;">Refresh</div>
+    <div id="btn-dismiss" class="w3-left w3-container" style="padding:16px;text-transform:uppercase;font-weight:bold;">Dismiss</div>
   </div>
   <div class="w3-rest">
-    <div class="w3-padding-16 w3-container w3-small">New version available</div>
+    <div class="w3-container w3-small" style="padding:16px;">New version available</div>
   </div>
 </div>
 
