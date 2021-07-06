@@ -1,13 +1,13 @@
 <export>
 
-<div class="search-box w3-container w3-hide Export" style="position:fixed;z-index:8177;top:0;width:100%;">
+<div class="w-100 search-box w3-container w3-hide Export" style="position:fixed;z-index:8177;top:0">
   <div class="w3-padding-large"></div>
   <div class="w3-left-align" style="max-width:400px;margin:auto;">
-    <div class="w3-card" style="position:relative;">
-      <div class="search-box" style="position:relative;">
-        <div class="w3-round w3-white" style="position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;align-items:center">
-          <div class="button-tb" style="overflow:hidden;">
-            <input id="search-input" class="w3-round w3-white w3-padding" autocomplete='off' onkeydown='wgSearch.selectHints()' oninput='wgSearch.find(this.value)' placeholder='Search snippets' type='text' name='q' style="width:100%;border:0;padding:16px"/>
+    <div class="w3-card relative">
+      <div class="search-box relative">
+        <div class="w3-round w3-white d-grid relative" style="z-index:1;grid-template-columns:1fr auto;align-items:center">
+          <div class="button-tb ov-hidden">
+            <input id="search-input" class="w3-round w3-white w3-padding w-100" autocomplete='off' onkeydown='wgSearch.selectHints()' oninput='wgSearch.find(this.value)' placeholder='Search snippets' type='text' name='q' style="border:0;padding:16px"/>
           </div>
           <div>
             <label for="search-input">
@@ -17,11 +17,11 @@
         </div>
       </div>
     </div>
-    <div id="search-result" style="position:relative;z-index:1;top:-2px;"></div>
+    <div id="search-result" class="relative" style="z-index:1;top:-2px;"></div>
   </div>
 </div>
 
-<div id="update-notif" class="Export" style="position:fixed;bottom:0;left:0;background:#0b0b0e;color:#ccc;z-index:8177;font-weight:bold;width:100%;">
+<div id="update-notif" class="Export w-100" style="position:fixed;bottom:0;left:0;background:#0b0b0e;color:#ccc;z-index:8177;font-weight:bold">
   <div class="w3-right">
     <div id="btn-refresh" class="w3-left w3-container" style="padding:16px;text-transform:uppercase;font-weight:bold;color:#d8d782;">Refresh</div>
     <div id="btn-dismiss" class="w3-left w3-container" style="padding:16px;text-transform:uppercase;font-weight:bold;">Dismiss</div>
@@ -31,7 +31,7 @@
   </div>
 </div>
 
-<div id="cprompt-modal" class="window Hide Export" data-name="account" style="display: grid;align-items: center">
+<div id="cprompt-modal" class="window Hide Export d-grid" data-name="account" style="align-items: center">
   <div class="Wrapper" style="height: auto">
       <div class="Overlay" data-target="account"></div>
       <div class="Modal bg8 col1">
@@ -55,7 +55,7 @@
   </div>
 </div>
 
-<div id="cconfirm-modal" class="window Hide Export" data-name="account" style="display: grid;align-items: center">
+<div id="cconfirm-modal" class="window Hide Export d-grid" data-name="account" style="align-items: center">
   <div class="Wrapper" style="height: auto">
       <div class="Overlay" data-target="account"></div>
       <div class="Modal bg8 col1">
@@ -143,7 +143,7 @@
         <div class="feature-disabled" data-feature="firebase">
           Access to Firebase account is required.
           <div style="height:1em"></div>
-          <button class="clickable btn-style-1" style="width:100%" data-callback="grant-firebase-access">Grant Access</button>
+          <button class="clickable btn-style-1 w-100" data-callback="grant-firebase-access">Grant Access</button>
         </div>
 
         <form class="authorized feature-enabled submittable preventDefault if-post" data-callback="deploy-hosting" data-feature="firebase">
@@ -173,9 +173,9 @@
 </div>
 
 <div class="window modal-window Hide Export" data-name="file-download">
-  <div class="Wrapper" style="height:100%;display:flex;align-items:center">
+  <div class="Wrapper h-100  d-flex" style="align-items:center">
       <div class="Overlay" data-target="file-download"></div>
-      <div class="Modal bg8 col1" style="width:100%">
+      <div class="Modal bg8 col1 w-100">
         <div class="Header no-select">
           <h5><b>File Download</b></h5>
           <i class="Btn-close material-icons w3-button w3-hover-none" data-target="file-download" style="color:#aaa;">close</i>
@@ -204,9 +204,9 @@
 </div>
 
 <div class="window modal-window Hide Export" data-name="generate-single-file">
-  <div class="Wrapper" style="height:100%;display:flex;align-items:center">
+  <div class="Wrapper h-100 d-flex" style="align-items:center">
       <div class="Overlay" data-target="generate-single-file"></div>
-      <div class="Modal bg8 col1" style="width:100%">
+      <div class="Modal bg8 col1 w-100">
         <div class="Header no-select">
           <h5><b>Generate Single File</b></h5>
           <i class="Btn-close material-icons w3-button w3-hover-none" data-target="generate-single-file" style="color:#aaa;">close</i>
@@ -270,7 +270,7 @@
       <i class="material-icons w3-button w3-hover-none Download Act-button" title="Download media">get_app</i>
       <i class="Btn-close material-icons w3-button w3-hover-none Act-button" data-target="media-preview">close</i>
     </div>
-    <div style="padding:16px;height: 100%;overflow: hidden;">
+    <div style="padding:16px;" class="h-100 ov-hidden">
       <div class="Media">
         <div class="Overlay" data-target="media-preview"></div>
       </div>
