@@ -1,17 +1,13 @@
-let previewUrl = 'https://cpreview.web.app/';
-let previewFrameResolver = null;
-let previewWindow = null;
-let portResolver = null;
-let PreviewLoadWindow = null;
-let isPreviewFrameLoaded = false;
-let isPortOpened = false;
-let previewManager = new PreviewManager();
-let windows = [];
-let previewMode = 'normal';
+let previewHandler = new PreviewHandler();
 
-function PreviewManager() {
+function PreviewHandler() {
 
+  this.portResolver = null;
+  this.previewMode = 'normal';
   let driveAccessToken = '';
+  let previewFrameResolver = null;
+  let PreviewLoadWindow = null;
+  let isPreviewFrameLoaded = false;
 
   function removeParam(url) {
     var oldURL = url;
@@ -36,16 +32,16 @@ function PreviewManager() {
   })
   .then(() => {
       let messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = previewManager.fileResponseHandler;
+      messageChannel.port1.onmessage = previewHandler.fileResponseHandler;
 
       previewLoadWindow.postMessage({ message: 'init-message-port' }, '*', [messageChannel.port2]);
       new Promise(function(resolve) {
-        portResolver = resolve;
+        previewHandler.portResolver = resolve;
       })
   });
 
   if (!isPreviewFrameLoaded)
-    previewLoadWindow = window.open(previewUrl, 'PreviewFrame');
+    previewLoadWindow = window.open(environment.previewUrl, 'PreviewFrame');
 
   async function responseAsMedia(event, path, mimeType) {
 
@@ -106,7 +102,7 @@ function PreviewManager() {
   	previewLoadWindow.postMessage({
   		message: 'response-file', 
   		mime: mimeType,
-  		content: previewManager.getContent(path, mimeType),
+  		content: previewHandler.getContent(path, mimeType),
   		resolverUID: event.data.resolverUID,
   	}, '*');
   }
@@ -116,11 +112,11 @@ function PreviewManager() {
       switch (event.data.method) {
         case 'POST':
           if (event.data.referrer) {
-            let parentDir = previewManager.getDirectory(event.data.referrer, null, ['root']);
+            let parentDir = previewHandler.getDirectory(event.data.referrer, null, ['root']);
             let file = new File({
               name: event.data.body.name,
               content: event.data.body.content,
-              parentId: previewManager.getDirectory(event.data.body.path, parentDir, ['root']),
+              parentId: previewHandler.getDirectory(event.data.body.path, parentDir, ['root']),
             });
             fileManager.sync(file.fid, 'create', 'files');
             drive.syncToDrive();
@@ -137,8 +133,8 @@ function PreviewManager() {
           break;
         case 'PATCH':
           if (event.data.referrer) {
-            let parentDir = previewManager.getDirectory(event.data.referrer, null, ['root']);
-            let parentId = previewManager.getDirectory(event.data.body.path, parentDir, ['root']);
+            let parentDir = previewHandler.getDirectory(event.data.referrer, null, ['root']);
+            let parentId = previewHandler.getDirectory(event.data.body.path, parentDir, ['root']);
             let files = fileManager.listFiles(parentId);
             let name = event.data.body.path.replace(/.*?\//g,'');
             let isFileFound = false;
@@ -173,8 +169,8 @@ function PreviewManager() {
           break;
         case 'PUT':
           if (event.data.referrer) {
-            let parentDir = previewManager.getDirectory(event.data.referrer, null, ['root']);
-            let parentId = previewManager.getDirectory(event.data.body.path, parentDir, ['root']);
+            let parentDir = previewHandler.getDirectory(event.data.referrer, null, ['root']);
+            let parentId = previewHandler.getDirectory(event.data.body.path, parentDir, ['root']);
             let files = fileManager.listFiles(parentId);
             let name = event.data.body.path.replace(/.*?\//g,'');
             let isFileFound = false;
@@ -223,7 +219,7 @@ function PreviewManager() {
     let preParent = activeFolder;
     let relativeParent = preParent;
     let path = ['root'];
-    let parentId = previewManager.getDirectory(src, relativeParent, path);
+    let parentId = previewHandler.getDirectory(src, relativeParent, path);
     let files = fileManager.listFiles(parentId);
     let name = src.replace(/.*?\//g,'');
     let isFileFound = false;
@@ -275,7 +271,7 @@ function PreviewManager() {
 
   this.getFrameName = function() {
     let file = activeFile;
-    let name = (previewMode == 'inframe') ? 'inframe-preview' : 'preview';
+    let name = (this.previewMode == 'inframe') ? 'inframe-preview' : 'preview';
     if (file !== null)
       name = 'preview-'+file.fid;
     return name;
@@ -358,123 +354,97 @@ function PreviewManager() {
     driveAccessToken = token;
   }
 
-  return this;
-}
-
-function getMatchTemplate(content) {
-	return content.match(/<file src=.*?><\/file>/);
-}
-
-function replaceFile(match, body, preParent, path) {
-  let src = match[0].substring(11, match[0].length-9);
-  let relativeParent = preParent;
-  let parentId = previewManager.getDirectory(src, relativeParent, path);
-  let files = fileManager.listFiles(parentId);
-  let name = src.replace(/.*?\//g,'');
-  let file = null;
-  for (let i=0; i<files.length; i++) {
-    if (files[i].trashed) {
-      continue;
-    } else if (files[i].name == name) {
-      file = files[i];
-    }
-  }
-  if (file === null) {
-    body = body.replace(match[0], '');
-    aww.pop('Required file not found : '+src);
-  } else {
-    let content = '';
-    if (!file.loaded) {
-      fileManager.downloadMedia(file);
-    } else {
-      let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
-      if (tabIdx >= 0)
-        content = (activeFile && activeFile.fid === file.fid) ? fileTab[activeTab].editor.env.editor.getValue() : fileTab[tabIdx].editor.env.editor.getValue();
-      else
-        content = file.content;
-    }
-    let swap = replaceTemplate(content, parentId, path);
-    body = body.replace(new RegExp(match[0]), swap);
-  }
-  return body;
-}
-
-function replaceTemplate(body, preParent = -1, path = ['root']) {
-  let match = getMatchTemplate(body);
-  while (match !== null) {
-    let searchPath = JSON.parse(JSON.stringify(path));
-    body = replaceFile(match, body, preParent, searchPath);
-    match = getMatchTemplate(body);
-  }
-  return body;
-}
-
-(function() {
-  
-  function previewWeb(filePath) {
-	  new Promise(function(resolve) {
-	  	if (isPreviewFrameLoaded) 
-	  		resolve();
-	  	else {
-	  		previewFrameResolver = resolve;
-	  	}
-	  })
-	  .then(() => {
-	  	  let messageChannel = new MessageChannel();
-		    messageChannel.port1.onmessage = previewManager.fileResponseHandler;
-	      previewLoadWindow.postMessage({ message: 'init-message-port' }, '*', [messageChannel.port2]);
-        // delayed to focus
-        setTimeout(function() {
-          window.open(previewUrl+filePath, previewManager.getFrameName());
-        }, 1);
-	  });
-  }
-
-  function previewHTML() {
-	  let filePath = previewManager.getPath();
+  this.previewHTML = function() {
+    let filePath = previewHandler.getPath();
      previewWeb(filePath);
   }
 
-  window.previewHTML = previewHTML;
-  
-})();
+  function previewWeb(filePath) {
+    new Promise(function(resolve) {
+      if (isPreviewFrameLoaded) 
+        resolve();
+      else {
+        previewFrameResolver = resolve;
+      }
+    })
+    .then(() => {
+        let messageChannel = new MessageChannel();
+        messageChannel.port1.onmessage = previewHandler.fileResponseHandler;
+        previewLoadWindow.postMessage({ message: 'init-message-port' }, '*', [messageChannel.port2]);
+        // delayed to focus
+        setTimeout(function() {
+          window.open(environment.previewUrl+filePath, previewHandler.getFrameName());
+        }, 1);
+    });
+  }
 
-// DOM events
+  function replaceFile(match, body, preParent, path) {
+    let src = match[0].substring(11, match[0].length-9);
+    let relativeParent = preParent;
+    let parentId = previewHandler.getDirectory(src, relativeParent, path);
+    let files = fileManager.listFiles(parentId);
+    let name = src.replace(/.*?\//g,'');
+    let file = null;
+    for (let i=0; i<files.length; i++) {
+      if (files[i].trashed) {
+        continue;
+      } else if (files[i].name == name) {
+        file = files[i];
+      }
+    }
+    if (file === null) {
+      body = body.replace(match[0], '');
+      aww.pop('Required file not found : '+src);
+    } else {
+      let content = '';
+      if (!file.loaded) {
+        fileManager.downloadMedia(file);
+      } else {
+        let tabIdx = odin.idxOf(file.fid, fileTab, 'fid');
+        if (tabIdx >= 0)
+          content = (activeFile && activeFile.fid === file.fid) ? fileTab[activeTab].editor.env.editor.getValue() : fileTab[tabIdx].editor.env.editor.getValue();
+        else
+          content = file.content;
+      }
+      let swap = replaceTemplate(content, parentId, path);
+      body = body.replace(new RegExp(match[0]), swap);
+    }
+    return body;
+  }
 
-window.addEventListener('message', function(e) {
-  if (e.data.message) {
-    switch (e.data.message) {
-	case 'html-snippet':
-      let editor = fileTab[0].editor.env.editor;
-      editor.setValue(e.data.html);
-      editor.clearSelection();
-      editor.moveCursorTo(0,0);
-    break;
-    case 'port-missing':
-      isPortOpened = false;
-      let messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = previewManager.fileResponseHandler;
-      previewLoadWindow.postMessage({ message: 'reinit-message-port' }, '*', [messageChannel.port2]);
-    break;
-    case 'message-port-opened':
-    	portResolver();
-    break;
-    case 'preview-frame-isReady':
-        isPreviewFrameLoaded = true;
-        previewFrameResolver();
+  function replaceTemplate(body, preParent = -1, path = ['root']) {
+    let match = getMatchTemplate(body);
+    while (match !== null) {
+      let searchPath = JSON.parse(JSON.stringify(path));
+      body = replaceFile(match, body, preParent, searchPath);
+      match = getMatchTemplate(body);
+    }
+    return body;
+  }
+
+  function getMatchTemplate(content) {
+    return content.match(/<file src=.*?><\/file>/);
+  }
+
+  window.addEventListener('message', function(e) {
+    if (e.data.message) {
+      switch (e.data.message) {
+        case 'port-missing':
+          let messageChannel = new MessageChannel();
+          messageChannel.port1.onmessage = previewHandler.fileResponseHandler;
+          previewLoadWindow.postMessage({ message: 'reinit-message-port' }, '*', [messageChannel.port2]);
         break;
+        case 'message-port-opened':
+          previewHandler.portResolver();
+        break;
+        case 'preview-frame-isReady':
+          isPreviewFrameLoaded = true;
+          previewFrameResolver();
+          break;
+      }
     }
-  }
 
-}, false);
+  }, false);
 
-// DOM events
-
-navigator.serviceWorker.addEventListener('message', e => {
-  if (e.data.type) {
-    switch (e.data.type) {
-      case 'extension':
-        extension.load(e.data.name);
-    }
-  }
-});
+  return this;
+}

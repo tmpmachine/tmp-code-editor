@@ -262,15 +262,15 @@ var wgSearch = {
     
     if (this.v.trim().length < 2) {
       if (this.v.trim().length == 0) {
-        somefun($('#btn-somefun'),true)
+        resetSearch($('#btn-search'),true)
       }
         
       $('#search-result').innerHTML = '';
       return;
     }
     
-    if ($('#btn-somefun').textContent == 'search')
-      somefun($('#btn-somefun'))
+    if ($('#btn-search').textContent == 'search')
+      resetSearch($('#btn-search'))
     
     var data = wgSearch.match(this.v.toLowerCase());
     
@@ -284,7 +284,7 @@ var wgSearch = {
   }
 };
 
-function somefun(self, bypass) {
+function resetSearch(self, bypass) {
   if (self.textContent == 'search' && $('#search-input').value.length > 0)
   {
     self.textContent = 'close';

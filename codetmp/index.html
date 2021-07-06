@@ -550,6 +550,25 @@
 
     })();
   </script>
+  <script>
+    window.L = console.log;
+    window.$ = function(selector, node=document) { let nodes = node.querySelectorAll(selector); return selector.startsWith('#') ? nodes[0] : nodes };
+  </script>
+  <script>
+    // prevent content shift by material icons
+    Promise.all([
+      new Promise(resolve => {
+        let interval = setInterval(() => {
+          if (document.querySelector('[data-callback="btn-menu-preview"]').firstElementChild.scrollWidth > 50) return;
+          clearInterval(interval);
+          resolve();
+        }, 100);
+      })
+    ]).then(() => {
+      document.querySelector('#preload-material').parentNode.removeChild(document.querySelector('#preload-material'));
+    });
+  </script>
+  <script src="js/core/component-loader.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

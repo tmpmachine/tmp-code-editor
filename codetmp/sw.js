@@ -49,13 +49,13 @@ self.addEventListener('install', function(event) {
 
     '/js/require/divless.js',
     '/js/require/o.js',
-    '/js/require/auth2helper.js',
     '/js/require/lsdb.js',
     '/js/require/keyboard.js',
     '/js/require/odin.js',
     '/js/require/aww.js',
     '/js/require/jszip.min.js',
 
+    '/js/components/auth2helper.js',
     '/js/components/support.js',
     '/js/components/extension.js',
     '/js/components/preferences.js',
@@ -65,7 +65,7 @@ self.addEventListener('install', function(event) {
     '/js/components/git.js',
     '/js/components/notifier.js',
     '/js/components/template.js',
-    '/js/components/preview.js',
+    '/js/components/preview-handler.js',
     '/js/components/clipboard.js',
     '/js/components/file-manager.js',
     '/js/components/file-tree.js',
@@ -74,6 +74,8 @@ self.addEventListener('install', function(event) {
     '/js/components/defer-feature-1.js',
     '/js/components/defer-feature-2.js',
     '/js/components/single-file-generator.js',
+    '/js/core/component-loader.js',
+    '/js/core/app-data.js',
     
     '/js/dom-events.js',
     '/js/ux.js',

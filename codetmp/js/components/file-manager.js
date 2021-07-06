@@ -681,6 +681,10 @@ function FileManager() {
   }
   this.replaceFileTag = replaceFileTag;
 
+  function getMatchTemplate(content) {
+    return content.match(/<file src=.*?><\/file>/);
+  }
+
   this.downloadSingle = function(file, options) {
     return new Promise(resolve => {
 

@@ -34,7 +34,7 @@ let DOMEvents = {
 
 	    'btn-menu-template': function() { toggleInsertSnippet() },
 	    'btn-menu-save': fileManager.save,
-	    'btn-menu-preview': function() { openPreviewWindow(); previewHTML(); },
+	    'btn-menu-preview': function() { openPreviewWindow(); previewHandler.previewHTML(); },
 	    'btn-undo': () => { fileTab[activeTab].editor.env.editor.undo(); fileTab[activeTab].editor.env.editor.focus() },
 	    'btn-redo': () => { fileTab[activeTab].editor.env.editor.redo(); fileTab[activeTab].editor.env.editor.focus() },
 	    'more-tab': function() { ui.switchTab(1) },
@@ -83,7 +83,7 @@ let DOMEvents = {
 		'new-file-on-disk': ui.newDiskFile,
 		'new-folder': ui.fileManager.newFolder,
 		'save': fileManager.save,
-		'preview': () => previewHTML(),
+		'preview': () => previewHandler.previewHTML(),
 		'my-files': ui.myFiles,
 		'trash': ui.trash,
 		'toggle-editor-theme': ui.toggleTheme,
@@ -133,7 +133,7 @@ let DOMEvents = {
 		  	if (selectedFile.length > 0) 
 		        renameFile();
 		  } else {
-		    previewHTML();
+		    previewHandler.previewHTML();
 		  }
 		},
 	},

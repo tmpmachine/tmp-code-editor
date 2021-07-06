@@ -24,7 +24,7 @@
 
   function distributeToken() {
     if (typeof(drive) != 'undefined') { drive.setToken(access_token) }
-    previewManager.setToken(access_token);
+    previewHandler.setToken(access_token);
     fire.setToken(access_token);
   }
 

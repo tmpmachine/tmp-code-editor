@@ -404,8 +404,6 @@ const drive = (function() {
      });
   }
 
-
-
   async function syncFile({ action, fid, metadata, type, source, isTemp }) {
     
     let method;

@@ -42,7 +42,7 @@ function SingleFileGeneratorComponent() {
   function replaceFile(match, body, preParent, path) {
     let src = match[0].substring(11, match[0].length-9);
     let relativeParent = preParent;
-    let parentId = previewManager.getDirectory(src, relativeParent, path);
+    let parentId = previewHandler.getDirectory(src, relativeParent, path);
     let files = fileManager.listFiles(parentId);
     let name = src.replace(/.*?\//g,'');
     let file = null;
@@ -116,7 +116,7 @@ function SingleFileGeneratorComponent() {
         src = src.replace(/__\//, '');
       }
       
-      let parentId = previewManager.getDirectory(src, relativeParent, path);
+      let parentId = previewHandler.getDirectory(src, relativeParent, path);
       let files = fileManager.listFiles(parentId);
       let name = src.replace(/.*?\//g,'');
       let file = null;

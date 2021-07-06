@@ -66,5 +66,6 @@ function minifyFiles() {
 	minifyCSS('./deploy/codetmp/css/');
 	minifyJS('./deploy/codetmp/js/');
 	minifyJS('./deploy/codetmp/js/require/');
+	minifyJS('./deploy/codetmp/js/core/');
 	minifyJS('./deploy/codetmp/js/components/');
 }

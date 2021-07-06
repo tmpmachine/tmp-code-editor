@@ -207,7 +207,7 @@ const ui = {
   toggleInFrame: function() {
     $('#main-layout').classList.toggle('inframe-mode');
     $('#main-layout').classList.toggle('normal-mode');
-    previewMode = (previewMode == 'normal') ? 'inframe' : 'normal';
+    previewHandler.previewMode = (previewHandler.previewMode == 'normal') ? 'inframe' : 'normal';
     fileTab[activeTab].editor.env.editor.session.setUseWrapMode(settings.data.editor.wordWrapEnabled);
   },
   setFontSize: function() {
@@ -749,7 +749,7 @@ function toggleModal(name) {
 // init
 function initUI() {
   
-  notif = Notifier($('#tmp-notif'), $('#notif-list'));
+	notif = Notifier($('#tmp-notif'), $('#notif-list'));
   // initInframeLayout();
   fileManager.list();
   preferences.loadSettings();
@@ -828,10 +828,10 @@ function toggleInsertSnippet(persistent) {
 
 function openPreviewWindow() {
   if (!$('#btn-menu-my-files').classList.contains('active')) {
-    let filePath = previewManager.getPath();
+    let filePath = previewHandler.getPath();
     // delayed to focus
     setTimeout(() => {
-      window.open(previewUrl+filePath, previewManager.getFrameName());
+      window.open(environment.previewUrl+filePath, previewHandler.getFrameName());
     }, 1)
   }
 }
