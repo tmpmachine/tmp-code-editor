@@ -5,14 +5,14 @@
   <div class="w3-left-align" style="max-width:400px;margin:auto;">
     <div class="w3-card" style="position:relative;">
       <div class="search-box" style="position:relative;">
-        <div class="w3-round w3-white" style="position:relative;z-index:1;">
-          <div class="w3-left w3-right">
-            <label for="search-input">
-              <i id="btn-somefun" class="material-icons ai-button w3-container w3-padding-16 w3-xlarge" onclick="somefun(this)">search</i>
-            </label>
-          </div>
+        <div class="w3-round w3-white" style="position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;align-items:center">
           <div class="button-tb" style="overflow:hidden;">
             <input id="search-input" class="w3-padding-16 w3-round w3-white w3-padding" autocomplete='off' onkeydown='wgSearch.selectHints()' oninput='wgSearch.find(this.value)' placeholder='Search snippets' type='text' name='q' style="width:100%;border:0;"/>
+          </div>
+          <div>
+            <label for="search-input">
+              <i id="btn-somefun" class="material-icons ai-button w3-container" onclick="somefun(this)">search</i>
+            </label>
           </div>
         </div>
       </div>
