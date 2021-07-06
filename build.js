@@ -28,14 +28,12 @@ function minifyFiles() {
 	function minifyCSS(srcPath) {
 		fs.readdir(srcPath, (err, files) => {
 		  	files.forEach(filename => {
-		    	if (['css/style.css'].includes(filename)) {
-					minify(srcPath+filename, {minifyCSS: true}).then(content => {
-						let path = srcPath+filename
-						fs.writeFile(path, content, () => {
-						  console.log('Done!')
-						});
-					})
-		    	}
+				minify(srcPath+filename, {minifyCSS: true}).then(content => {
+					let path = srcPath+filename
+					fs.writeFile(path, content, () => {
+					  console.log('Done!')
+					});
+				})
 		    })
 		});
 	}
@@ -65,7 +63,7 @@ function minifyFiles() {
 
 	minifyHTML('./deploy/codetmp/');
 	minifyHTML('./deploy/codetmp/views/');
-	minifyCSS('./deploy/codetmp/');
+	minifyCSS('./deploy/codetmp/css/');
 	minifyJS('./deploy/codetmp/js/');
 	minifyJS('./deploy/codetmp/js/require/');
 	minifyJS('./deploy/codetmp/js/components/');
