@@ -674,7 +674,7 @@ function FileManager() {
     let match = getMatchTemplate(content);
     while (match !== null) {
       let searchPath = JSON.parse(JSON.stringify(path = ['root']));
-      content = replaceFile(match, content, parentId, searchPath);
+      content = previewHandler.replaceFile(match, content, parentId, searchPath);
       match = getMatchTemplate(content);
     }
     return content;

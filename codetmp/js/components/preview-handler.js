@@ -412,6 +412,8 @@ function PreviewHandler() {
     return body;
   }
 
+  this.replaceFile = replaceFile;
+
   function replaceTemplate(body, preParent = -1, path = ['root']) {
     let match = getMatchTemplate(body);
     while (match !== null) {
