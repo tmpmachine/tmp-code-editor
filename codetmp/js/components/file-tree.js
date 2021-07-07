@@ -35,8 +35,7 @@ function FileTreeComponent() {
 
   this.insertToSubtree = function(fileName, node, parentNode, type='folder') {
     if (!parentNode.classList.contains('isLoaded')) {
-      node.remove();
-      return
+      return false;
     }
 
     parentNode.append(node)
@@ -65,10 +64,11 @@ function FileTreeComponent() {
         break;
       }
     }
+    return true;
   }
 
   this.insertFileToSubtree = function(fileName, node, parentNode) {
-    this.insertToSubtree(fileName, node, parentNode, 'file');
+    return this.insertToSubtree(fileName, node, parentNode, 'file');
   }
 
   this.removeFolder = function(file) {
@@ -104,12 +104,16 @@ function FileTreeComponent() {
     if (!span || !targetSpan)
       return;
     let li = span.parentNode;
+    let isAppended = false;
     if (type == 'file') {
       span.dataset.parent = targetParentId;
-      this.insertFileToSubtree(span.textContent, li, targetSpan.nextElementSibling);
+      isAppended = this.insertFileToSubtree(span.textContent, li, targetSpan.nextElementSibling);
     } else {
-      this.insertToSubtree(span.textContent, li, targetSpan.nextElementSibling);
+      isAppended = this.insertToSubtree(span.textContent, li, targetSpan.nextElementSibling);
     }
+    // sub tree have not opened/loaded yet
+    if (!isAppended)
+      li.remove();
   }
 
   this.openDirectoryTree = function(target, isForceOpen = false) {

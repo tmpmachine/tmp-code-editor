@@ -49,7 +49,7 @@ let DOMEvents = {
 	    	settings.save();
 	     	document.body.classList.toggle('--tree-explorer', false) 
 	 	},
-	    'reload-file-tree': fileManager.reloadFileTree,
+	    'reload-file-tree': ui.reloadFileTree,
 	},
 
 	submittable: {

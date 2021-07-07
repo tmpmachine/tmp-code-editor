@@ -144,6 +144,11 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
+	reloadFileTree: function() {
+		getComponentAsPromise('file-tree').then(ft => {
+			ft.reload();
+		})
+	},
 	changeWorkspace: function() {
 	  if (this.dataset.target != $('#workspace-title').textContent) {
 	    for (let node of $('.workspace .Btn')) {
@@ -1345,6 +1350,7 @@ function authLogout() {
   fileStorage.reset();
   settings.reset();
   notif.reset();
+  ui.reloadFileTree();
 
   $('body')[0].classList.toggle('is-authorized', false);
   support.check('firebase');
