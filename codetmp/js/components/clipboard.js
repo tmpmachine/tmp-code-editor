@@ -93,7 +93,7 @@ const fileClipBoard = (function() {
     if (fileIds.length === 0) return;
     
     activeWorkspace = sourceWorkspaceId;
-    ({ id, fid, name, parentId, content, loaded, trashed } = fileManager.get({fid: fileIds[0], type: 'files'}));
+    ({ id, fid, name, parentId, content, loaded, trashed, fileRef } = fileManager.get({fid: fileIds[0], type: 'files'}));
     activeWorkspace = targetWorkspaceId;
     
     if (!trashed) {
@@ -101,6 +101,7 @@ const fileClipBoard = (function() {
       let action = (loaded) ? 'create' : 'copy';
       let file = new File({
         id,
+        fileRef,
         name: fileManager.getDuplicateName(pasteParentFolderId, name),
         modifiedTime,
         trashed,

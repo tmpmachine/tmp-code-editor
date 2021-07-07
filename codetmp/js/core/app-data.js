@@ -82,7 +82,6 @@
       get: () => workspaces[activeWorkspace],
     });
 
-    unlinkTempFiles();
   }
 
   function unlinkTempFiles() {
@@ -95,5 +94,6 @@
   }
 
   initWorkspace();
+  unlinkTempFiles();
 
 })();
