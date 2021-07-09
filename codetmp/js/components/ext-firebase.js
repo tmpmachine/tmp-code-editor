@@ -18,7 +18,7 @@ const fire = (() => {
   }
 
   function selectSite(value) {
-    siteId = value;
+    siteID = value;
   }
 
   function listProject() {
