@@ -344,8 +344,11 @@ body:not(.--tree-explorer) .tree-explorer{display: none}
       padding: 16px 0;
       height: 100%;
   	}
-  	.window .Wrapper {
-  		display: grid;height: 100%
+    .window .Wrapper {
+      height: 100%
+    }
+  	.window .Wrapper:not(.d-flex) {
+  		display: grid;
   	}
   	.window .Modal {
   		display: grid;
