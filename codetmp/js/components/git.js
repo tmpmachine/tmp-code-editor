@@ -55,9 +55,7 @@ const git = (function() {
       name: _file.name,
       content: helper.generateRemoteDataContent('git', _file.download_url),
     });
-    getComponentAsPromise('file-tree').then(ft => {
-      ft.appendFile(file);
-    });
+    ui.tree.appendFile(file);
     let mimeType = helper.getMimeType(file.name);
     if (helper.isMediaTypeMultimedia(mimeType)) {
       file.contentLink = _file.download_url;
@@ -75,9 +73,7 @@ const git = (function() {
       parentId,
       name: _folder.name,
     });
-    getComponentAsPromise('file-tree').then(ft => {
-      ft.appendFolder(folder);
-    });
+    ui.tree.appendFolder(folder);
     fileManager.sync({
       fid: folder.fid, 
       action: 'create', 
@@ -156,9 +152,7 @@ const git = (function() {
           parentId: activeFolder,
           name: repo.name,
         });
-        getComponentAsPromise('file-tree').then(ft => {
-          ft.appendFolder(folder);
-        });
+        ui.tree.appendFolder(folder);
         fileManager.sync({
           fid: folder.fid, 
           action: 'create', 
