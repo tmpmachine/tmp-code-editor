@@ -215,12 +215,13 @@
 
         <section>
         <h6 style="font-weight:bold;">File options</h6>
-        <form class="submittable preventDefault" data-callback="confirm-generate-single-file">
+        <form onsubmit="event.preventDefault()">
           <p>
             <label class="no-select"><input class="w3-check" name="replaceDivless" type="checkbox"/> Replace Divless-HTML tag</label>
           </p>
-          <div style="text-align:right;">
-            <button class="btn-style-1" name="submit" style="width:auto">Generate</button>
+          <div class="d-flex justify-content-end mt-1">
+            <button class="btn-style-1 clickable" data-callback="copy-generated-file" name="submit" style="width:auto"><i class="material-icons" style="color:white">content_paste</i> <span class="ml-1">Copy</span></button>
+            <button class="btn-style-1 ml-2 clickable" data-callback="generate-single-file" name="submit" style="width:auto">Generate</button>
           </div>
         </form>
         </section>

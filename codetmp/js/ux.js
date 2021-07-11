@@ -140,6 +140,24 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
+	fileGenerator: {
+		generate: function() {
+			let form = this.form;
+			getComponentAsPromise('single-file-generator').then(sfg => {
+				sfg.generate(form);
+			}).catch((e) => {
+				aww.pop('Component is not ready yet.')
+			});
+		},
+		copy: function() {
+			let form = this.form;
+			getComponentAsPromise('single-file-generator').then(sfg => {
+				sfg.copy(form);
+			}).catch((e) => {
+				aww.pop('Component is not ready yet.')
+			});
+		},
+	},
 	tree: {
 		renameFolder: function(folder) {
 			getComponentAsPromise('file-tree').then(fileTree => {
