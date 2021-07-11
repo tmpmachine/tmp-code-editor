@@ -54,6 +54,7 @@ componentLoader.load([
       'js/components/notifier.js',
       'js/core/app-data.js',
       'assets/ace/ace.js',
+      'js/components/tab-manager.js',
     ],
     callback: function() {
       // loadStorageData();

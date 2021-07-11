@@ -132,15 +132,17 @@ function FileTreeComponent() {
     fileManager.open(target.dataset.fid)
   }
 
-  this.highlightTree = function(fid) {
+  this.highlightTree = function(fid, isRevealFileTree = true) {
     removeTreeFocus();
     let node = $(`.file-name[data-fid="${fid}"]`)[0];
     if (node) {
       revealTreeDirectory(node, fid);
       node.classList.add('--focus', '--opened');
-      node.setAttribute('tabindex', 0);
-      node.focus();
-      node.removeAttribute('tabindex');
+      if (isRevealFileTree) {
+        node.setAttribute('tabindex', 0);
+        node.focus();
+        node.removeAttribute('tabindex');
+      }
     } else {
       this.loadAndRevealTreeDirectory(fid);
     }

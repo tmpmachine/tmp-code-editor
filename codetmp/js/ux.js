@@ -12,10 +12,6 @@ const fileExplorerManager = {
 	doubleClick: false,
 };
 
-const tabManager = {
-	lastOpenTabIndex: 0,
-};
-
 const editorManager = {
 	fontSizeIndex: 2,
 	defaultFontSizeIndex: 2,
@@ -144,6 +140,11 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
+	revealFileTree: function(fid, isRevealFileTree = true) {
+		getComponentAsPromise('file-tree').then(ft => {
+      ft.highlightTree(fid, isRevealFileTree);
+    });
+	},
 	reloadFileTree: function() {
 		getComponentAsPromise('file-tree').then(ft => {
 			ft.reload();
@@ -1104,10 +1105,10 @@ function confirmCloseTab(focus = true, comeback) {
   if (focus) {
     if ($('.file-tab')[activeTab].firstElementChild.firstElementChild.textContent.trim() != 'close') {
         modal.confirm('Changes you made will be lost.').then(() => {
-          changeFocusTab(focus, comeback);
+          tabManager.changeFocusTab(focus, comeback);
         }).catch(() => fileTab[activeTab].editor.env.editor.focus())
       } else {
-        changeFocusTab(focus, comeback);
+        tabManager.changeFocusTab(focus, comeback);
       } 
   } else {
     closeActiveTab()
@@ -1124,18 +1125,7 @@ function closeActiveTab() {
 }
 
 function changeFocusTab(focus, comeback) {
-  closeActiveTab()
-  if (fileTab.length == 0) {
-    newTab()
-    activeFile = null;
-  } else {
-    if (comeback === undefined) {
-      if (activeTab == 0)
-        focusTab(fileTab[0].fid);
-      else
-        focusTab(fileTab[activeTab-1].fid);
-    }
-  }
+  tabManager.changeFocusTab(focus, comeback);
 }
 
 function initTabFocusHandler() {
@@ -1157,62 +1147,8 @@ function initTabFocusHandler() {
   window.addEventListener('keydown', tabFocusHandler);
 }
 
-function compressTab(idx) {
-  for (let tab of $('.file-tab'))
-    tab.style.display = 'inline-block';
-
-  $('#more-tab').style.display = ($('.file-tab').length > 1 && getTabWidth() >= $('#file-title').offsetWidth - 48) ? 'inline-block' : 'none';
-  let maxOpenTab = Math.floor(($('#file-title').offsetWidth - 48) / $('.file-tab')[idx].offsetWidth);
-
-  if ($('.file-tab').length > maxOpenTab) {
-    let lastOpenedTabIndex = Math.max(idx, $('.file-tab').length - 1);
-    let firstOpenedTabIndex = Math.max(lastOpenedTabIndex - (maxOpenTab - 1), 0);
-    
-    if (idx >= tabManager.lastOpenTabIndex && idx <= tabManager.lastOpenTabIndex + maxOpenTab - 1) {
-      firstOpenedTabIndex = tabManager.lastOpenTabIndex;
-      lastOpenedTabIndex = firstOpenedTabIndex + maxOpenTab - 1;
-    }
-    
-    while (idx < firstOpenedTabIndex) {
-      lastOpenedTabIndex--;
-      firstOpenedTabIndex--;
-    }
-    
-    for (let i=0; i<$('.file-tab').length; i++) {
-      if (i < firstOpenedTabIndex || i > lastOpenedTabIndex)
-        $('.file-tab')[i].style.display = 'none';
-      else
-        $('.file-tab')[i].style.display = 'inline-block';
-    }
-    
-    tabManager.lastOpenTabIndex = firstOpenedTabIndex;
-  }
-}
-
 function focusTab(fid) {
-  
-  let idx = odin.idxOf(String(fid), fileTab, 'fid');
-  
-  for (let tab of $('.file-tab')) {
-    tab.classList.toggle('isActive', false);
-  }
-  
-  getComponentAsPromise('file-tree').then(fileTree => {
-	  fileTree.highlightTree(fid);
-	});
-
-  $('.file-tab')[idx].classList.toggle('isActive', true);
-  
-  compressTab(idx);
-  activeTab = idx;
-  $('#editor-wrapper').innerHTML = '';
-  $('#editor-wrapper').append(fileTab[idx].editor)
-  
-  fileTab[idx].editor.env.editor.focus();
-  fileTab[idx].editor.env.editor.session.setUseWrapMode(settings.data.editor.wordWrapEnabled);
-  fileTab[idx].editor.env.editor.setFontSize(editorManager.fontSize);
-  activeFile = (String(fid)[0] == '-') ? null : fileTab[activeTab].file;
-  setEditorMode(fileTab[activeTab].name);  
+  tabManager.focusTab(fid);
 }
 
 // explorer, DOM events
