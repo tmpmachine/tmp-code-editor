@@ -329,9 +329,7 @@ function FileManager() {
       let row = fileTab[activeTab].editor.env.editor.getCursorPosition().row;
       let col = fileTab[activeTab].editor.env.editor.getCursorPosition().column;
       
-      getComponentAsPromise('file-tree').then(fileTree => {
-        fileTree.appendFile(file);
-      });
+      ui.tree.appendFile(file);
 
       confirmCloseTab(false);
       newTab(activeTab, {

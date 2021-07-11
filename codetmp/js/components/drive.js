@@ -115,9 +115,7 @@ const drive = (function() {
             parentId: parentFolderId,
           }, 0);
           newBranch.push(id);
-          getComponentAsPromise('file-tree').then(ft => {
-            ft.appendFolder(folder);
-          });
+          ui.tree.appendFile(folder);
         }
       }
       if (activeWorkspace === 0) {
@@ -171,9 +169,7 @@ const drive = (function() {
             parentId: parentFolderId,
           };
           let file  = new File(data, 0);
-          getComponentAsPromise('file-tree').then(ft => {
-            ft.appendFile(file);
-          });
+          ui.tree.appendFile(file);
         }
       }
       if (activeWorkspace === 0) {

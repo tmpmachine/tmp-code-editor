@@ -83,9 +83,7 @@ const fileClipBoard = (function() {
       action, 
       type: 'files',
     });
-    getComponentAsPromise('file-tree').then(fileTree => {
-      fileTree.appendFile(file);
-    });
+    ui.tree.appendFile(file);
   }
   
   function copyBranchFile(fileIds, road, modifiedTime) {
@@ -144,9 +142,7 @@ const fileClipBoard = (function() {
         type: 'folders',
       });
       if (road.length == 1) {
-        getComponentAsPromise('file-tree').then(fileTree => {
-          fileTree.appendFolder(folder);
-        });
+        ui.tree.appendFolder(folder);
       }
     }
     

@@ -11,7 +11,7 @@ function TabManagerComponent() {
       tab.classList.toggle('isActive', false);
     }
     
-    ui.revealFileTree(fid, isRevealFileTree);
+    ui.highlightTree(fid, isRevealFileTree);
 
     $('.file-tab')[idx].classList.toggle('isActive', true);
     

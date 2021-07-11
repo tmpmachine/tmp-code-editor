@@ -140,7 +140,29 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
-	revealFileTree: function(fid, isRevealFileTree = true) {
+	tree: {
+		renameFolder: function(folder) {
+			getComponentAsPromise('file-tree').then(fileTree => {
+    		fileTree.renameItem(folder, 'folder');
+    	});
+		},
+		renameFile: function(file) {
+			getComponentAsPromise('file-tree').then(fileTree => {
+    		fileTree.renameItem(file, 'file');
+    	});
+		},
+		appendFile: function(file) {
+			getComponentAsPromise('file-tree').then(ft => {
+	      ft.appendFile(file);
+	    });
+		},
+		appendFolder: function(folder) {
+			getComponentAsPromise('file-tree').then(ft => {
+	      ft.appendFolder(folder);
+	    });
+		},
+	},
+	highlightTree: function(fid, isRevealFileTree = true) {
 		getComponentAsPromise('file-tree').then(ft => {
       ft.highlightTree(fid, isRevealFileTree);
     });
@@ -368,9 +390,7 @@ const ui = {
 		          metadata: ['name'],
 		          type: 'folders'
 		        });
-		        getComponentAsPromise('file-tree').then(fileTree => {
-	        		fileTree.renameItem(folder, 'folder');
-	        	});
+		        ui.tree.renameFolder(folder);
 
 	      	});
 	    }
@@ -389,9 +409,7 @@ const ui = {
 		          metadata: ['name'],
 		          type: 'files'
 		        });
-		        getComponentAsPromise('file-tree').then(fileTree => {
-	        		fileTree.renameItem(file, 'file');
-	        	});
+		        ui.tree.renameFile(file);
 
 		        if (activeFile) {
 		          if (fid === activeFile.fid)
@@ -427,9 +445,7 @@ const ui = {
 		        	type: 'folders',
 	        	});
 	        	clearSelection();
-	        	getComponentAsPromise('file-tree').then(fileTree => {
-	        		fileTree.appendFolder(folder);
-	        	});
+	        	ui.tree.appendFolder(folder);
 
 	      	});
 	    }
@@ -451,9 +467,7 @@ const ui = {
               type: 'files',
             });
             clearSelection();
-            getComponentAsPromise('file-tree').then(fileTree => {
-	        		fileTree.appendFile(file);
-	        	});
+            ui.tree.appendFile(file);
 
           });
       }

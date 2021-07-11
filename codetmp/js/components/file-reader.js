@@ -175,9 +175,7 @@ const fileReaderModule = (function() {
 				    parentId: item.parentId,
 				    isTemp: true,
 				});
-				getComponentAsPromise('file-tree').then(ft => {
-		      ft.appendFile(file);
-		    });
+				ui.tree.appendFile(file);
 				fileManager.sync({
 					fid: file.fid, 
 				    action: 'create', 
@@ -197,9 +195,7 @@ const fileReaderModule = (function() {
 			    parentId: item.parentId,
 			    name: item.name,
 			});
-			getComponentAsPromise('file-tree').then(ft => {
-	      ft.appendFolder(folder);
-	    });
+			ui.tree.appendFolder(folder);
 			fileManager.sync({
 				fid: folder.fid, 
 			    action: 'create', 
@@ -481,9 +477,8 @@ const fileReaderModule = (function() {
 		    parentId: activeFolder,
 		    isTemp: true,
 		});
-		getComponentAsPromise('file-tree').then(ft => {
-      ft.appendFile(file);
-    });
+		ui.tree.appendFile(file);
+
 		fileManager.sync({
 			fid: file.fid, 
 		    action: 'create', 
