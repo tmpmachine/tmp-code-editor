@@ -103,13 +103,7 @@ let DOMEvents = {
 		    	ui.toggleMyFiles();
 		},
 		'Alt+R': () => deferFeature1.toggleWrapMode(),
-		'Alt+N': () => { 
-			if (!$('#in-home').classList.contains('active')) {
-		    	if ($('#btn-menu-my-files').classList.contains('active'))
-		    		ui.toggleMyFiles();
-				ui.openNewTab();
-			}
-		},
+		'Alt+N': ui.fileManager.newFile,
 		'Alt+Q': () => {
 			document.body.classList.toggle('--tree-explorer');
 			settings.data.explorer.tree = document.body.classList.contains('--tree-explorer');
