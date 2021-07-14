@@ -467,9 +467,12 @@ const ui = {
 
 	      	});
 	    }
+
       function newFile() {
-          if (!$('#in-my-files').classList.contains('active'))
+          if (!$('#in-my-files').classList.contains('active')) {
+						ui.openNewTab();
             return;
+          }
           
           modal.prompt('File name', 'Untitled').then(name => {
             if (!name) 
