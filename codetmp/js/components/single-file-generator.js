@@ -2,14 +2,21 @@ registerComponent('single-file-generator', new SingleFileGeneratorComponent());
 
 function SingleFileGeneratorComponent() {
 
-  this.generate = function(self) {
-    let form = self.target;
+  this.generate = function(form) {
     let options = {
       replaceDivless: form.replaceDivless.checked,
     };
     let content = getSingleFileContent(options);
     downloadFile(content);
   };
+
+  this.copy = function(form) {
+    let options = {
+      replaceDivless: form.replaceDivless.checked,
+    };
+    let content = getSingleFileContent(options);
+    copyToClipboard(content, form);
+  }
 
   function getSingleFileContent(options) {
     let body = fileTab[activeTab].editor.env.editor.getValue();
@@ -163,6 +170,18 @@ function SingleFileGeneratorComponent() {
     document.body.appendChild(a);
     a.click();
     a.remove()
+  }
+
+  function copyToClipboard(content, form) {
+    let copyText = document.createElement('textarea');
+    copyText.setAttribute('style', 'heigh:1px;position:absolute;opacity:0');
+    copyText.value = content;
+    form.append(copyText);
+    copyText.select();
+    copyText.setSelectionRange(0, content.length+1);
+    document.execCommand("copy");
+    copyText.remove();
+    aww.pop('Copied to clipboard.')
   }
 
 }

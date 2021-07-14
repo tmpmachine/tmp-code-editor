@@ -175,6 +175,7 @@ const fileReaderModule = (function() {
 				    parentId: item.parentId,
 				    isTemp: true,
 				});
+				ui.tree.appendFile(file);
 				fileManager.sync({
 					fid: file.fid, 
 				    action: 'create', 
@@ -194,6 +195,7 @@ const fileReaderModule = (function() {
 			    parentId: item.parentId,
 			    name: item.name,
 			});
+			ui.tree.appendFolder(folder);
 			fileManager.sync({
 				fid: folder.fid, 
 			    action: 'create', 
@@ -475,6 +477,8 @@ const fileReaderModule = (function() {
 		    parentId: activeFolder,
 		    isTemp: true,
 		});
+		ui.tree.appendFile(file);
+
 		fileManager.sync({
 			fid: file.fid, 
 		    action: 'create', 

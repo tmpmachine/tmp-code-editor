@@ -1,7 +1,15 @@
+:root {
+  --spacer: 1rem;
+  --spacing-1: calc(var(--spacer) * 0.25);
+  --spacing-2: calc(var(--spacer) * 0.5);
+}
 .h-100{height: 100%}.w-100{width: 100%;}
 .ov-auto{overflow:auto}.ov-hidden{overflow:hidden}
 .relative{position: relative}.absolute{position: absolute;}
 .d-inline-flex{display: inline-flex}.d-flex{display: flex;}.d-grid{display: grid;}.d-none{display: none;}
+.justify-content-end{justify-content: flex-end}
+.ml-1{margin-left:var(--spacing-1)}.mt-1{margin-top:var(--spacing-1)}
+.ml-2{margin-left:var(--spacing-2)}
 
 .material-icons {
   font-family: 'Material Icons Round';
@@ -344,8 +352,11 @@ body:not(.--tree-explorer) .tree-explorer{display: none}
       padding: 16px 0;
       height: 100%;
   	}
-  	.window .Wrapper {
-  		display: grid;height: 100%
+    .window .Wrapper {
+      height: 100%
+    }
+  	.window .Wrapper:not(.d-flex) {
+  		display: grid;
   	}
   	.window .Modal {
   		display: grid;

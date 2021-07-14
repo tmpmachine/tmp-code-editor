@@ -49,18 +49,13 @@ let DOMEvents = {
 	    	settings.save();
 	     	document.body.classList.toggle('--tree-explorer', false) 
 	 	},
-	    'reload-file-tree': fileManager.reloadFileTree,
+	    'reload-file-tree': ui.reloadFileTree,
+	    'generate-single-file': ui.fileGenerator.generate,
+		'copy-generated-file': ui.fileGenerator.copy,
 	},
 
 	submittable: {
 		'confirm-download': ui.fileManager.fileDownload,
-		'confirm-generate-single-file': (self) => {
-			getComponentAsPromise('single-file-generator').then(sfg => {
-				sfg.generate(self);
-			}).catch((e) => {
-				aww.pop('Component is not ready yet.')
-			});
-		},
 		'deploy-hosting': () => fire.deploy(),
 	},
 
