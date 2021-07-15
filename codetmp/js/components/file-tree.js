@@ -321,6 +321,23 @@
           SELF.changeWorkspace(folderId);
         }
       });
+
+      $('#tree-workspace')[0].addEventListener("contextmenu", e => {
+        e.preventDefault();
+        if (e.target.parentNode === $('#tree-workspace')[0]) {
+          if (parseInt(e.target.dataset.fid) == -1)
+            return;
+
+          modal.confirm(`Removing workspace <b><u>${e.target.textContent}</u></b> from tree explorer. Continue?`, false).then(() => {
+            e.target.remove();
+            $(`.file-tree[data-fid="${e.target.dataset.fid}"]`)[0].remove();
+            
+            if (SELF.workspaceId == parseInt(e.target.dataset.fid)) {
+              SELF.changeWorkspace(-1);
+            }
+          });
+        }
+      });
     }
 
     function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
@@ -361,7 +378,8 @@
         let isHide = (node.dataset.fid != folderId);
         node.classList.toggle('d-none', isHide);
       }
-      $('#tree-workspace .--active')[0].classList.remove('--active');
+      if ($('#tree-workspace .--active').length > 0)
+        $('#tree-workspace .--active')[0].classList.remove('--active');
       $(`#tree-workspace [data-fid="${folderId}"]`)[0].classList.add('--active');
     };
 

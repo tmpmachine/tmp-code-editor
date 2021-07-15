@@ -97,7 +97,7 @@ const modal = (function() {
       else
         $('.Btn-cancel', modal)[0].focus();
     }, 150);
-    message.textContent = promptText;
+    message.innerHTML = promptText;
     return getResolver();
   }
 
@@ -112,7 +112,7 @@ const modal = (function() {
     btnClose.onclick = close;
     form.onsubmit = submitForm;
     document.activeElement.blur()
-    title.textContent = promptText;
+    title.innerHTML = promptText;
     input.value = defaultValue;
     $('.Notes', modal)[0].innerHTML = notes;
     $('.Btn-submit', modal)[0].onclick = function() {
