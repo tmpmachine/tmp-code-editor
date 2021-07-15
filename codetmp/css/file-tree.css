@@ -165,3 +165,31 @@
 .tree-explorer .folder-name[data-fid="-1"] {
   background: #03a9f440;
 }
+
+#tree-workspace {
+    display: grid;
+    max-height: 84px;
+    overflow: auto; 
+    background: #2f3738;
+    gap: 2px;
+    grid-template-columns: repeat(3,1fr);
+    padding: 8px;
+}
+
+#tree-workspace > div {
+    background: #4c545f;
+    color: white;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: sans-serif;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px;
+    cursor: pointer;
+}
+
+#tree-workspace:empty {
+    padding: 0;
+}

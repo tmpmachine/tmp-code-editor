@@ -143,6 +143,10 @@
                       <i class="material-icons">paste</i>
                       <span class="w3-small w3-padding-small Label">Move here</span>
                     </div>
+                    <div class="Btn w3-padding clickable" data-callback="create-workspace">
+                      <i class="material-icons">workspaces</i>
+                      <span class="w3-small w3-padding-small">Create Workspace</span>
+                    </div>
                   </div>
                 </div>
               </a>
@@ -395,14 +399,15 @@
             </button>
             <button>Info: Right click to reveal file</button>
           </div>
-          <div class="d-grid">
-            <ul id="file-tree" class="file-tree-list file-tree">
+          <div id="file-tree" class="d-grid">
+            <ul class="file-tree-list file-tree" data-fid="-1">
               <li class="folder-root open">
                 <span class="folder-name" data-fid="-1">My Files</span>
                 <ul class="isLoaded"></ul>
               </li>
             </ul>
           </div>
+          <div id="tree-workspace"></div>
         </div>
         <!--  -->
         <!-- END OF FILE TREE EXPLORER -->

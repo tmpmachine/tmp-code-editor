@@ -6,7 +6,7 @@
   function FileTreeComponent() {
 
     const SELF = {
-
+      workspaceId: -1, // folder FID
     };
 
     SELF.appendFolder = function(file) {
@@ -237,17 +237,24 @@
     }
 
     SELF.reload = function () {
-      $('#file-tree > li > ul').innerHTML = '';
+      $(`.file-tree[data-fid="${SELF.workspaceId}"] > li > ul`)[0].innerHTML = '';
       listTree();
+    }
+
+    SELF.reloadWorkspace = function (workspaceId) {
+      let currentWorkspaceId = workspaceId;
+      SELF.workspaceId = workspaceId;
+      listTree();
+      SELF.workspaceId = currentWorkspaceId;
     }
 
     function listTree(fid = null, parentNode = null) {
 
       let fm = fileManager;
-      let folders = (fid === null) ? fm.getListFolder(-1) : fm.getListFolder(parseInt(fid));
-      let files = (fid === null) ? fm.getListFiles(-1) : fm.getListFiles(parseInt(fid));
+      let folders = (fid === null) ? fm.getListFolder(SELF.workspaceId) : fm.getListFolder(parseInt(fid));
+      let files = (fid === null) ? fm.getListFiles(SELF.workspaceId) : fm.getListFiles(parseInt(fid));
       if (fid == null) {
-        parentNode = $('#file-tree .folder-name[data-fid="-1"]').nextElementSibling;
+        parentNode = $(`.file-tree[data-fid="${SELF.workspaceId}"] .folder-name[data-fid="${SELF.workspaceId}"]`)[0].nextElementSibling;
       } else {
         parentNode = $('ul',parentNode)[0];
         parentNode.classList.toggle('isLoaded', true);
@@ -277,7 +284,7 @@
     };
 
     SELF.attachListener = function() {
-      document.getElementById('file-tree').addEventListener("contextmenu", e => {
+      $('#file-tree').addEventListener("contextmenu", e => {
         let isDirectory = true;
         if (e.target.classList.contains('folder-name')) {
           e.preventDefault();
@@ -289,20 +296,28 @@
         }
       });
 
-      document.getElementById('file-tree').addEventListener("click", e => {
+      $('#file-tree').addEventListener("click", e => {
         let elClass = e.target.classList;
         if (elClass.contains('folder-name')) {
           if (e.target.dataset.fid == '-1')
             return
-          getComponent('file-tree').openDirectoryTree(e.target);
+          SELF.openDirectoryTree(e.target);
         } else if (['file-name','--opened'].every(cls => elClass.contains(cls))) {
-          getComponent('file-tree').openFileByElementFidDataset(e.target);
+          SELF.openFileByElementFidDataset(e.target);
         }
       });
 
-      document.getElementById('file-tree').addEventListener("dblclick", e => {
+      $('#file-tree').addEventListener("dblclick", e => {
         if (e.target.classList.contains('file-name')) {
-          getComponent('file-tree').openFileByElementFidDataset(e.target);
+          SELF.openFileByElementFidDataset(e.target);
+        }
+      });
+
+      $('#tree-workspace').addEventListener("click", e => {
+        if (e.target.parentNode === $('#tree-workspace')) {
+          let folderId = e.target.dataset.fid;
+          $('#tree-workspace').dataset.focus = folderId;
+          SELF.changeWorkspace(folderId);
         }
       });
     }
@@ -338,6 +353,30 @@
       fileManager.openFolder(fid);
 
     }
+
+    SELF.changeWorkspace = function(folderId) {
+      SELF.workspaceId = folderId;
+      for (let node of $('#file-tree').children) {
+        let isHide = (node.dataset.fid != folderId);
+        node.classList.toggle('d-none', isHide);
+      }
+
+    };
+
+    SELF.createWorkspace = function(folderId) {
+      let folderName = fileManager.get({fid: folderId, type: 'folders'}).name;
+      let node = document.createElement('div');
+      node.dataset.fid = folderId;
+      node.textContent = folderName;
+      $('#tree-workspace').append(node);
+
+      let treeNode = $('template[data-name="tree-node"]')[0].content.cloneNode(true);
+      $('.file-tree-list', treeNode)[0].dataset.fid = folderId;
+      $('.folder-name', treeNode)[0].dataset.fid = folderId;
+      $('.folder-name', treeNode)[0].textContent = folderName;
+      $('#file-tree').append(treeNode);
+      SELF.reloadWorkspace(folderId);
+    };
 
     return SELF;
   }

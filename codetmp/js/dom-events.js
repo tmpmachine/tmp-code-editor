@@ -52,6 +52,7 @@ let DOMEvents = {
 	    'reload-file-tree': ui.reloadFileTree,
 	    'generate-single-file': ui.fileGenerator.generate,
 		'copy-generated-file': ui.fileGenerator.copy,
+	    'create-workspace': ui.tree.createWorkspace,
 	},
 
 	submittable: {

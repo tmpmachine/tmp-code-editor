@@ -179,6 +179,11 @@ const ui = {
 	      ft.appendFolder(folder);
 	    });
 		},
+		createWorkspace: function() {
+			getComponentAsPromise('file-tree').then(ft => {
+	      ft.createWorkspace(activeFolder);
+	    });
+		},
 	},
 	highlightTree: function(fid, isRevealFileTree = true) {
 		getComponentAsPromise('file-tree').then(ft => {
