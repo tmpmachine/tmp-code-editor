@@ -342,7 +342,7 @@ body:not(.--tree-explorer) .tree-explorer{display: none}
   padding-bottom: 1em;
 }
 @media (max-width:600px) {
-  .tree-explorer{display: none!important}
+  .tree-explorer,.clickable[data-callback="create-workspace"]{display: none!important}
   #nav-bar{height:0!important;overflow:hidden}
 }
 
