@@ -190,6 +190,10 @@
     cursor: pointer;
 }
 
-#tree-workspace:empty {
-    padding: 0;
+#tree-workspace > div.--active {
+  background: #e91e63;
+}
+
+#tree-workspace :first-child:nth-last-child(1) {
+  display:none;
 }

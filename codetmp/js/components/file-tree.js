@@ -1,5 +1,7 @@
 "use strict";
 (function() {
+  // TODO: remove local query selector after updating all components that use
+  let $ = function(selector, node=document) { return node.querySelectorAll(selector) };
 
   registerComponent('file-tree', FileTreeComponent());
 
@@ -13,7 +15,7 @@
       let parentNode = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
       if (parentNode) {
         parentNode = parentNode.nextElementSibling;
-        let node = $('#tmp-file-tree-directory').content.cloneNode(true);
+        let node = $('#tmp-file-tree-directory')[0].content.cloneNode(true);
         let span = $('.folder-name', node)[0];
         span.textContent = file.name
         span.dataset.fid = file.fid
@@ -29,7 +31,7 @@
       let parentNode = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
       if (parentNode && parentNode.nextElementSibling.classList.contains('isLoaded')) {
         parentNode = parentNode.nextElementSibling;
-        let node = $('#tmp-file-tree-file').content.cloneNode(true);
+        let node = $('#tmp-file-tree-file')[0].content.cloneNode(true);
         let span = $('.file-name', node)[0];
         span.textContent = file.name
         span.dataset.title = file.name
@@ -261,7 +263,7 @@
       }
 
       for (var i = 0; i < folders.length; i++) {
-        let node = $('#tmp-file-tree-directory').content.cloneNode(true);
+        let node = $('#tmp-file-tree-directory')[0].content.cloneNode(true);
         let span = $('.folder-name', node)[0];
         span.textContent = folders[i].name
         span.dataset.fid = folders[i].fid
@@ -272,7 +274,7 @@
       }
 
       for (var i = 0; i < files.length; i++) {
-        let node = $('#tmp-file-tree-file').content.cloneNode(true);
+        let node = $('#tmp-file-tree-file')[0].content.cloneNode(true);
         let span = $('.file-name', node)[0];
         span.textContent = files[i].name
         span.dataset.title = files[i].name
@@ -284,7 +286,7 @@
     };
 
     SELF.attachListener = function() {
-      $('#file-tree').addEventListener("contextmenu", e => {
+      $('#file-tree')[0].addEventListener("contextmenu", e => {
         let isDirectory = true;
         if (e.target.classList.contains('folder-name')) {
           e.preventDefault();
@@ -296,7 +298,7 @@
         }
       });
 
-      $('#file-tree').addEventListener("click", e => {
+      $('#file-tree')[0].addEventListener("click", e => {
         let elClass = e.target.classList;
         if (elClass.contains('folder-name')) {
           if (e.target.dataset.fid == '-1')
@@ -307,16 +309,15 @@
         }
       });
 
-      $('#file-tree').addEventListener("dblclick", e => {
+      $('#file-tree')[0].addEventListener("dblclick", e => {
         if (e.target.classList.contains('file-name')) {
           SELF.openFileByElementFidDataset(e.target);
         }
       });
 
-      $('#tree-workspace').addEventListener("click", e => {
-        if (e.target.parentNode === $('#tree-workspace')) {
+      $('#tree-workspace')[0].addEventListener("click", e => {
+        if (e.target.parentNode === $('#tree-workspace')[0]) {
           let folderId = e.target.dataset.fid;
-          $('#tree-workspace').dataset.focus = folderId;
           SELF.changeWorkspace(folderId);
         }
       });
@@ -324,8 +325,8 @@
 
     function updateTreeBreadcrumbs(fid, node, isDirectory = true) {
 
-      if (!$('#in-my-files').classList.contains('active'))
-        $('#btn-menu-my-files').click();
+      if (!$('#in-my-files')[0].classList.contains('active'))
+        $('#btn-menu-my-files')[0].click();
       if (activeFolder == fid)
         return
 
@@ -356,25 +357,27 @@
 
     SELF.changeWorkspace = function(folderId) {
       SELF.workspaceId = folderId;
-      for (let node of $('#file-tree').children) {
+      for (let node of $('#file-tree')[0].children) {
         let isHide = (node.dataset.fid != folderId);
         node.classList.toggle('d-none', isHide);
       }
-
+      $('#tree-workspace .--active')[0].classList.remove('--active');
+      $(`#tree-workspace [data-fid="${folderId}"]`)[0].classList.add('--active');
     };
 
     SELF.createWorkspace = function(folderId) {
       let folderName = fileManager.get({fid: folderId, type: 'folders'}).name;
       let node = document.createElement('div');
       node.dataset.fid = folderId;
+      node.classList.add('no-select');
       node.textContent = folderName;
-      $('#tree-workspace').append(node);
+      $('#tree-workspace')[0].append(node);
 
       let treeNode = $('template[data-name="tree-node"]')[0].content.cloneNode(true);
       $('.file-tree-list', treeNode)[0].dataset.fid = folderId;
       $('.folder-name', treeNode)[0].dataset.fid = folderId;
       $('.folder-name', treeNode)[0].textContent = folderName;
-      $('#file-tree').append(treeNode);
+      $('#file-tree')[0].append(treeNode);
       SELF.reloadWorkspace(folderId);
     };
 
