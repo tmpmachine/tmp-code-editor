@@ -168,7 +168,7 @@
 
 #tree-workspace {
     display: grid;
-    max-height: 84px;
+    max-height: 90px;
     overflow: auto; 
     background: #2f3738;
     gap: 2px;
