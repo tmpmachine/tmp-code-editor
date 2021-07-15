@@ -140,6 +140,15 @@ const modalWindowManager = (function() {
 })();
 
 const ui = {
+	tab: {
+		openDirectory: function(self) {
+			if (self.dataset.parentId != '' && self.classList.contains('isActive')) {
+				let parentId = parseInt(self.dataset.parentId);
+				tabManager.openDirectory(parentId);
+			}
+			event.preventDefault();
+		},
+	},
 	fileGenerator: {
 		generate: function() {
 			let form = this.form;
@@ -1046,72 +1055,17 @@ function initEditor(content = '', scrollTop = 0, row = 0, col = 0) {
 
 // tab
 
+// to do: remove after replacing all call to related component
 function listTab() {
-    $('#file-title').innerHTML = '';
-    let fragment = document.createDocumentFragment();
-    for (let tab of fileTab) {
-      el = o.element('div', {
-        innerHTML: o.template('tmp-file-tab', {
-          fid: tab.fid,
-          name: tab.name,
-          fiber: tab.fiber,
-        })
-      })
-      fragment.append(el.firstElementChild);
-    }
-    $('#file-title').append(fragment);
+ 	tabManager.list();
 }
 
 function newTab(position, data) {
-  
-  let fid, el;
-  let name = 'untitled.html';
-  if (data) {
-    fid = data.fid
-    el = o.element('div', {
-      innerHTML: o.template('tmp-file-tab', {
-        fid,
-        name: data.name,
-        fiber: 'close'
-      })
-    });
-    if (data.fileHandle === undefined)
-      data.fileHandle = null;
-  } else {
-    fid = '-' + (new Date).getTime();
-    el = o.element('div', {
-      innerHTML: o.template('tmp-file-tab', {
-        fid,
-        name,
-        fiber: 'close',
-      })
-    })
-  }
-  
-  if (position >= 0) {
-    $('#file-title').insertBefore(el.firstElementChild, $('.file-tab')[position])
-  } else {
-    $('#file-title').append(el.firstElementChild)
-  }
-  
-  
-  if (data) {
-    if (position >= 0)
-      fileTab.splice(position, 0, data);
-    else
-      fileTab.push(data)
-  } else {
-    let tabData = {
-    name,
-      fid,
-      editor: initEditor(),
-      fiber: 'close',
-      fileHandle: null,
-    };
-    fileTab.push(tabData);
-  }
-  
-  focusTab(fid)
+  tabManager.newTab(position, data);
+}
+
+function focusTab(fid) {
+  tabManager.focusTab(fid);
 }
 
 function getTabWidth() {
@@ -1185,10 +1139,6 @@ function initTabFocusHandler() {
   }
 
   window.addEventListener('keydown', tabFocusHandler);
-}
-
-function focusTab(fid) {
-  tabManager.focusTab(fid);
 }
 
 // explorer, DOM events

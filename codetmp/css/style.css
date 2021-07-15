@@ -287,6 +287,8 @@ display: grid;
 .file-tab .Indicator{height:3px}
 .file-tab:hover .Indicator{background:white}
 .file-tab.isActive .Indicator{background:#3bff99}
+.file-tab{width:180px;background:#101113;z-index:1}
+.file-tab:hover{background:#262626!important}
 
 /*THEME*/
 .col1{color:#ffffff!important}

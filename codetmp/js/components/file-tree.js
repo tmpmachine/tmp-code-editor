@@ -286,7 +286,7 @@
     };
 
     SELF.attachListener = function() {
-      $('#file-tree')[0].addEventListener("contextmenu", e => {
+      $('#file-tree')[0].addEventListener('contextmenu', e => {
         let isDirectory = true;
         if (e.target.classList.contains('folder-name')) {
           e.preventDefault();
