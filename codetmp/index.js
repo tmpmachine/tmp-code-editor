@@ -76,7 +76,7 @@ componentLoader.load([
     urls: [
       'js/components/keyboard-handler.js',
       'js/components/file-reader.js',
-      'js/components/template.js',
+      'js/components/snippet-manager.js',
       'js/require/divless.js',
     ],
     callback: function() {

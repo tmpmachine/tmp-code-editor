@@ -1,5 +1,5 @@
 L = console.log;
-let cacheVersion = '7.281';
+let cacheVersion = '7.282';
 let cacheItem = 'codetmp-'+cacheVersion;
 
 self.addEventListener('message', function(e) {
@@ -65,7 +65,7 @@ self.addEventListener('install', function(event) {
     '/js/components/file-reader.js',
     '/js/components/git.js',
     '/js/components/notifier.js',
-    '/js/components/template.js',
+    '/js/components/snippet-manager.js',
     '/js/components/preview-handler.js',
     '/js/components/clipboard.js',
     '/js/components/file-manager.js',

@@ -10,7 +10,7 @@ let snippets = [
   {pos: [1, 0], title: 'charset', snippet: '<meta charset="utf-8"/>\n'},
   {pos: [1, 0], title: 'querySelector()', snippet: "<script> $ = function(selector, node=document) { let nodes = node.querySelectorAll(selector); return selector.startsWith('#') ? nodes[0] : nodes } </script>"},
   {pos: [1, 0], title: 'console.log()', snippet: '<script> L = console.log </script>'},
-  {title: 'reload snippet', callback: loadSnippets},
+  // {title: 'reload snippet', callback: loadSnippets},
 ];
 let customSnippetsCounter = 0;
 let index = 0;
@@ -21,95 +21,60 @@ for (let snippet of snippets) {
   index++;
 }
 
-function downloadSnippetFile(fid) {
-  return new Promise(function(resolve, reject) {
-    let f = odin.dataOf(fid, fileStorage.data.files, 'fid');
-    if (!f)
-      resolve();
+// function downloadSnippetFile(fid) {
+//   return new Promise(function(resolve, reject) {
+//     let f = odin.dataOf(fid, fileStorage.data.files, 'fid');
+//     if (!f)
+//       resolve();
       
-    if (f.loaded) {
-      resolve(f);
-    } else {
-	    drive.downloadDependencies(f).then(media => {
-	      f.content = media;
-	      f.loaded = true;
-	      fileStorage.save();
-	      resolve(f);
-	    });
-    }
-  });
-}
+//     if (f.loaded) {
+//       resolve(f);
+//     } else {
+// 	    drive.downloadDependencies(f).then(media => {
+// 	      f.content = media;
+// 	      f.loaded = true;
+// 	      fileStorage.save();
+// 	      resolve(f);
+// 	    });
+//     }
+//   });
+// }
 
-function applySnippets(html) {
-  let child = html.children;
-  for (let el of child) {
-    if (!['TEMPLATE','SCRIPT'].includes(el.nodeName)) continue;
-    if (!el.dataset.prefix) continue;
+// function applySnippets(html) {
+//   let child = html.children;
+//   for (let el of child) {
+//     if (!['TEMPLATE','SCRIPT'].includes(el.nodeName)) continue;
+//     if (!el.dataset.prefix) continue;
     
-    let snippet = el.innerHTML;
-    let cursor = el.dataset.cursor ? [parseInt(el.dataset.cursor.split(',')[0]), parseInt(el.dataset.cursor.split(',')[1])] : [1,0];
-    let isTrim = el.dataset.trim ? el.dataset.trim == 'false' ? false : true : true;
-    if (isTrim)
-      snippet = snippet.trim();
-    snippets.push({pos: cursor, title: el.dataset.prefix, snippet});
-    customSnippetsCounter++;
-  }
-  document.body.removeChild(html);
+//     let snippet = el.innerHTML;
+//     let cursor = el.dataset.cursor ? [parseInt(el.dataset.cursor.split(',')[0]), parseInt(el.dataset.cursor.split(',')[1])] : [1,0];
+//     let isTrim = el.dataset.trim ? el.dataset.trim == 'false' ? false : true : true;
+//     if (isTrim)
+//       snippet = snippet.trim();
+//     snippets.push({pos: cursor, title: el.dataset.prefix, snippet});
+//     customSnippetsCounter++;
+//   }
+//   document.body.removeChild(html);
   
-  for (let i=0; i<snippets.length; i++)
-    snippets[i].index = i;
-}
+//   for (let i=0; i<snippets.length; i++)
+//     snippets[i].index = i;
+// }
 
-function loadEnvironmentSettings(file) {
+// function loadSnippets() {
   
-  new Promise((resolve, reject) => {
-    if (file.loaded) {
-      resolve(file);
-    } else {
-      
-      	drive.downloadDependencies(file).then(media => {
-	      file.content = media;
-	      file.loaded = true;
-	      fileStorage.save();
-	      resolve(file);
-	    });
-    }
-    
-  }).then(file => {
-    let setup = JSON.parse(file.content);
-    let files = setup.snippets;
-    for (let path of files) {
-      let f = getFileAtPath(path);
-      if (typeof(f) == 'undefined' || f.trashed)
-        L('Environemnt error : snippet '+path+' not found');
-      else
-        downloadSnippetFile(f.fid)
-        .then(f => {
-          let html = document.createElement('div');
-          html.style.display = 'none';
-          document.body.append(html);
-          html.innerHTML += f.content;
-          applySnippets(html);
-        });
-    }
-  });
-}
-
-function loadSnippets() {
+  // snippets.length -= customSnippetsCounter;
+  // customSnippetsCounter = 0;
   
-  snippets.length -= customSnippetsCounter;
-  customSnippetsCounter = 0;
+  // for (let i=0; i<fileStorage.data.files.length; i++) {
+    // if (fileStorage.data.files[i].parentId == -1 && fileStorage.data.files[i].name == 'env.json' && !fileStorage.data.files[i].trashed) {
+      // loadEnvironmentSettings(fileStorage.data.files[i]);
+      // break;
+    // }
+  // }
   
-  for (let i=0; i<fileStorage.data.files.length; i++) {
-    if (fileStorage.data.files[i].parentId == -1 && fileStorage.data.files[i].name == 'env.json' && !fileStorage.data.files[i].trashed) {
-      loadEnvironmentSettings(fileStorage.data.files[i]);
-      break;
-    }
-  }
-  
-  for (let i=0; i<snippets.length; i++)
-    snippets[i].index = i;
-}
+  // for (let i=0; i<snippets.length; i++)
+    // snippets[i].index = i;
+// }
 
 // https://github.com/bevacqua/fuzzysearch
 function fuzzysearch (needle, haystack) {

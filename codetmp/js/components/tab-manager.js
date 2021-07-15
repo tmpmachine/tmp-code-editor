@@ -64,7 +64,7 @@ function TabManagerComponent() {
     $('#file-title').innerHTML = '';
     let fragment = document.createDocumentFragment();
     for (let tab of fileTab) {
-      el = o.element('div', {
+      let el = o.element('div', {
         innerHTML: o.template('tmp-file-tab', {
           fid: tab.fid,
           name: tab.name,
