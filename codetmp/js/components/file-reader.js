@@ -168,7 +168,7 @@ const fileReaderModule = (function() {
 				    delayResolve(resolve, item);
 			    });
 			} else {
-				let file = new File({
+				let file = new fileManager.File({
 				    fileRef,
 				    content: null,
 				    name: item.name,
@@ -191,7 +191,7 @@ const fileReaderModule = (function() {
 	function handleItemDirectory(item) {
 		let folder = fileManager.getExistingItem(item.name, item.parentId, 'folder');
 		if (folder === null) {
-			folder = new Folder({
+			folder = new fileManager.Folder({
 			    parentId: item.parentId,
 			    name: item.name,
 			});
@@ -470,7 +470,7 @@ const fileReaderModule = (function() {
 
 	function uploadFile(self) {
 		let f = self.files[0];
-		let file = new File({
+		let file = new fileManager.File({
 		    fileRef: f,
 		    content: null,
 		    name: f.name,

@@ -1,3 +1,25 @@
+let navStructure = {
+  root: {
+    activeFile: null,
+    fileTab: [],
+    selectedFile: [],
+    activeTab: 0,
+    activeFolder: -1,
+    breadcrumbs: [{folderId:-1,title:'My Files'}],
+  },
+};
+
+let navMain = new lsdb('nav-main', navStructure);
+let navTemp = new lsdb('nav-temp', navStructure);
+let navs = [navMain, navTemp];
+
+for (let key in navStructure.root) {
+  Object.defineProperty(window, key, { 
+    get: () => navs[activeWorkspace].data[key],
+    set: value => navs[activeWorkspace].data[key] = value,
+  })
+}
+
 // dom
 let pressedKeys = {};
 
@@ -466,7 +488,7 @@ const ui = {
 		        if (!name) 
 		        	return;
 
-		        let folder = new Folder({
+		        let folder = new fileManager.Folder({
                 name: fileManager.getDuplicateName(activeFolder, name, 'folder'),
 		          	modifiedTime: new Date().toISOString(),
 		          	parentId: activeFolder,
@@ -491,7 +513,7 @@ const ui = {
           modal.prompt('File name', 'Untitled').then(name => {
             if (!name) 
               return;
-            let file = new File({
+            let file = new fileManager.File({
                 name: fileManager.getDuplicateName(activeFolder, name),
                 modifiedTime: new Date().toISOString(),
                 content: '',
@@ -580,61 +602,16 @@ const ui = {
 		    }
 		  }
 
-    function fileDownload(self) {
-      if (selectedFile.length === 0)
-        return;
-
-      if (JSZip === undefined) {
-        aww.pop('JSZip component is not yet loaded. Try again later.');
-        return
-      }
-
-      let form = self.target;
-      let zip = new JSZip();
-      let zipName = getSelected(selectedFile[0]).title+'.zip';
-      let isCompressed = ( selectedFile.length > 1 || (selectedFile.length === 1 && (selectedFile[0].dataset.type == 'folder')) );
-      let options = {
-        replaceDivless: form.replaceDivless.checked,
-        replaceFileTag: form.replaceFileTag.checked,
-      };
-
-      if (isCompressed) {
-        fileManager.createBundle(selectedFile, zip, options).then(() => {
-          zip.generateAsync({type:"blob"})
-          .then(function(content) {
-            blob = new Blob([content], {type: 'application/zip'});
-            a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = zipName;
-            $('#limbo').appendChild(a);
-            a.click();
-            $('#limbo').removeChild(a);
-          });
-        })
-      } else {
-        fileManager.downloadSingle(selectedFile[0], options).then(blob => {
-          if (blob === null)
-            return
-          let a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = getSelected(selectedFile[0]).title;
-          $('#limbo').appendChild(a);
-          a.click();
-          $('#limbo').removeChild(a);
-        })
-      }
-    }
-
     return {
 			renameFolder,
 			renameFile,
 			newFolder,
       newFile,
 			deleteSelected,
-      fileDownload,
+			getSelected,
     };
 
-	})(),
+	})(), // end of ui.fileManager
 
   toggleMenu: function() {
     
@@ -776,8 +753,19 @@ const ui = {
 
   alert: function({text, isPersistent = false, timeout}) {
     aww.pop(text, isPersistent, timeout);
-  }
-};
+  },
+
+  fileDownload: function(self) {
+  	getComponentAsPromise('fileBundler').then(fb => {
+  		fb.fileDownload(self);
+  	}).catch((e) => {
+  		L(e);
+  		aww.pop('Component is not ready. Try again later.');
+  	});
+  },
+
+
+}; // end of ui
 
 // modal
 

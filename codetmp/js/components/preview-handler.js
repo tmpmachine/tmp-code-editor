@@ -113,7 +113,7 @@ function PreviewHandler() {
         case 'POST':
           if (event.data.referrer) {
             let parentDir = previewHandler.getDirectory(event.data.referrer, null, ['root']);
-            let file = new File({
+            let file = new fileManager.File({
               name: event.data.body.name,
               content: event.data.body.content,
               parentId: previewHandler.getDirectory(event.data.body.path, parentDir, ['root']),

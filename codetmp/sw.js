@@ -63,6 +63,7 @@ self.addEventListener('install', function(event) {
     '/js/components/helper.js',
     '/js/components/tab-manager.js',
     '/js/components/file-reader.js',
+    '/js/components/file-bundler.js',
     '/js/components/git.js',
     '/js/components/notifier.js',
     '/js/components/snippet-manager.js',

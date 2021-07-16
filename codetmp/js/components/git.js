@@ -49,7 +49,7 @@ const git = (function() {
   };
 
   const registerFile = function(_file, parentId) {
-    let file = new File({
+    let file = new fileManager.File({
       parentId,
       loaded: false,
       name: _file.name,
@@ -69,7 +69,7 @@ const git = (function() {
   };
     
   const registerDir = function(repo, _folder, parentId) {
-    let folder = new Folder({
+    let folder = new fileManager.Folder({
       parentId,
       name: _folder.name,
     });
@@ -148,7 +148,7 @@ const git = (function() {
           timeout: 5000,
         });
       } else {
-        let folder = new Folder({
+        let folder = new fileManager.Folder({
           parentId: activeFolder,
           name: repo.name,
         });

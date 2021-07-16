@@ -12,33 +12,41 @@
     };
 
     SELF.appendFolder = function(file) {
-      let parentNode = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
-      if (parentNode) {
-        parentNode = parentNode.nextElementSibling;
-        let node = $('#tmp-file-tree-directory')[0].content.cloneNode(true);
-        let span = $('.folder-name', node)[0];
-        span.textContent = file.name
-        span.dataset.fid = file.fid
-        span.dataset.title = file.name
-        // span.addEventListener('click', SELF.openDirectoryTree);
-        $('li', node)[0].classList.add('folder-root');
-        $('li', node)[0].classList.add('closed');
-        SELF.insertToSubtree(file.name, node, parentNode);
+      let nodes = $(`.folder-name[data-fid="${file.parentId}"]`);
+      if (nodes.length > 0) {
+        for (let parentNode of nodes) {
+          if (parentNode) {
+            parentNode = parentNode.nextElementSibling;
+            let node = $('#tmp-file-tree-directory')[0].content.cloneNode(true);
+            let span = $('.folder-name', node)[0];
+            span.textContent = file.name
+            span.dataset.fid = file.fid
+            span.dataset.title = file.name
+            // span.addEventListener('click', SELF.openDirectoryTree);
+            $('li', node)[0].classList.add('folder-root');
+            $('li', node)[0].classList.add('closed');
+            SELF.insertToSubtree(file.name, node, parentNode);
+          }
+        }
       }
     }
 
     SELF.appendFile = function(file) {
-      let parentNode = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
-      if (parentNode && parentNode.nextElementSibling.classList.contains('isLoaded')) {
-        parentNode = parentNode.nextElementSibling;
-        let node = $('#tmp-file-tree-file')[0].content.cloneNode(true);
-        let span = $('.file-name', node)[0];
-        span.textContent = file.name
-        span.dataset.title = file.name
-        span.dataset.fid = file.fid
-        span.dataset.parent = file.parentId
-        // span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
-        SELF.insertFileToSubtree(file.name, node, parentNode);
+      let nodes = $(`.folder-name[data-fid="${file.parentId}"]`);
+      if (nodes.length > 0) {
+        for (let parentNode of nodes) {
+          if (parentNode.nextElementSibling.classList.contains('isLoaded')) {
+            parentNode = parentNode.nextElementSibling;
+            let node = $('#tmp-file-tree-file')[0].content.cloneNode(true);
+            let span = $('.file-name', node)[0];
+            span.textContent = file.name
+            span.dataset.title = file.name
+            span.dataset.fid = file.fid
+            span.dataset.parent = file.parentId
+            // span.addEventListener('dblclick', fileManager.openFileByElementFidDataset);
+            SELF.insertFileToSubtree(file.name, node, parentNode);
+          }
+        }
       }
     }
 
@@ -81,48 +89,65 @@
     }
 
     SELF.removeFolder = function(file) {
-      let span = $(`.folder-name[data-fid="${file.fid}"]`)[0];
-      if (!span)
+      let nodes = $(`.folder-name[data-fid="${file.fid}"]`);
+      if (nodes.length == 0)
         return
-      let li = span.parentNode;
-      li.remove();
+      for (let span of nodes) {
+        let li = span.parentNode;
+        li.remove();
+      }
     }
 
     SELF.removeFile = function(file) {
-      let span = $(`.file-name[data-fid="${file.fid}"]`)[0];
-      if (!span)
+      let nodes = $(`.file-name[data-fid="${file.fid}"]`);
+      if (nodes.length == 0)
         return
-      let li = span.parentNode;
-      li.remove();
+      for (let span of nodes) {
+        let li = span.parentNode;
+        li.remove();
+      }
     }
 
     SELF.renameItem = function(file, type) {
-      let span = $(`.${type}-name[data-fid="${file.fid}"]`)[0];
-      if (!span)
+      let nodes = $(`.${type}-name[data-fid="${file.fid}"]`);
+      if (nodes.length == 0)
         return
-      span.textContent = file.name;
-      if (type == 'file')
-        SELF.insertFileToSubtree(file.name, span.parentNode, span.parentNode.parentNode);
-      else
-        SELF.insertToSubtree(file.name, span.parentNode, span.parentNode.parentNode);
+      for (let span of nodes) {
+        span.textContent = file.name;
+        if (type == 'file')
+          SELF.insertFileToSubtree(file.name, span.parentNode, span.parentNode.parentNode);
+        else
+          SELF.insertToSubtree(file.name, span.parentNode, span.parentNode.parentNode);
+      }
     }
 
-    SELF.moveItemFrom = function(type, fid, targetParentId) {
-      let span = $(`.${type}-name[data-fid="${fid}"]`)[0];
-      let targetSpan = $(`.folder-name[data-fid="${targetParentId}"]`)[0];
-      if (!span || !targetSpan)
-        return;
-      let li = span.parentNode;
-      let isAppended = false;
-      if (type == 'file') {
-        span.dataset.parent = targetParentId;
-        isAppended = SELF.insertFileToSubtree(span.textContent, li, targetSpan.nextElementSibling);
+    SELF.moveItemFrom = function(type, data, targetParentId) {
+      let spans = $(`.${type}-name[data-fid="${data.fid}"]`);
+      let targetSpans = $(`.folder-name[data-fid="${targetParentId}"]`);
+      if (targetSpans.length > 0) {
+        if (spans.length > 0) {
+          for (let span of spans) {
+            let li = span.parentNode;
+            li.remove();
+          }
+        }
+        let file = {
+          fid: data.fid,
+          name: data.name,
+          parentId: targetParentId,
+        };
+        if (type == 'file')
+          SELF.appendFile(file);
+        else 
+          SELF.appendFolder(file);
       } else {
-        isAppended = SELF.insertToSubtree(span.textContent, li, targetSpan.nextElementSibling);
+        if (spans.length > 0) {
+          for (let span of spans) {
+            let li = span.parentNode;
+            li.remove();
+          }
+        }
       }
-      // sub tree have not opened/loaded yet
-      if (!isAppended)
-        li.remove();
     }
 
     SELF.openDirectoryTree = function(target, isForceOpen = false) {
@@ -143,14 +168,16 @@
 
     SELF.highlightTree = function(fid, isRevealFileTree = true) {
       removeTreeFocus();
-      let node = $(`.file-name[data-fid="${fid}"]`)[0];
-      if (node) {
-        revealTreeDirectory(node, fid);
-        node.classList.add('--focus', '--opened');
-        if (isRevealFileTree) {
-          node.setAttribute('tabindex', 0);
-          node.focus();
-          node.removeAttribute('tabindex');
+      let nodes = $(`.file-name[data-fid="${fid}"]`);
+      if (nodes.length > 0) {
+        for (let node of nodes) {
+          revealTreeDirectory(node, fid);
+          node.classList.add('--focus', '--opened');
+          if (isRevealFileTree) {
+            node.setAttribute('tabindex', 0);
+            node.focus();
+            node.removeAttribute('tabindex');
+          }
         }
       } else {
         SELF.loadAndRevealTreeDirectory(fid);
@@ -158,15 +185,18 @@
     }
 
     function removeTreeFocus() {
-      let node = $(`.file-name.--focus`);
-      if (node.length > 0)
-        node[0].classList.toggle('--focus', false);
+      let nodes = $(`.file-name.--focus`);
+      if (nodes.length > 0) {
+        for (let node of nodes) 
+          node.classList.toggle('--focus', false);
+      }
     }
 
     SELF.removeOpenIndicator = function(fid) {
-      let node = $(`.file-name[data-fid="${fid}"]`)[0];
-      if (node) {
-        node.classList.remove('--opened');
+      let nodes = $(`.file-name[data-fid="${fid}"]`);
+      if (nodes.length > 0) {
+        for (let node of nodes) 
+          node.classList.remove('--opened');
       }
     }
 
@@ -193,7 +223,7 @@
       let flaggedNode;
 
       while (true) {
-        let node = $(`.folder-name[data-fid="${file.parentId}"]`)[0];
+        let node = $(`.file-tree[data-fid="${SELF.workspaceId}"] .folder-name[data-fid="${file.parentId}"]`)[0];
         if (node) {
           temp.push(file.parentId);
           flaggedNode = node;
@@ -208,14 +238,14 @@
 
       let isForceOpen = true
       for (var i = temp.length - 1; i >= 0; i--) {
-        let span = $(`.folder-name[data-fid="${temp[i]}"]`)[0];
+        let span = $(`.file-tree[data-fid="${SELF.workspaceId}"] .folder-name[data-fid="${temp[i]}"]`)[0];
         let li = span.parentNode;   
         SELF.openDirectoryTree(span, isForceOpen);
       }
 
       revealPathToRoot(flaggedNode);
 
-      let node = $(`.file-name[data-fid="${fid}"]`)[0];
+      let node = $(`.file-tree[data-fid="${SELF.workspaceId}"] .file-name[data-fid="${fid}"]`)[0];
       if (node) {
         node.classList.toggle('--focus', true);
         node.setAttribute('tabindex', 0);
@@ -384,6 +414,8 @@
     };
 
     SELF.createWorkspace = function(folderId) {
+      if (parseInt(folderId) == -1)
+        return;
       let folderName = fileManager.get({fid: folderId, type: 'folders'}).name;
       let node = document.createElement('div');
       node.dataset.fid = folderId;

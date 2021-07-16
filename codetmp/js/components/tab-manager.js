@@ -20,7 +20,8 @@ function TabManagerComponent() {
           fiber: 'close'
         })
       });
-      $('.file-tab', el)[0].dataset.parentId = data.file.parentId;
+      if (data.file)
+        $('.file-tab', el)[0].dataset.parentId = data.file.parentId;
       if (data.fileHandle === undefined)
         data.fileHandle = null;
     } else {

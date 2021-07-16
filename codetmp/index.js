@@ -95,21 +95,18 @@ componentLoader.load([
   },
   {
     urls: [
-      'js/components/single-file-generator.js',
+      'https://apis.google.com/js/platform.js?onload=renderSignInButton',
     ],
   },
   {
     urls: [
+      'js/components/git.js',
+      'js/components/single-file-generator.js',
+      'js/components/file-bundler.js',
       'js/require/jszip.min.js',
     ],
     callback: function() {
       support.check('JSZip');
     },
-  },
-  {
-    urls: [
-      'js/components/git.js',
-      'https://apis.google.com/js/platform.js?onload=renderSignInButton',
-    ],
   },
 ]);

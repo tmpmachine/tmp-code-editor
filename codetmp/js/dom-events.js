@@ -56,7 +56,7 @@ let DOMEvents = {
 	},
 
 	submittable: {
-		'confirm-download': ui.fileManager.fileDownload,
+		'confirm-download': ui.fileDownload,
 		'deploy-hosting': () => fire.deploy(),
 	},
 

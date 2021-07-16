@@ -1,93 +1,70 @@
 let fileManager = new FileManager();
 
-let navStructure = {
-  root: {
-    activeFile: null,
-    fileTab: [],
-    selectedFile: [],
-    activeTab: 0,
-    activeFolder: -1,
-    breadcrumbs: [{folderId:-1,title:'My Files'}],
-  },
-};
-
-let navMain = new lsdb('nav-main', navStructure);
-let navTemp = new lsdb('nav-temp', navStructure);
-let navs = [navMain, navTemp];
-
-for (let key in navStructure.root) {
-  Object.defineProperty(window, key, { 
-    get: () => navs[activeWorkspace].data[key],
-    set: value => navs[activeWorkspace].data[key] = value,
-  })
-}
-
-function File(data = {}, workspaceId = activeWorkspace) {
-  
-  let temp = activeWorkspace;
-  activeWorkspace = workspaceId;
-  
-  let file = fileStorage.new('files');
-  
-  let predefinedData = {
-    fid: fileStorage.data.counter.files,
-    name: 'untitled.html',
-    content: fileTab[activeTab].editor.env.editor.getValue(),
-    loaded: true,
-    parentId: activeFolder,
-    modifiedTime: new Date().toISOString(),
-  };
-  
-  for (let key in predefinedData) {
-    if (file.hasOwnProperty(key)) {
-      file[key] = predefinedData[key];
-    }
-  }
-  
-  for (let key in data) {
-    if (file.hasOwnProperty(key))
-      file[key] = data[key];
-  }
-  
-  fileStorage.data.files.push(file);
-  fileStorage.data.counter.files++;
-  activeWorkspace = temp;
-  return file;
-}
-
-function Folder(data = {}, workspaceId = activeWorkspace) {
-  
-  let temp = activeWorkspace;
-  activeWorkspace = workspaceId;
-  
-  let file = fileStorage.new('folders');
-  
-  let predefinedData = {
-    fid: fileStorage.data.counter.folders,
-    name: 'New Folder',
-    parentId: activeFolder,
-    modifiedTime: new Date().toISOString(),
-  };
-  
-  for (let key in predefinedData) {
-    if (file.hasOwnProperty(key))
-      file[key] = predefinedData[key];
-  }
-  
-  for (let key in data) {
-    if (file.hasOwnProperty(key))
-      file[key] = data[key];
-  }
-  
-  fileStorage.data.counter.folders++;
-  fileStorage.data.folders.push(file);
-  fileStorage.save();
-  activeWorkspace = temp;
-  return file;
-}
-
-
 function FileManager() {
+  
+  this.File = function(data = {}, workspaceId = activeWorkspace) {
+    
+    let temp = activeWorkspace;
+    activeWorkspace = workspaceId;
+    
+    let file = fileStorage.new('files');
+    
+    let predefinedData = {
+      fid: fileStorage.data.counter.files,
+      name: 'untitled.html',
+      content: fileTab[activeTab].editor.env.editor.getValue(),
+      loaded: true,
+      parentId: activeFolder,
+      modifiedTime: new Date().toISOString(),
+    };
+    
+    for (let key in predefinedData) {
+      if (file.hasOwnProperty(key)) {
+        file[key] = predefinedData[key];
+      }
+    }
+    
+    for (let key in data) {
+      if (file.hasOwnProperty(key))
+        file[key] = data[key];
+    }
+    
+    fileStorage.data.files.push(file);
+    fileStorage.data.counter.files++;
+    activeWorkspace = temp;
+    return file;
+  }
+
+  this.Folder = function(data = {}, workspaceId = activeWorkspace) {
+    
+    let temp = activeWorkspace;
+    activeWorkspace = workspaceId;
+    
+    let file = fileStorage.new('folders');
+    
+    let predefinedData = {
+      fid: fileStorage.data.counter.folders,
+      name: 'New Folder',
+      parentId: activeFolder,
+      modifiedTime: new Date().toISOString(),
+    };
+    
+    for (let key in predefinedData) {
+      if (file.hasOwnProperty(key))
+        file[key] = predefinedData[key];
+    }
+    
+    for (let key in data) {
+      if (file.hasOwnProperty(key))
+        file[key] = data[key];
+    }
+    
+    fileStorage.data.counter.folders++;
+    fileStorage.data.folders.push(file);
+    fileStorage.save();
+    activeWorkspace = temp;
+    return file;
+  }
   
   async function writeToDisk() {
     let writable = await fileTab[activeTab].fileHandle.createWritable();
@@ -285,7 +262,7 @@ function FileManager() {
   
   this.sync = function(data) {
     if (activeWorkspace === 0) {
-      handleSync(data);
+      this.handleSync(data);
     }
   };
 
@@ -313,7 +290,7 @@ function FileManager() {
       if (!name) 
       	return;
       
-      let file = new File({
+      let file = new fileManager.File({
         name,
       });
       fileManager.sync({
@@ -502,264 +479,33 @@ function FileManager() {
     });
   }
 
-  function folderToZip(container, folder, fileRequests, options) {
-    return new Promise(async resolve => {
+  // function folderToZip(container, folder, fileRequests, options) {
+  // moved to file bundler component
 
-      let folders = fileManager.listFolders(container.fid);
-      let files = fileManager.listFiles(container.fid);
-      for (let f of folders) {
-        if (f.trashed)
-          continue;
-        let subFolder = folder.folder(f.name);
-        await insertTreeToBundle(f, subFolder, fileRequests, options);
-      }
-      for (let f of files) {
-        if (f.trashed)
-          continue;
-        if (f.isTemp && f.content === null) {    
-        // if (f.fileRef.name !== undefined) {
-          folder.file(f.name, f.fileRef, {binary: true});
-        } else {
-          fileRequests.push({f, folder, options})
-        }
-      }
-      resolve();
+  // function insertTreeToBundle(container, folder, fileRequests, options) {
+  // moved to file bundler component
 
-    })
-  }
+  // function getReqFileContent(f, options) {
+  // moved to file bundler component
+  // this.getReqFileContent = getReqFileContent;
 
-  function insertTreeToBundle(container, folder, fileRequests, options) {
-    return new Promise(resolve => {
-      
-      if (container.id.length > 0) {
-        if (container.isLoaded) {
-          folderToZip(container, folder, fileRequests, options).then(resolve);
-        } else {
-          drive.syncFromDrivePartial([container.id]).then(async () => {
-            folderToZip(container, folder, fileRequests, options).then(resolve);
-          });
-        }
-      } else {
-        folderToZip(container, folder, fileRequests, options).then(resolve);
-      }
+  // function needConvertDivless(f, options) {
+  // moved to file bundler component
 
-    })
-  }
+  // function needReplaceFileTag(f, options) {
+  // moved to file bundler component
 
-  function getReqFileContent(f, options) {
-	  	return new Promise(resolve => {
+  // this.createBundle = function(selectedFile, zip, options) {
+  // moved to file bundler component
 
-            if (f.isTemp && f.content === null) {
-            // if (f.fileRef.name !== undefined) {
-              resolve(f.fileRef);
-              return
-         	}
+  // function replaceFileTag(content, parentId) {
+  // this.replaceFileTag = replaceFileTag;
 
-		    let mimeType = helper.getMimeType(f.name);
-		      
-		      if (f.loaded) {
-            
-            	let content = f.content;
-              if (needReplaceFileTag(f, options))
-                content = replaceFileTag(content, f.parentId);
-	          	if (needConvertDivless(f, options)) 
-	              content = divless.replace(content);
-              
-        		resolve(new Blob([content], {type: mimeType}));
+  // function getMatchTemplate(content) {
+  // moved to file bundler component
 
-		      } else {
-
-			      if (helper.isHasSource(f.content)) {
-		        	let source = helper.getRemoteDataContent(f.content);
-		        	if (needConvertDivless(f, options) || needReplaceFileTag(f, options)) {
-				      	fetch(source.downloadUrl).then(r => r.text()).then(content => {
-                  if (options.replaceFileTag)
-                    content = replaceFileTag(content, f.parentId);
-					         content = divless.replace(content);
-			        		 resolve(new Blob([content], {type: mimeType}));
-				      	});
-			      	} else { 
-				      	fetch(source.downloadUrl).then(r => r.blob()).then(resolve);
-              }
-			      } else {
-			        drive.downloadDependencies(f, 'blob').then(blob => {
-				      	let firstBytes = blob.slice(0, 12);
-			        	let r = new FileReader();
-    						r.onload = function() {
-    							if (r.result == '/*RD-start*/')  {
-    								let r = new FileReader();
-    								r.onload = function() {
-    			        		let source = helper.getRemoteDataContent(r.result);
-    			        		if (needConvertDivless(f, options) || needReplaceFileTag(f, options)) { 
-    						      	fetch(source.downloadUrl).then(r => r.text()).then(content => {
-                            if (options.replaceFileTag)
-                              content = replaceFileTag(content, f.parentId);
-    					          		resolve(new Blob([divless.replace(content)], {type:blob.type}));
-    						      	});
-    					      	} else {
-    					      		fetch(source.downloadUrl).then(r => r.blob()).then(resolve);
-                      }
-    								}
-    								r.readAsText(blob);			
-    							} else {
-    								if (needConvertDivless(f, options)) {
-  							      let r = new FileReader();
-    									r.onload = function() {
-    							          resolve(new Blob([divless.replace(r.result)], {type:blob.type}));
-    						        	}
-    									r.readAsText(blob);				      		
-				        		} else {
-					        		resolve(blob);
-				        		}
-    							}
-    						}
-    						r.readAsText(firstBytes);
-			        });
-			      }
-		      }
-	  	});
-  }
-  this.getReqFileContent = getReqFileContent;
-
-  function needConvertDivless(f, options) {
-  	if (helper.isMediaTypeHTML(f.name) && options.replaceDivless)
-  		return true;
-  	return false;
-  }
-
-  function needReplaceFileTag(f, options) {
-    if (helper.isMediaTypeHTML(f.name) && options.replaceFileTag)
-      return true;
-    return false;
-  }
-
-  this.createBundle = function(selectedFile, zip, options) {
-  	return new Promise(async (resolve) => {
-
-      let notifId = notif.add({title: 'Bundling files ...'});
-  		let fileRequests = [];
-
-  		 for (let file of selectedFile) {
-          if (file.dataset.type == 'folder') {
-            let f = fileManager.get({fid: Number(file.getAttribute('data')), type: 'folders'})
-            let folder = zip.folder(f.name);
-            await insertTreeToBundle(f, folder, fileRequests, options);
-          } else if (file.dataset.type == 'file') {
-            let f = fileManager.get({fid: Number(file.getAttribute('data')), type: 'files'})
-            if (f.trashed)
-            	continue;
-            if (f.isTemp && f.content === null) {
-            // if (f.fileRef.name !== undefined) {
-              	zip.file(f.name, f.fileRef, {binary: true});
-            } else {
-    		    	fileRequests.push({f, folder: zip, options})
-            }
-          }
-        }
-
-    	let countError = 0;
-     	handleRequestChunks(fileRequests, () => {
-        notif.update(notifId, {}, true);        
-        notifId = notif.add({title: 'Downloading your files ...'});
-        notif.update(notifId, {}, true);        
-        resolve();
-      }, countError);
-  	});
-  }
-
-  function replaceFileTag(content, parentId) {
-    let preParent = -1
-    let match = getMatchTemplate(content);
-    while (match !== null) {
-      let searchPath = JSON.parse(JSON.stringify(path = ['root']));
-      content = previewHandler.replaceFile(match, content, parentId, searchPath);
-      match = getMatchTemplate(content);
-    }
-    return content;
-  }
-  this.replaceFileTag = replaceFileTag;
-
-  function getMatchTemplate(content) {
-    return content.match(/<file src=.*?><\/file>/);
-  }
-
-  this.downloadSingle = function(file, options) {
-    return new Promise(resolve => {
-
-        let f = fileManager.get({fid: Number(file.getAttribute('data')), type: 'files'})
-        new Promise(resolveReader => {
-
-            if (f.isTemp && f.content === null) {
-            // if (f.fileRef.name !== undefined) {
-              resolveReader(f.fileRef);
-            } else {
-              getReqFileContent(f, options).then(blob => {
-                resolveReader(blob);
-              })
-            }
-
-        }).then(blob => {
-
-          let firstBytes = blob.slice(0, 12);
-          let r = new FileReader();
-          let mimeType = helper.getMimeType(f.name);
-          r.onload = function() {
-            if (r.result == '/*RD-start*/')  {
-              let r = new FileReader();
-              r.onload = function() {
-                let source = helper.getRemoteDataContent(r.result);
-                if (needConvertDivless(f, options) || needReplaceFileTag(f, options)) { 
-                  fetch(source.downloadUrl).then(r => r.text()).then(content => {
-                      if (options.replaceFileTag)
-                        content = replaceFileTag(content, f.parentId);
-                      resolve(new Blob([divless.replace(content)], {type:blob.type}));
-                  });
-                } else {
-                  fetch(source.downloadUrl).then(r => r.blob()).then(resolve);
-                }
-              }
-              r.readAsText(blob);     
-            } else {
-              if (needConvertDivless(f, options) || needReplaceFileTag(f, options)) { 
-                let r = new FileReader();
-                r.onload = function() {
-                  let content = r.result;
-                  if (options.replaceFileTag)
-                    content = replaceFileTag(content, f.parentId);
-                  resolve(new Blob([divless.replace(content)], {type:blob.type}));
-                }
-                r.readAsText(blob);                 
-              } else {
-                resolve(blob);
-              }
-            }
-          }
-          r.readAsText(firstBytes);
-          
-        })
-    });
-  }
-
-  function handleRequestChunks(requests, resolveZip, countError) {
-  	if (requests.length > 0) {
-  		let request = requests[0];
-      let notifId = notif.add({title:'Downloading '+request.f.name, content: 'In progress'});
-  		getReqFileContent(request.f, request.options).then(content => {
-  			requests.shift();
-        notif.update(notifId, {content:'Done'}, true);
-  			handleRequestChunks(requests, resolveZip, countError);
-  	     request.folder.file(request.f.name, content);
-  		}).catch(() => {
-  			requests.shift();
-        notif.update(notifId, {content:'Failed'}, true);
-  			handleRequestChunks(requests, resolveZip, countError+1);
-  		})
-  	} else {
-  		if (countError > 0)
-  			alert('There is an error while downloading files. You might want to redownload some files');
-  		resolveZip();
-  	}
-  }
+  // this.downloadSingle = function(file, options) {
+  // moved to file bundler component
 
   this.getExistingItem = function(name, parentId, type = 'file') {
     let haystack;
@@ -806,128 +552,129 @@ function FileManager() {
     
     fileManager.list();
   }
-}
 
-function handleSync(sync) {
-  
-  if (sync.action === 'create' || sync.action === 'copy') {
-    sync.metadata = [];
-    fileStorage.data.sync.push(sync);
-  } else if (sync.action === 'update') {
-    // Reduce request load by merging, modifying, and swapping sync request in queue.
-    // Do not reorder sync with type of files to prevent file being created before parent directory.
-    fileStorage.data.sync.push(sync);
+  this.handleSync = function(sync) {
     
-    for (let i=0; i<fileStorage.data.sync.length-1; i++) {
-      let s = fileStorage.data.sync[i];
+    if (sync.action === 'create' || sync.action === 'copy') {
+      sync.metadata = [];
+      fileStorage.data.sync.push(sync);
+    } else if (sync.action === 'update') {
+      // Reduce request load by merging, modifying, and swapping sync request in queue.
+      // Do not reorder sync with type of files to prevent file being created before parent directory.
+      fileStorage.data.sync.push(sync);
       
-      if (s.fid === sync.fid && s.type == sync.type) {
-        switch (s.action) {
-          case 'create':
-          case 'copy':
-            if (!sync.metadata.includes('trashed')) {
-              if (sync.type == 'files') {
-                fileStorage.data.sync.splice(i, 1);
-                sync.action = s.action;
-                sync.metadata = [];
+      for (let i=0; i<fileStorage.data.sync.length-1; i++) {
+        let s = fileStorage.data.sync[i];
+        
+        if (s.fid === sync.fid && s.type == sync.type) {
+          switch (s.action) {
+            case 'create':
+            case 'copy':
+              if (!sync.metadata.includes('trashed')) {
+                if (sync.type == 'files') {
+                  fileStorage.data.sync.splice(i, 1);
+                  sync.action = s.action;
+                  sync.metadata = [];
+                }
               }
-            }
-            break;
-          case 'update':
-            for (let meta of s.metadata) {
-              if (sync.metadata.indexOf(meta) < 0)
-                sync.metadata.push(meta);
-                
-              if (meta === 'parents')
-                sync.source = s.source;
-            }
-            if (sync.type == 'files') 
-              fileStorage.data.sync.splice(i, 1);
-            break;
+              break;
+            case 'update':
+              for (let meta of s.metadata) {
+                if (sync.metadata.indexOf(meta) < 0)
+                  sync.metadata.push(meta);
+                  
+                if (meta === 'parents')
+                  sync.source = s.source;
+              }
+              if (sync.type == 'files') 
+                fileStorage.data.sync.splice(i, 1);
+              break;
+          }
+          break;
         }
-        break;
+      }
+    } else if (sync.action === 'delete') {
+      for (let i=0; i<fileStorage.data.sync.length; i++) {
+        if (fileStorage.data.sync[i].fid === sync.fid)
+          fileStorage.data.sync.splice(i, 1);
       }
     }
-  } else if (sync.action === 'delete') {
-    for (let i=0; i<fileStorage.data.sync.length; i++) {
-      if (fileStorage.data.sync[i].fid === sync.fid)
-        fileStorage.data.sync.splice(i, 1);
-    }
   }
-}
 
 
-function getFileAtPath(path, parentId = -1) {
-    
-  while (path.match('//'))
-    path = path.replace('//','/');
-  
-  let dir = path.split('/');
-  let folder;
-  
-  while (dir.length > 1) {
-    
-    if (dir[0] === '..' || dir[0] === '.'  || dir[0] === '') {
+  function getFileAtPath(path, parentId = -1) {
       
-      folder = fileManager.get({fid: parentId, type: 'folders'});
-      if (folder === undefined)
-        break;
-      dir.splice(0, 1);
-      parentId = folder.parentId;
-    } else {
+    while (path.match('//'))
+      path = path.replace('//','/');
+    
+    let dir = path.split('/');
+    let folder;
+    
+    while (dir.length > 1) {
       
-      let folders = fileManager.listFolders(parentId);
-      folder = odin.dataOf(dir[0], folders, 'name');
-      if (folder) {
-        parentId = folder.fid;
+      if (dir[0] === '..' || dir[0] === '.'  || dir[0] === '') {
+        
+        folder = fileManager.get({fid: parentId, type: 'folders'});
+        if (folder === undefined)
+          break;
         dir.splice(0, 1);
+        parentId = folder.parentId;
       } else {
-        parentId = -2;
-        break;
+        
+        let folders = fileManager.listFolders(parentId);
+        folder = odin.dataOf(dir[0], folders, 'name');
+        if (folder) {
+          parentId = folder.fid;
+          dir.splice(0, 1);
+        } else {
+          parentId = -2;
+          break;
+        }
       }
     }
-  }
-  
-  let fileName = path.replace(/.+\//g,'')
-  let files = fileManager.listFiles(parentId);
-  let found = files.find(file => file.name == fileName);
-  return found;
-}
-
-
-function trashList() {
-  
-  var el;
-  $('#list-trash').innerHTML = '';
-  
-  let folders = odin.filterData(true, fileStorage.data.folders, 'trashed');
-  
-  folders.sort(function(a, b) {
-    return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
-  });
-
-  for (let f of folders) {
-    el = o.element('div',{innerHTML:o.template('tmp-list-folder-trash', f)});
-    $('#list-trash').appendChild(el);
-  }
-  
-  $('#list-trash').appendChild(o.element('div', {style:'flex:0 0 100%;height:16px;'}));
-  
-  let files = odin.filterData(true, fileStorage.data.files, 'trashed');
-  
-  files.sort(function(a, b) {
-    return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
-  });
-  
-  for (let {fid, name, trashed} of files) {
-    let iconColor = helper.getFileIconColor(name);
-      
-    el = o.element('div',{ innerHTML: o.template('tmp-list-file-trash', {
-      fid,
-      name,
-      iconColor,
-    }) });
     
-    $('#list-trash').appendChild(el);
+    let fileName = path.replace(/.+\//g,'')
+    let files = fileManager.listFiles(parentId);
+    let found = files.find(file => file.name == fileName);
+    return found;
   }
+
+
+  function trashList() {
+    
+    var el;
+    $('#list-trash').innerHTML = '';
+    
+    let folders = odin.filterData(true, fileStorage.data.folders, 'trashed');
+    
+    folders.sort(function(a, b) {
+      return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
+    });
+
+    for (let f of folders) {
+      el = o.element('div',{innerHTML:o.template('tmp-list-folder-trash', f)});
+      $('#list-trash').appendChild(el);
+    }
+    
+    $('#list-trash').appendChild(o.element('div', {style:'flex:0 0 100%;height:16px;'}));
+    
+    let files = odin.filterData(true, fileStorage.data.files, 'trashed');
+    
+    files.sort(function(a, b) {
+      return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
+    });
+    
+    for (let {fid, name, trashed} of files) {
+      let iconColor = helper.getFileIconColor(name);
+        
+      el = o.element('div',{ innerHTML: o.template('tmp-list-file-trash', {
+        fid,
+        name,
+        iconColor,
+      }) });
+      
+      $('#list-trash').appendChild(el);
+    }
+  }
+
 }
