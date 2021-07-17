@@ -106,7 +106,7 @@ const drive = (function() {
         }
       } else {
         if (parentFolderId > -2) {
-          let folder = new fileManager.Folder({
+          let folder = fileManager.newFolder({
             id,
             name,
             modifiedTime,
@@ -168,7 +168,7 @@ const drive = (function() {
             loaded: false,
             parentId: parentFolderId,
           };
-          let file  = new fileManager.File(data, 0);
+          let file  = fileManager.newFile(data, 0);
           ui.tree.appendFile(file);
         }
       }

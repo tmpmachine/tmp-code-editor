@@ -2,7 +2,11 @@ let fileManager = new FileManager();
 
 function FileManager() {
   
-  this.File = function(data = {}, workspaceId = activeWorkspace) {
+  let SELF = {
+
+  };
+
+  function File(data, workspaceId) {
     
     let temp = activeWorkspace;
     activeWorkspace = workspaceId;
@@ -35,7 +39,7 @@ function FileManager() {
     return file;
   }
 
-  this.Folder = function(data = {}, workspaceId = activeWorkspace) {
+  function Folder(data, workspaceId) {
     
     let temp = activeWorkspace;
     activeWorkspace = workspaceId;
@@ -66,6 +70,14 @@ function FileManager() {
     return file;
   }
   
+  SELF.newFile = function(data = {}, workspaceId = activeWorkspace) {
+    return new File(data, workspaceId)
+  };
+
+  SELF.newFolder = function(data = {}, workspaceId = activeWorkspace) {
+    return new Folder(data, workspaceId)
+  };
+
   async function writeToDisk() {
     let writable = await fileTab[activeTab].fileHandle.createWritable();
     let content = fileTab[activeTab].editor.env.editor.getValue();
@@ -108,8 +120,8 @@ function FileManager() {
     }
   }
 
-  this.getListFolder = function(parentId = activeFolder) {
-    let folders = this.listFolders(parentId);
+  SELF.getListFolder = function(parentId = activeFolder) {
+    let folders = SELF.listFolders(parentId);
     folders.sort(function(a, b) {
       return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
     });
@@ -142,17 +154,17 @@ function FileManager() {
     return traversePath(folder.parentId, path);
   }
 
-  this.getFullPath = function(file) {
+  SELF.getFullPath = function(file) {
     let path = traversePath(file.parentId).reverse();
     path.push(file.name);
     return path.join('/');
   }
 
-  this.listFiles = function(parentId) {
+  SELF.listFiles = function(parentId) {
     return odin.filterData(parentId, fileStorage.data.files, 'parentId');
   }
 
-  this.listFolders = function(parentId, column = 'parentId') {
+  SELF.listFolders = function(parentId, column = 'parentId') {
     return odin.filterData(parentId, fileStorage.data.folders, column);
   }
 
@@ -190,8 +202,8 @@ function FileManager() {
     }
   }
 
-  this.getListFiles = function(parentId = activeFolder) {
-    let files = this.listFiles(parentId);
+  SELF.getListFiles = function(parentId = activeFolder) {
+    let files = SELF.listFiles(parentId);
     files.sort(function(a, b) {
       return (a.name.toLowerCase() < b.name.toLowerCase()) ? -1 : 1;
     });
@@ -203,7 +215,7 @@ function FileManager() {
     return result;
   }
 
-  this.downloadDependencies = function(file, source) {
+  SELF.downloadDependencies = function(file, source) {
     return new Promise((resolve, reject) => {
       if (source.origin == 'git')
         git.downloadFile(source.downloadUrl).then(resolve);
@@ -212,7 +224,7 @@ function FileManager() {
     });
   }
 
-  this.downloadMedia = function(file) {
+  SELF.downloadMedia = function(file) {
     return new Promise(resolve => {
       
       let notifId = notif.add({
@@ -260,13 +272,13 @@ function FileManager() {
     });
   }
   
-  this.sync = function(data) {
+  SELF.sync = function(data) {
     if (activeWorkspace === 0) {
-      this.handleSync(data);
+      SELF.handleSync(data);
     }
   };
 
-  this.openLocal = async function(event) {
+  SELF.openLocal = async function(event) {
     if (typeof(window.showOpenFilePicker) !== 'undefined') {
       event.preventDefault();
       let [entry] = await window.showOpenFilePicker();
@@ -290,7 +302,7 @@ function FileManager() {
       if (!name) 
       	return;
       
-      let file = new fileManager.File({
+      let file = SELF.newFile({
         name,
       });
       fileManager.sync({
@@ -337,7 +349,7 @@ function FileManager() {
     $('.icon-rename')[activeTab].textContent = 'close';
   }
 
-  this.save = function() {
+  SELF.save = function() {
     if (fileTab[activeTab].fileHandle !== null) {
         writeToDisk();
     } else {
@@ -349,7 +361,7 @@ function FileManager() {
     }
   };
   
-  this.list = function() {
+  SELF.list = function() {
     $('#file-list').innerHTML = '';
     displayListFolders();
     $('#file-list').appendChild(o.element('div', { style: 'flex: 0 0 100%', class: 'separator w3-padding-small' }));
@@ -371,7 +383,7 @@ function FileManager() {
     })
   }
   
-  this.get = function(data, workspaceId = activeWorkspace) {
+  SELF.get = function(data, workspaceId = activeWorkspace) {
     let haystack;
     if (workspaceId === 0)
       haystack = (data.type == 'files') ? mainStorage.data.files : mainStorage.data.folders;
@@ -418,7 +430,7 @@ function FileManager() {
     })
   }
 
-  this.open = function(fid) {
+  SELF.open = function(fid) {
     let f = fileManager.get({fid, type: 'files'});
     let mimeType = helper.getMimeType(f.name);
 
@@ -451,7 +463,7 @@ function FileManager() {
     });
   };
 
-  this.getPreviewLink = function(f) {
+  SELF.getPreviewLink = function(f) {
     return new Promise(async (resolve, reject) => {
 
       let src = f.contentLink;
@@ -479,35 +491,7 @@ function FileManager() {
     });
   }
 
-  // function folderToZip(container, folder, fileRequests, options) {
-  // moved to file bundler component
-
-  // function insertTreeToBundle(container, folder, fileRequests, options) {
-  // moved to file bundler component
-
-  // function getReqFileContent(f, options) {
-  // moved to file bundler component
-  // this.getReqFileContent = getReqFileContent;
-
-  // function needConvertDivless(f, options) {
-  // moved to file bundler component
-
-  // function needReplaceFileTag(f, options) {
-  // moved to file bundler component
-
-  // this.createBundle = function(selectedFile, zip, options) {
-  // moved to file bundler component
-
-  // function replaceFileTag(content, parentId) {
-  // this.replaceFileTag = replaceFileTag;
-
-  // function getMatchTemplate(content) {
-  // moved to file bundler component
-
-  // this.downloadSingle = function(file, options) {
-  // moved to file bundler component
-
-  this.getExistingItem = function(name, parentId, type = 'file') {
+  SELF.getExistingItem = function(name, parentId, type = 'file') {
     let haystack;
     if (type == 'file')
       haystack = fileManager.listFiles(parentId);
@@ -524,22 +508,22 @@ function FileManager() {
     return null;
   }
 
-  this.getDuplicateName = function(parentId, name, type = 'file', originalName = '', duplicateCount = 1) {
+  SELF.getDuplicateName = function(parentId, name, type = 'file', originalName = '', duplicateCount = 1) {
     if (originalName == '')
       originalName = name;
-    let existing = this.getExistingItem(name, parentId, type);
+    let existing = SELF.getExistingItem(name, parentId, type);
     if (existing !== null) {
         let ext = '';
         var arr = originalName.split('.');
         if (arr.length > 1) {
           ext = '.'+arr.pop();
         }
-        return this.getDuplicateName(parentId, arr.join('.')+' ('+duplicateCount+')'+ext, type, originalName, duplicateCount+1);
+        return SELF.getDuplicateName(parentId, arr.join('.')+' ('+duplicateCount+')'+ext, type, originalName, duplicateCount+1);
     }
     return name;
   }
 
-  this.openFolder = function(folderId) {
+  SELF.openFolder = function(folderId) {
     activeFolder = folderId;
     
     if (activeFolder == -1) {
@@ -553,7 +537,7 @@ function FileManager() {
     fileManager.list();
   }
 
-  this.handleSync = function(sync) {
+  SELF.handleSync = function(sync) {
     
     if (sync.action === 'create' || sync.action === 'copy') {
       sync.metadata = [];
@@ -676,5 +660,7 @@ function FileManager() {
       $('#list-trash').appendChild(el);
     }
   }
+
+  return SELF;
 
 }

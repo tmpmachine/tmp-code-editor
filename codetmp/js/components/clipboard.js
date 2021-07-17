@@ -68,7 +68,7 @@ const fileClipBoard = (function() {
   
   function copySingleFile({ id, fid, name, content, loaded, isTemp, fileRef }, modifiedTime) {
     let action = (loaded) ? 'create' : 'copy';
-    let file = new fileManager.File({
+    let file = fileManager.newFile({
       id,
       isTemp,
       fileRef,
@@ -97,7 +97,7 @@ const fileClipBoard = (function() {
     if (!trashed) {
       let idx = odin.idxOf(parentId, road, 0);
       let action = (loaded) ? 'create' : 'copy';
-      let file = new fileManager.File({
+      let file = fileManager.newFile({
         id,
         fileRef,
         name: fileManager.getDuplicateName(pasteParentFolderId, name),
@@ -131,7 +131,7 @@ const fileClipBoard = (function() {
       road.push([folderId, fileStorage.data.counter.folders]);
       
       let idx = odin.idxOf(parentId, road, 0);
-      let folder = new fileManager.Folder({
+      let folder = fileManager.newFolder({
         name: fileManager.getDuplicateName(pasteParentFolderId, name, 'folder'),
         modifiedTime,
         parentId: (idx < 0) ? activeFolder : road[idx][1],
@@ -160,7 +160,7 @@ const fileClipBoard = (function() {
       type: fileType,
       source: data.parentId
     });
-    getComponentAsPromise('file-tree').then(fileTree => {
+    window.app.getComponent('file-tree').then(fileTree => {
       let type = (fileType == 'files') ? 'file' : 'folder';
       fileTree.moveItemFrom(type, data, activeFolder);
     });

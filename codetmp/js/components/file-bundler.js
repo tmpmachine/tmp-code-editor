@@ -317,7 +317,7 @@
   }
 
   let fileBundler = new FileBundlerComponent();
-  registerComponent('fileBundler', fileBundler);
+  window.app.registerComponent('fileBundler', fileBundler);
   fileBundler.init(); 
 
 })();

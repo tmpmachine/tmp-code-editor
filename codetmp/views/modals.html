@@ -283,5 +283,5 @@
 
 <script>
   let content = document.getElementsByTagName('export')[0].innerHTML.trim();
-  window.opener.postMessage({ content }, '*');
+  window.opener.postMessage({ type: 'export-html', content }, '*');
 </script>

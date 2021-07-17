@@ -3,7 +3,7 @@
   // TODO: remove local query selector after updating all components that use
   let $ = function(selector, node=document) { return node.querySelectorAll(selector) };
 
-  registerComponent('file-tree', FileTreeComponent());
+  window.app.registerComponent('file-tree', FileTreeComponent());
 
   function FileTreeComponent() {
 
@@ -435,7 +435,7 @@
   }
 
 
-  getComponentAsPromise('file-tree').then(ft => {
+  window.app.getComponent('file-tree').then(ft => {
     ft.reload();
     ft.attachListener();
     if (settings.data.explorer.tree) {

@@ -1,4 +1,4 @@
-registerComponent('single-file-generator', new SingleFileGeneratorComponent());
+window.app.registerComponent('single-file-generator', new SingleFileGeneratorComponent());
 
 function SingleFileGeneratorComponent() {
 

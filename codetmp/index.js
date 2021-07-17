@@ -3,15 +3,12 @@ let environment = {
   previewUrl: 'https://cpreview.web.app/',
 };
 
-componentLoader.load([
+window.app.loadFiles([
   {
     urls: [
       'views/modals.html',
       'views/templates.html',
     ],
-    callback: function() {
-      window.removeEventListener('message', componentLoader.messageHandler);
-    }
   },
   {
   urls: [
@@ -101,6 +98,7 @@ componentLoader.load([
   {
     urls: [
       'js/components/git.js',
+      'js/components/environment-manager.js',
       'js/components/single-file-generator.js',
       'js/components/file-bundler.js',
       'js/require/jszip.min.js',

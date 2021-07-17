@@ -25,14 +25,14 @@
   <div id="main-layout" class="normal-mode">
     <div id="main-editor">
       <div class="w3-rest relative h-100">
-        <div id="in-home" class="in-window in-content col1 active" style="background:#181e2a">
+        <div id="in-home" class="in-window in-content col1 active">
           <div style="top:0;left:0;overflow:auto;z-index:2;" class="w-100 h-100 absolute">
             <div class="w3-hide-small" style="height:34px;"></div>
             
             <div class="w3-padding homepage-content">
               <div>
               <h3 style="font-weight:bold;margin-bottom: 0">Codetmp</h3>
-              <div class="w3-tiny" style="opacity:0.5;">Build v7.2.83, 16 July 2021</div>
+              <div class="w3-tiny" style="opacity:0.5;">Build v7.2.84, 17 July 2021</div>
               <p>Static web development sandbox by <u><a href="http://pacolemon.blogspot.com/">PacoLemon</a></u>.</p>
               <p>Codetmp is all about :</p>
               <ul>
@@ -67,7 +67,7 @@
           </div>
         </div>
         <div id="in-home-block" class="in-window in-block" style="z-index:0;"></div>
-        <div id="in-my-files" class="in-window in-content col1 d-grid" style="grid-template-rows:auto auto 1fr;background:#262931">
+        <div id="in-my-files" class="in-window in-content col1 d-grid">
           <div class="w3-hide-small" style="height:34px;"></div>
           
           <div>
@@ -242,9 +242,9 @@
         <div class="in-window d-grid ov-hidden h-100">
           <div class="relative h-100 d-grid" style="grid-template-rows:auto auto 1fr;">
             
-            <div id="nav-bar" class="no-select w3-small relative d-flex w-100" style="background:#191a21;height:34px;justify-content:space-between;color:#fafafa;">
+            <div id="nav-bar" class="no-select w3-small relative d-flex w-100">
               <div class="menu-bar">
-                <button class="tree-explorer-btn-expand clickable d-none" title="File Tree Explorer (Alt + Q)" data-callback="expand-tree-explorer" style="border: 0;cursor: pointer;color: #97bcc1;">
+                <button class="tree-explorer-btn-expand clickable d-none" title="File Tree Explorer (Alt + Q)" data-callback="expand-tree-explorer" style="border: 0;cursor: pointer;color: #97bcc1;border-right: 1px solid hsl(214deg 14% 13%);">
                   <i class="material-icons i-btn-in">chevron_right</i>
                 </button>
                 <div class="drop-menu">
@@ -306,9 +306,9 @@
               </div>
             </div>
             
-            <div class="d-grid relative" style="background:#141414;grid-template-columns: 1fr auto">
+            <div class="d-grid relative file-tab-container">
               <div id="file-title"></div>
-              <div id="more-tab" data-callback="more-tab" class="clickable w3-left relative d-none" style="background:#101113;z-index:1;">
+              <div id="more-tab" data-callback="more-tab" class="clickable w3-left relative d-none" style="z-index:1;">
                 <div>
                   <div class="w3-rest relative" style="padding:18px 24px;line-height:1.5em;">
                     <div class="file-tab-name no-select w3-small w3-left h-100 d-flex w-100 absolute" data-title="__name__" style="left:0;top:0;color:#fff!important;font-weight:bold;align-items:center;justify-content:center;">
@@ -316,7 +316,7 @@
                     </div>
                   </div>
                 </div>
-                <div style="height:3px;background:#202020;"></div>
+                <div style="height:3px"></div>
               </div>
             </div>
             
@@ -402,7 +402,7 @@
           <div id="file-tree" class="d-grid">
             <ul class="file-tree-list file-tree" data-fid="-1">
               <li class="folder-root open">
-                <span class="folder-name" data-fid="-1">My Files</span>
+                <span class="folder-name root" data-fid="-1">My Files</span>
                 <ul class="isLoaded"></ul>
               </li>
             </ul>
@@ -575,7 +575,7 @@
       document.querySelector('#preload-material').parentNode.removeChild(document.querySelector('#preload-material'));
     });
   </script>
-  <script src="js/core/component-loader.js"></script>
+  <script src="js/core/app.js"></script>
   <script src="index.js"></script>
 </body>
 </html>

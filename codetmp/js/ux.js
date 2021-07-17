@@ -174,7 +174,7 @@ const ui = {
 	fileGenerator: {
 		generate: function() {
 			let form = this.form;
-			getComponentAsPromise('single-file-generator').then(sfg => {
+			window.app.getComponent('single-file-generator').then(sfg => {
 				sfg.generate(form);
 			}).catch((e) => {
 				aww.pop('Component is not ready yet.')
@@ -182,7 +182,7 @@ const ui = {
 		},
 		copy: function() {
 			let form = this.form;
-			getComponentAsPromise('single-file-generator').then(sfg => {
+			window.app.getComponent('single-file-generator').then(sfg => {
 				sfg.copy(form);
 			}).catch((e) => {
 				aww.pop('Component is not ready yet.')
@@ -191,38 +191,38 @@ const ui = {
 	},
 	tree: {
 		renameFolder: function(folder) {
-			getComponentAsPromise('file-tree').then(fileTree => {
+			window.app.getComponent('file-tree').then(fileTree => {
     		fileTree.renameItem(folder, 'folder');
     	});
 		},
 		renameFile: function(file) {
-			getComponentAsPromise('file-tree').then(fileTree => {
+			window.app.getComponent('file-tree').then(fileTree => {
     		fileTree.renameItem(file, 'file');
     	});
 		},
 		appendFile: function(file) {
-			getComponentAsPromise('file-tree').then(ft => {
+			window.app.getComponent('file-tree').then(ft => {
 	      ft.appendFile(file);
 	    });
 		},
 		appendFolder: function(folder) {
-			getComponentAsPromise('file-tree').then(ft => {
+			window.app.getComponent('file-tree').then(ft => {
 	      ft.appendFolder(folder);
 	    });
 		},
 		createWorkspace: function() {
-			getComponentAsPromise('file-tree').then(ft => {
+			window.app.getComponent('file-tree').then(ft => {
 	      ft.createWorkspace(activeFolder);
 	    });
 		},
 	},
 	highlightTree: function(fid, isRevealFileTree = true) {
-		getComponentAsPromise('file-tree').then(ft => {
+		window.app.getComponent('file-tree').then(ft => {
       ft.highlightTree(fid, isRevealFileTree);
     });
 	},
 	reloadFileTree: function() {
-		getComponentAsPromise('file-tree').then(ft => {
+		window.app.getComponent('file-tree').then(ft => {
 			ft.reload();
 		})
 	},
@@ -239,7 +239,7 @@ const ui = {
 	      newTab();
 	    focusTab(fileTab[activeTab].fid);
 	    loadBreadCrumbs();
-	    getComponentAsPromise('file-tree').then(ft => {
+	    window.app.getComponent('file-tree').then(ft => {
 				ft.reload();
 			})
 	  }
@@ -488,7 +488,7 @@ const ui = {
 		        if (!name) 
 		        	return;
 
-		        let folder = new fileManager.Folder({
+		        let folder = fileManager.newFolder({
                 name: fileManager.getDuplicateName(activeFolder, name, 'folder'),
 		          	modifiedTime: new Date().toISOString(),
 		          	parentId: activeFolder,
@@ -513,7 +513,7 @@ const ui = {
           modal.prompt('File name', 'Untitled').then(name => {
             if (!name) 
               return;
-            let file = new fileManager.File({
+            let file = fileManager.newFile({
                 name: fileManager.getDuplicateName(activeFolder, name),
                 modifiedTime: new Date().toISOString(),
                 content: '',
@@ -545,7 +545,7 @@ const ui = {
         	metadata: ['trashed'],
         	type: 'folders'
       	});
-      	getComponentAsPromise('file-tree').then(fileTree => {
+      	window.app.getComponent('file-tree').then(fileTree => {
       		fileTree.removeFolder(data);
       	});
 	    }
@@ -573,7 +573,7 @@ const ui = {
 		        metadata: ['trashed'],
 		        type: 'files'
 		    });
-		    getComponentAsPromise('file-tree').then(fileTree => {
+		    window.app.getComponent('file-tree').then(fileTree => {
 	    		fileTree.removeFile(data);
 	      });
 	    }
@@ -756,7 +756,7 @@ const ui = {
   },
 
   fileDownload: function(self) {
-  	getComponentAsPromise('fileBundler').then(fb => {
+  	window.app.getComponent('fileBundler').then(fb => {
   		fb.fileDownload(self);
   	}).catch((e) => {
   		L(e);
@@ -1099,7 +1099,7 @@ function confirmCloseTab(focus = true, comeback) {
 
 function closeActiveTab() {
 	let fid = parseInt(fileTab[activeTab].fid); 
-	getComponentAsPromise('file-tree').then(fileTree => {
+	window.app.getComponent('file-tree').then(fileTree => {
 	  fileTree.removeOpenIndicator(fid);
 	});
   $('#file-title').removeChild($('.file-tab')[activeTab]);

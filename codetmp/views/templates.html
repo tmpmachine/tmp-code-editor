@@ -128,7 +128,7 @@
 <template data-name="tree-node" class="Export">
   <ul class="file-tree-list file-tree d-none" data-fid="-1">
     <li class="folder-root open">
-      <span class="folder-name" data-fid="-1">Tree root name</span>
+      <span class="folder-name root" data-fid="">Root</span>
       <ul class="isLoaded"></ul>
     </li>
   </ul>
@@ -138,5 +138,5 @@
 
 <script>
   let content = document.getElementsByTagName('export')[0].innerHTML.trim();
-  window.opener.postMessage({ content }, '*');
+  window.opener.postMessage({ type: 'export-html', content }, '*');
 </script>
