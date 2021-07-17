@@ -50,7 +50,7 @@
               // if (f.fileRef.name !== undefined) {
                 resolveReader(f.fileRef);
               } else {
-                getReqFileContent(f, options).then(blob => {
+                SELF.getReqFileContent(f, options).then(blob => {
                   resolveReader(blob);
                 })
               }
@@ -101,7 +101,7 @@
       if (requests.length > 0) {
         let request = requests[0];
         let notifId = notif.add({title:'Downloading '+request.f.name, content: 'In progress'});
-        getReqFileContent(request.f, request.options).then(content => {
+        SELF.getReqFileContent(request.f, request.options).then(content => {
           requests.shift();
           notif.update(notifId, {content:'Done'}, true);
           handleRequestChunks(requests, resolveZip, countError);
@@ -118,7 +118,7 @@
       }
     }
 
-    function getReqFileContent(f, options) {
+    SELF.getReqFileContent = function(f, options) {
       return new Promise(resolve => {
 
             if (f.isTemp && f.content === null) {

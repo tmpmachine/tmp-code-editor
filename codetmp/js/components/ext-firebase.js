@@ -137,7 +137,7 @@ const fire = (() => {
             replaceDivless: settings.data.editor.divlessHTMLEnabled,
           };
 
-          fileManager.getReqFileContent(file, options).then(blob => {
+          app.fileBundler.getReqFileContent(file, options).then(blob => {
 
             let r = new FileReader();
             r.onload = function() {
