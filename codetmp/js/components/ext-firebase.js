@@ -218,7 +218,7 @@ const fire = (() => {
   }
 
 
-  function async init() {
+  async function init() {
     if (token.length > 0) {
        await auth2.init();
       listProject();

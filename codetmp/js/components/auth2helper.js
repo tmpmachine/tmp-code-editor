@@ -23,9 +23,11 @@
   }
 
   function distributeToken() {
-    if (typeof(drive) != 'undefined') { drive.setToken(access_token) }
     previewHandler.setToken(access_token);
-    fire.setToken(access_token);
+    if (typeof(drive) != 'undefined') 
+      drive.setToken(access_token);
+    if (typeof(fire) != 'undefined')
+      fire.setToken(access_token);
   }
 
   function init() {
