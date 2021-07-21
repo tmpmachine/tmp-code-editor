@@ -1,5 +1,5 @@
 L = console.log;
-let cacheVersion = '7.2851';
+let cacheVersion = '7.29';
 let cacheItem = 'codetmp-'+cacheVersion;
 
 self.addEventListener('message', function(e) {
@@ -76,6 +76,7 @@ self.addEventListener('install', function(event) {
     '/js/components/defer-feature-1.js',
     '/js/components/defer-feature-2.js',
     '/js/components/single-file-generator.js',
+    '/js/components/environment-manager.js',
     
     '/js/core/app.js',
     '/js/core/app-data.js',

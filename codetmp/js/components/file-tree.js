@@ -352,6 +352,21 @@
         }
       });
 
+      $('#tree-workspace')[0].addEventListener("dblclick", e => {
+        if (e.target.parentNode === $('#tree-workspace')[0]) {
+          let folderId = e.target.dataset.fid;
+          let parentId = e.target.dataset.parentId;
+          // SELF.changeWorkspace(folderId);
+          // if (breadcrumbs.length > 1)
+            // breadcrumbs.length e(0);
+          // L(parentId)
+          let rootTitle = (parentId == -1 || parentId === undefined) ? 'My Files' : '..';
+          breadcrumbs.length = 0;
+          breadcrumbs.push({folderId:parentId, title: rootTitle})
+          fileManager.openFolder(folderId);
+        }
+      });
+
       $('#tree-workspace')[0].addEventListener("contextmenu", e => {
         e.preventDefault();
         if (e.target.parentNode === $('#tree-workspace')[0]) {
@@ -416,17 +431,18 @@
     SELF.createWorkspace = function(folderId) {
       if (parseInt(folderId) == -1)
         return;
-      let folderName = fileManager.get({fid: folderId, type: 'folders'}).name;
+      let folder = fileManager.get({fid: folderId, type: 'folders'});
       let node = document.createElement('div');
       node.dataset.fid = folderId;
+      node.dataset.parentId = folder.parentId;
       node.classList.add('no-select');
-      node.textContent = folderName;
+      node.textContent = folder.name;
       $('#tree-workspace')[0].append(node);
 
       let treeNode = $('template[data-name="tree-node"]')[0].content.cloneNode(true);
       $('.file-tree-list', treeNode)[0].dataset.fid = folderId;
       $('.folder-name', treeNode)[0].dataset.fid = folderId;
-      $('.folder-name', treeNode)[0].textContent = folderName;
+      $('.folder-name', treeNode)[0].textContent = folder.name;
       $('#file-tree')[0].append(treeNode);
       SELF.reloadWorkspace(folderId);
     };

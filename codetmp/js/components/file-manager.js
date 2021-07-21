@@ -585,6 +585,19 @@ function FileManager() {
     }
   }
 
+  SELF.reloadBreadcrumb = function() {
+    breadcrumbs.length = 0;
+    let folderId = activeFolder;
+    while (folderId != -1) {
+      let folder = fileManager.get({fid: folderId, type: 'folders'});
+      breadcrumbs.push({folderId:folder.fid, title: folder.name})
+      folderId = folder.parentId;
+    }
+    breadcrumbs.push({folderId:-1, title: 'My Files'});
+    breadcrumbs.reverse();
+    loadBreadCrumbs();
+  }
+
 
   function getFileAtPath(path, parentId = -1) {
       

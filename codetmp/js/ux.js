@@ -1353,8 +1353,12 @@ function loadBreadCrumbs() {
 function openBread() {
   let fid = this.dataset.fid;
   activeFolder = parseInt(fid);
-  let idx = odin.idxOf(fid,breadcrumbs,'folderId');
-  breadcrumbs = breadcrumbs.slice(0,idx+1);
+  if (this.textContent == '..') {
+	  fileManager.reloadBreadcrumb();
+  } else {
+	  let idx = odin.idxOf(fid,breadcrumbs,'folderId');
+	  breadcrumbs = breadcrumbs.slice(0,idx+1);
+  }
   fileManager.list();
   clearSelection();
 }
